@@ -1,0 +1,38 @@
+{
+  "name": "pump.fun.client",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "biome check .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "5.45.1",
+    "antd": "^5.21.6",
+    "axios": "^1.7.7",
+    "grommet": "^2.41.0",
+    "moment": "^2.30.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.27.0",
+    "styled-components": "^5.3.11",
+    "viem": "latest",
+    "vite-plugin-svgr": "^4.2.0",
+    "wagmi": "latest"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.0",
+    "@svgr/rollup": "^8.1.0",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
+    "@types/styled-components": "^5.1.34",
+    "@vitejs/plugin-react": "^4.2.1",
+    "@wagmi/cli": "latest",
+    "buffer": "^6.0.3",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11"
+  }
+}
