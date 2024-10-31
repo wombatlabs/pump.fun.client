@@ -13,6 +13,7 @@ const TokenContainer = styled(Box)`
 
 export const TokenItem = (props: {
   data: Token
+  onClick?: () => void
 }) => {
   const { data: {
     address,
@@ -22,8 +23,10 @@ export const TokenItem = (props: {
     user
   } } = props
 
-  return <TokenContainer>
-    <Text>Created by {user?.username} at {moment(+timestamp * 1000).format('LTS')}</Text>
+  return <TokenContainer onClick={props.onClick}>
+    <Text color={'accentWhite'}>
+      Created by {user?.username} at {moment(+timestamp * 1000).format('LTS')}
+    </Text>
     <Text>{name}</Text>
     <Text>{symbol}</Text>
     <Text>{address}</Text>

@@ -5,6 +5,7 @@ import {Token} from "../../types.ts";
 import {TokenItem} from "./TokenItem.tsx";
 import {Spin} from "antd";
 import styled from "styled-components";
+import {useNavigate} from "react-router-dom";
 
 const TokensContainer = styled(Box)`
     display: flex;
@@ -21,6 +22,8 @@ const TokensContainer = styled(Box)`
 export const TokensList = () => {
   const [tokens, setTokens] = useState<Token[]>([])
   const [isInitialLoading, setInitialLoading] = useState(true)
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     const loadData = async () => {
@@ -47,7 +50,7 @@ export const TokensList = () => {
     </Box>}
     <TokensContainer direction={'row'}>
       {tokens.map(token => {
-        return <TokenItem key={token.id} data={token} />
+        return <TokenItem key={token.id} data={token} onClick={() => navigate(`/${token.address}`)} />
       })}
     </TokensContainer>
   </Box>

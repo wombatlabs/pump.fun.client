@@ -131,7 +131,6 @@ export const grommet = {
 export const darkTheme = deepMerge(grommet, {
   global: {
     colors: {
-      brandRho: '#4852FF',
       background: '#18181A',
       accentWhite: '#E4E4E8',
       accentWhite2: '#B6B7C8',

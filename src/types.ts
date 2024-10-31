@@ -6,6 +6,14 @@ export interface UserAccount {
   updatedAt: string
 }
 
+export interface UserComment {
+  id: string
+  text: string
+  token: Token
+  user: UserAccount
+  createdAt: string
+}
+
 export interface Token {
   id: string;
   txnHash: string
