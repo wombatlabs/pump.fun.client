@@ -4,7 +4,7 @@ export const antdTheme: ThemeConfig = {
   algorithm: theme.darkAlgorithm,
   token: {
     colorBgContainer: '#19191A',
-    colorBorder: 'transparent'
+    // colorBorder: 'transparent'
   },
   components: {
     InputNumber: {

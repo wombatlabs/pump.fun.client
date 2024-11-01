@@ -1,7 +1,8 @@
 import axios from 'axios'
-import {Token, UserAccount, UserComment} from "../types.ts";
+import {Token, TokenMetadata, UserAccount, UserComment} from "../types.ts";
+import {appConfig} from "../config.ts";
 
-const baseURL = 'http://localhost:8085' //'https://pump-fun-backend.fly.dev'
+const baseURL = appConfig.apiUrl
 
 const client = axios.create({
   baseURL
@@ -65,5 +66,10 @@ export interface PostCommentParams {
 
 export const addComment = async (params: PostCommentParams) => {
   const {data} = await client.post<number>('/comment', params)
+  return data
+}
+
+export const addTokenMetadata = async (payload: TokenMetadata) => {
+  const {data} = await client.post<UserAccount>('/metadata', payload)
   return data
 }

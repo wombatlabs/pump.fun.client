@@ -26,3 +26,11 @@ export interface Token {
   updatedAt: string
   user: UserAccount | null
 }
+
+export interface TokenMetadata {
+  userAddress: string
+  name: string
+  ticker: string
+  description: string
+  image: string
+}
