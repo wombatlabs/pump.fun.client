@@ -8,8 +8,8 @@ import TokenFactoryABI from '../../abi/TokenFactory.json'
 import {config} from "../../wagmi.ts";
 import { InboxOutlined } from '@ant-design/icons';
 import {useClientData} from "../../providers/DataProvider.tsx";
-import {TokenMetadata} from "../../types.ts";
-import {addTokenMetadata} from "../../api";
+import {Token, TokenMetadata} from "../../types.ts";
+import {addTokenMetadata, getTokens} from "../../api";
 
 const { Dragger } = Upload;
 
@@ -60,9 +60,31 @@ export const CreatePage = () => {
       console.log('Create contract hash:', txnHash)
       setCurrentStatus('Contract minted, waiting for confirmation...')
       const receipt = await waitForTransactionReceipt(config, {
-        hash: txnHash
+        hash: txnHash,
+        confirmations: 6
       })
       console.log('Create contract receipt:', receipt)
+      setCurrentStatus('Transaction confirmed, waiting for indexer...')
+
+      let mintedToken: Token
+
+      for(let i = 0; i < 20; i++) {
+        await new Promise(resolve => setTimeout(resolve, 500))
+        const tokens = await getTokens({ search: txnHash })
+        if(tokens.length === 1) {
+          mintedToken = tokens[0]
+          break;
+        }
+      }
+
+      // @ts-ignore
+      if(mintedToken) {
+        message.success(`Token ${payload.name} successfully minted`);
+        navigate(`/${mintedToken.address}`)
+      } else {
+        message.error(`Failed to confirm token status`);
+      }
+
     } catch (e) {
       message.error(`Failed to add token metadata`);
       console.log('Failed to create metadata', e)

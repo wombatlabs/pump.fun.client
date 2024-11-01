@@ -2,7 +2,7 @@ import {Box, Text} from "grommet";
 import {UserComment} from "../../types.ts";
 import {useEffect, useState} from "react";
 import {addComment, getTokenComments} from "../../api";
-import {Button, Input, Modal, Tag} from "antd";
+import {Button, Input, message, Modal, Tag} from "antd";
 import moment from "moment";
 import {useClientData} from "../../providers/DataProvider.tsx";
 
@@ -66,8 +66,10 @@ export const TokenComments = (props: { tokenAddress: string }) => {
       setReplyMessage('')
       setShowReplyModal(false)
       loadComments()
+      message.success(`Reply sent`);
     } catch (e) {
       console.error('Failed to post reply', e)
+      message.error(`Failed to post reply`);
     }
   }
 
@@ -81,7 +83,7 @@ export const TokenComments = (props: { tokenAddress: string }) => {
       key={comment.id}
       data={comment}
       onReplyClicked={() => {
-        setReplyMessage(`#${comment.id}`)
+        setReplyMessage(`#${comment.id} `)
         setShowReplyModal(true)
       }}
     />)}
