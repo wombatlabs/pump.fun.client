@@ -1,5 +1,5 @@
 import {Box, Spinner, Text} from 'grommet'
-import {Button, Tag} from "antd";
+import {Button, Tag, Image} from "antd";
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {Token} from "../../types.ts";
@@ -60,8 +60,21 @@ export const TokenPage = () => {
                     {moment(+token.timestamp * 1000).fromNow()}
                 </Text>
             </Box>
-            <Box margin={{ top: '32px' }}>
-                <TradingForm />
+            <Box gap={'32px'} margin={{ top: '32px' }}>
+                <Box>
+                    <TradingForm />
+                </Box>
+                <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }}>
+                    <Box>
+                        <Image
+                            width={200}
+                            src={token.uriData?.image}
+                        />
+                    </Box>
+                    <Box style={{ maxWidth: 'calc(100% - 200px - 16px)' }}>
+                        <Text><b>{token.name} (ticker: {token.symbol})</b>: {token.uriData?.description}</Text>
+                    </Box>
+                </Box>
             </Box>
         </Box>
     }

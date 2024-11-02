@@ -10,25 +10,27 @@ import { InboxOutlined } from '@ant-design/icons';
 import {useClientData} from "../../providers/DataProvider.tsx";
 import {Token, TokenMetadata} from "../../types.ts";
 import {addTokenMetadata, getTokens} from "../../api";
+import {useAccount} from "wagmi";
 
 const { Dragger } = Upload;
 
 interface CreateTokenForm {
   name: string
-  ticker: string
+  symbol: string
   description: string
-  imageUrl: string
+  image: string
 }
 
 const defaultFormState: CreateTokenForm = {
   name: '',
-  ticker: '',
+  symbol: '',
   description: '',
-  imageUrl: ''
+  image: ''
 }
 
 export const CreatePage = () => {
   const navigate = useNavigate();
+  const account = useAccount()
   const { state: { userAccount } } = useClientData()
 
   const [tokenForm, setTokenForm] = useState<CreateTokenForm>(defaultFormState)
@@ -42,9 +44,9 @@ export const CreatePage = () => {
       const payload: TokenMetadata = {
         userAddress: userAccount?.address || '',
         name: tokenForm.name,
-        ticker: tokenForm.ticker,
+        symbol: tokenForm.symbol,
         description: tokenForm.description,
-        image: tokenForm.imageUrl,
+        image: tokenForm.image,
       }
       const metadataUrl = await addTokenMetadata(payload)
       console.log('metadataUrl:', metadataUrl)
@@ -54,7 +56,7 @@ export const CreatePage = () => {
         // @ts-ignore
         address: appConfig.tokenFactoryAddress,
         abi: TokenFactoryABI,
-        args: [tokenForm.name, tokenForm.ticker],
+        args: [tokenForm.name, tokenForm.symbol, metadataUrl],
         functionName: 'createToken'
       });
       console.log('Create contract hash:', txnHash)
@@ -96,6 +98,7 @@ export const CreatePage = () => {
 
   const uploadProps: UploadProps = {
     name: 'file',
+    disabled: !account.address || !userAccount?.address,
     headers: {
       'meta_user_address': userAccount?.address || '',
       'meta_file_name': userAccount?.address || ''
@@ -115,7 +118,7 @@ export const CreatePage = () => {
         setTokenForm(current => {
           return {
             ...current,
-            imageUrl: publicImageUrl
+            image: publicImageUrl
           }
         })
       } else if (status === 'error') {
@@ -164,12 +167,12 @@ export const CreatePage = () => {
       <Box>
         <Text color={'accentLabel'} weight={500}>ticker</Text>
         <Input
-          value={tokenForm.ticker}
+          value={tokenForm.symbol}
           size={'large'}
           onChange={(e) => setTokenForm(current => {
             return {
               ...current,
-              ticker: e.target.value,
+              symbol: e.target.value,
             }
           })}
         />
@@ -203,7 +206,7 @@ export const CreatePage = () => {
       <Button
         type={'primary'}
         size={'large'}
-        disabled={Object.values(tokenForm).includes('')}
+        disabled={Object.values(tokenForm).includes('') || inProgress || !account.address || !userAccount?.address}
         onClick={onCreateClicked}
       >
         Create Coin

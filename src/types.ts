@@ -14,13 +14,23 @@ export interface UserComment {
   createdAt: string
 }
 
+export interface TokenUriData {
+  userAddress: string
+  name: string
+  ticker: string
+  description: string
+  image: string
+}
+
 export interface Token {
   id: string;
   txnHash: string
-  blockNumber: string
+  blockNumber: number
   address: string
-  symbol: string
   name: string
+  symbol: string
+  uri: string
+  uriData: TokenUriData | null
   timestamp: string
   createdAt: string
   updatedAt: string
@@ -30,7 +40,7 @@ export interface Token {
 export interface TokenMetadata {
   userAddress: string
   name: string
-  ticker: string
+  symbol: string
   description: string
   image: string
 }

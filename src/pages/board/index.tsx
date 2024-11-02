@@ -13,7 +13,7 @@ export const BoardPage = () => {
           Start a new coin
         </Button>
       </Box>
-      <Box margin={{ top: '16px' }} align={'center'}>
+      <Box margin={{ top: '32px' }} align={'center'}>
         <Box  width={'200px'}>
           <Input
             placeholder={'Search for a token'}
@@ -23,7 +23,7 @@ export const BoardPage = () => {
         </Box>
       </Box>
     </Box>
-    <Box>
+    <Box margin={{ top: '32px' }}>
       <TokensList />
     </Box>
   </Box>

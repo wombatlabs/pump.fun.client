@@ -1,12 +1,14 @@
 import {Box, Text} from "grommet";
-import {useAccount, useConnect, useDisconnect} from "wagmi";
-import {Button} from "antd";
+import {useAccount, useConnect, useDisconnect, useSwitchChain} from "wagmi";
+import {Button, message} from "antd";
 import {createUser, getUserByAddress} from "../../api";
 import {useClientData} from "../../providers/DataProvider.tsx";
+import {harmonyOne} from "wagmi/chains";
 
 export const Header = () => {
   const account = useAccount()
-  const { connectors, connectAsync, status, error, isPending } = useConnect()
+  const { switchChainAsync } = useSwitchChain()
+  const { connectors, connectAsync, isPending } = useConnect()
   const { disconnect } = useDisconnect()
   const { state: clientState, setState: setClientState } = useClientData()
 
@@ -19,12 +21,14 @@ export const Header = () => {
     let userAddress = ''
 
     try {
+      await switchChainAsync({ chainId: harmonyOne.id })
       const data = await connectAsync({ connector: metamaskConnector })
       if(data.accounts.length > 0) {
         userAddress = data.accounts[0]
       }
     } catch (e) {
       console.error('Failed to connect wallet', e)
+      message.error(`Failed to connect wallet`);
     }
 
     console.log('Address connected:', userAddress)
@@ -35,7 +39,8 @@ export const Header = () => {
         if(!user) {
           user = await createUser({ address: userAddress })
         }
-        console.log('User account', user)
+        console.log('User account:', user)
+
         setClientState({
           ...clientState,
           userAccount: user
@@ -43,8 +48,6 @@ export const Header = () => {
       } catch (e) {
         console.error('Failed to create user', e)
       }
-    } else {
-
     }
   }
 
@@ -54,7 +57,7 @@ export const Header = () => {
 
   return <Box pad={'16px'} direction={'row'} justify={'between'}>
     <Box>
-      <Text>Logo</Text>
+      <Text size={'20px'}>Pump</Text>
     </Box>
     <Box>
       {account.status === 'disconnected' &&

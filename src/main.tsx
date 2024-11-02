@@ -9,6 +9,7 @@ import { config } from './wagmi.ts'
 
 import './index.css'
 
+// @ts-ignore
 globalThis.Buffer = Buffer
 
 const queryClient = new QueryClient()

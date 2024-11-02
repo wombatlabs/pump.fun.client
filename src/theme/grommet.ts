@@ -63,14 +63,14 @@ export const grommet = {
     },
     icon: {
       size: '12px',
-      extend: (props: any) => `
+      extend: () => `
         background: #5359C6;
       `
     },
     check: {
       radius: '2px',
       thickness: '3px',
-      extend: (props: any) => `
+      extend: () => `
         border-color: #5359C6;
       `
     },
@@ -97,7 +97,7 @@ export const grommet = {
       }
     },
     body: {
-      extend: (props: any) => ``
+      extend: () => ``
     },
   },
   text: {
