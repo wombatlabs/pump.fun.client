@@ -34,7 +34,7 @@ export const TokenItem = (props: {
     </Box>
     <Box style={{ maxWidth: 'calc(100% - 150px - 16px)' }}>
       <Text color={'accentWhite'}>
-        Created by {user?.username} at {moment(+timestamp * 1000).format('LTS')}
+        Created by {user?.username} at {moment(+timestamp * 1000).fromNow()}
       </Text>
       <Text><b>{name} (ticker: {symbol})</b>: {uriData?.description}</Text>
     </Box>

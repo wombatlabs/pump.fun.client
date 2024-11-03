@@ -52,7 +52,7 @@ export interface TokenTrade {
   txnHash: string
   blockNumber: number
   type: TokenTradeType
-  userAddress: string
+  user: UserAccount
   amountIn: string
   amountOut: string
   fee: string

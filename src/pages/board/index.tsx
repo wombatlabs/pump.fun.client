@@ -1,5 +1,5 @@
 import { Box } from 'grommet'
-import {Button, Input} from "antd";
+import {Button} from "antd";
 import {TokensList} from "./TokensList.tsx";
 import {useNavigate} from "react-router-dom";
 
@@ -13,15 +13,15 @@ export const BoardPage = () => {
           Start a new coin
         </Button>
       </Box>
-      <Box margin={{ top: '32px' }} align={'center'}>
-        <Box  width={'200px'}>
-          <Input
-            placeholder={'Search for a token'}
-            size={'large'}
-            // style={{ background: '#41ddcd', color: 'black' }}
-          />
-        </Box>
-      </Box>
+      {/*<Box margin={{ top: '32px' }} align={'center'}>*/}
+      {/*  <Box  width={'200px'}>*/}
+      {/*    <Input*/}
+      {/*      placeholder={'Search for a token'}*/}
+      {/*      size={'large'}*/}
+      {/*      // style={{ background: '#41ddcd', color: 'black' }}*/}
+      {/*    />*/}
+      {/*  </Box>*/}
+      {/*</Box>*/}
     </Box>
     <Box margin={{ top: '32px' }}>
       <TokensList />

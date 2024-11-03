@@ -7,6 +7,8 @@ import {getTokens} from "../../api";
 import moment from "moment";
 import {TradingForm} from "./TradingForm.tsx";
 import {TokenComments} from "./TokenComments.tsx";
+import { Radio } from 'antd';
+import {TokenTrades} from "./TokenTrades.tsx";
 
 export const TokenPage = () => {
   const navigate = useNavigate()
@@ -15,6 +17,7 @@ export const TokenPage = () => {
 
   const [isLoading, setLoading] = useState(false)
   const [token, setToken] = useState<Token>()
+  const [activeTab, setActiveTab] = useState<'thread' | 'trades'>('thread')
 
   useEffect(() => {
     const loadData = async () => {
@@ -80,7 +83,18 @@ export const TokenPage = () => {
     }
     {tokenAddress &&
         <Box margin={{ top: '32px' }}>
-            <TokenComments tokenAddress={tokenAddress} />
+            <Radio.Group onChange={(e) => setActiveTab(e.target.value)} value={activeTab} style={{ marginBottom: 8 }}>
+                <Radio.Button value="thread">Thread</Radio.Button>
+                <Radio.Button value="trades">Trades</Radio.Button>
+            </Radio.Group>
+            <Box margin={{ top: '16px' }}>
+              {activeTab === 'thread' &&
+                  <TokenComments tokenAddress={tokenAddress} />
+              }
+              {activeTab === 'trades' &&
+                  <TokenTrades tokenAddress={tokenAddress} />
+              }
+            </Box>
         </Box>
     }
   </Box>
