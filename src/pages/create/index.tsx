@@ -212,9 +212,9 @@ export const CreatePage = () => {
         Create Coin
       </Button>
       <Box align={'center'} direction={'row'} gap={'16px'} justify={'center'}>
-        {inProgress && <Spinner />}
+        {inProgress && <Spinner color={'activeStatus'} />}
         {currentStatus &&
-            <Text color={'#4852FF'}>{currentStatus}</Text>
+            <Text color={'activeStatus'}>{currentStatus}</Text>
         }
       </Box>
     </Box>

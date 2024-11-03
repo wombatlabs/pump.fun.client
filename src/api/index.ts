@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {Token, TokenMetadata, UserAccount, UserComment} from "../types.ts";
+import {Token, TokenMetadata, TokenTrade, UserAccount, UserComment} from "../types.ts";
 import {appConfig} from "../config.ts";
 
 const baseURL = appConfig.apiUrl
@@ -71,5 +71,24 @@ export const addComment = async (params: PostCommentParams) => {
 
 export const addTokenMetadata = async (payload: TokenMetadata) => {
   const {data} = await client.post<UserAccount>('/metadata', payload)
+  return data
+}
+
+export interface GetTradeParams {
+  tokenAddress: string
+  offset?: number
+  limit?: number
+}
+
+export const getTrades = async (params: GetTradeParams) => {
+  const {limit = 100, offset = 0} = params
+
+  const {data} = await client.get<TokenTrade[]>('/trades', {
+    params: {
+      ...params,
+      limit,
+      offset
+    }
+  })
   return data
 }

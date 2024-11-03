@@ -175,7 +175,8 @@ export const darkTheme = deepMerge(grommet, {
       optionBg: '#292933',
       widgetBg: '#1E1E20',
       widgetBgDark: '#1B1B1D',
-      dividerBg: '#414258'
+      dividerBg: '#414258',
+      activeStatus: '#4852FF'
     },
   },
   button: {

@@ -44,3 +44,18 @@ export interface TokenMetadata {
   description: string
   image: string
 }
+
+export type TokenTradeType = 'buy' | 'sell'
+
+export interface TokenTrade {
+  id: string
+  txnHash: string
+  blockNumber: number
+  type: TokenTradeType
+  userAddress: string
+  amountIn: string
+  amountOut: string
+  fee: string
+  timestamp: string
+  createdAt: string
+}
