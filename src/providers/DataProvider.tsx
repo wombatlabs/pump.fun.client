@@ -10,6 +10,7 @@ interface ClientState {
 export interface RhoV2Data {
   state: ClientState,
   setState: (newState: ClientState) => void
+  onDisconnect: () => void
 }
 
 const getInitialState = (): RhoV2Data => {
@@ -18,6 +19,7 @@ const getInitialState = (): RhoV2Data => {
       userAccount: undefined
     },
     setState: () => {},
+    onDisconnect: () => {},
   }
 }
 
@@ -60,9 +62,20 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
     }
   }, [account.address, state.userAccount?.address]);
 
+  const onDisconnect = () => {
+    disconnect()
+    setState(current => {
+      return {
+        ...current,
+        userAccount: undefined
+      }
+    })
+  };
+
   return <UserDataContext.Provider value={{
     state,
     setState,
+    onDisconnect
   }}>
     {children}
   </UserDataContext.Provider>

@@ -1,16 +1,18 @@
 import {Box, Text} from "grommet";
-import {useAccount, useConnect, useDisconnect, useSwitchChain} from "wagmi";
-import {Button, message} from "antd";
+import {useAccount, useConnect, useSwitchChain} from "wagmi";
+import {Button, message, Modal} from "antd";
 import {createUser, getUserByAddress} from "../../api";
 import {useClientData} from "../../providers/DataProvider.tsx";
 import {harmonyOne} from "wagmi/chains";
+import {ProfileModal} from "./ProfileModal.tsx";
+import {useState} from "react";
 
 export const Header = () => {
   const account = useAccount()
   const { switchChainAsync } = useSwitchChain()
   const { connectors, connectAsync, isPending } = useConnect()
-  const { disconnect } = useDisconnect()
-  const { state: clientState, setState: setClientState } = useClientData()
+  const { state: clientState, setState: setClientState, onDisconnect } = useClientData()
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
 
   const onConnectClicked = async () => {
     const metamaskConnector = connectors.find(c => c.name === 'MetaMask')
@@ -52,7 +54,7 @@ export const Header = () => {
   }
 
   const onDisconnectClicked = () => {
-    disconnect()
+    onDisconnect()
   }
 
   return <Box pad={'16px'} direction={'row'} justify={'between'}>
@@ -68,9 +70,10 @@ export const Header = () => {
       {account.status === 'connected' &&
         <Box gap={'8px'}>
           <Box>
-              {clientState &&
+              <Button onClick={() => setIsProfileModalOpen(true)}>
                   <Text>{clientState.userAccount?.username}</Text>
-              }
+                  <Text size={'12px'}>▼</Text>
+              </Button>
           </Box>
             <Box width={'120px'}>
                 <Button type={'primary'} loading={isPending} onClick={onDisconnectClicked}>
@@ -80,5 +83,21 @@ export const Header = () => {
         </Box>
       }
     </Box>
+    <Modal
+      title="Profile"
+      footer={null}
+      open={isProfileModalOpen}
+      onOk={() => setIsProfileModalOpen(false)}
+      onCancel={() => setIsProfileModalOpen(false)}
+      styles={{
+        mask: {
+          backdropFilter: 'blur(4px)',
+        },
+      }}
+    >
+      {clientState.userAccount &&
+          <ProfileModal user={clientState.userAccount} onClose={() => setIsProfileModalOpen(false)} />
+      }
+    </Modal>
   </Box>
 }
