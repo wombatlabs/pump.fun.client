@@ -2,14 +2,15 @@ import {Box, Spinner, Text} from "grommet";
 import {Button, InputNumber, message} from "antd";
 import styled from "styled-components";
 import {useState} from "react";
-import {useAccount, useWriteContract} from "wagmi";
+import {useAccount, useBalance, useWriteContract} from "wagmi";
 import TokenFactoryABI from '../../abi/TokenFactory.json'
 import {appConfig} from "../../config.ts";
-import { parseUnits } from 'viem'
+import { parseUnits, formatUnits } from 'viem'
 import {Token, TokenTrade} from "../../types.ts";
 import {waitForTransactionReceipt} from "wagmi/actions";
 import {config} from "../../wagmi.ts";
 import {getTrades} from "../../api";
+import {harmonyOne} from "wagmi/chains";
 
 const TradeButton = styled(Box)`
     padding: 8px 16px;
@@ -31,6 +32,16 @@ export const TradingForm = (props: {
   const [amount, setAmount] = useState<number | null>(null)
   const [currentStatus, setCurrentStatus] = useState('')
   const [inProgress, setInProgress] = useState(false)
+
+  const { data: tokenBalance, refetch: refetchOneBalance } = useBalance({
+    token: token?.address as `0x${string}`,
+    address: account?.address,
+    chainId: harmonyOne.id,
+  })
+  const { data: oneBalance, refetch: refetchTokenBalance } = useBalance({
+    address: account?.address,
+    chainId: harmonyOne.id,
+  })
 
   const { writeContractAsync } = useWriteContract()
 
@@ -87,8 +98,11 @@ export const TradingForm = (props: {
       console.log('Failed to trade:', e)
       message.error(`Failed to trade: ${(e as Error).message}`)
     } finally {
+      setAmount(null)
       setInProgress(false)
       setCurrentStatus('')
+      refetchOneBalance()
+      refetchTokenBalance()
     }
   }
 
@@ -116,6 +130,22 @@ export const TradingForm = (props: {
         onChange={(value) => setAmount(value)}
         style={{ width: '100%' }}
       />
+      <Box margin={{ top: '4px' }} align={'end'}>
+        {selectedSide === 'buy' &&
+            <Text>Balance: {
+              oneBalance
+                ? formatUnits(oneBalance.value, oneBalance.decimals)
+                : '0'
+            } ONE</Text>
+        }
+        {selectedSide === 'sell' &&
+            <Text>Balance: {
+              tokenBalance
+                ? formatUnits(tokenBalance.value, tokenBalance.decimals)
+                : '0'
+            } {token?.symbol}</Text>
+        }
+      </Box>
     </Box>
     <Box margin={{ top: '24px' }}>
       <Button
