@@ -2,9 +2,10 @@ import {Box, Text} from "grommet";
 import {TokenTrade} from "../../types.ts";
 import {useEffect, useMemo, useState} from "react";
 import {getTrades} from "../../api";
-import {Table, Tag, Typography} from "antd";
+import {Table, Typography} from "antd";
 import moment from "moment";
 import { formatUnits } from 'viem'
+import {UserTag} from "../../components/UserTag.tsx";
 
 
 const columns = [
@@ -60,7 +61,7 @@ export const TokenTrades = (props: { tokenAddress: string }) => {
     return trades.map(trade => {
       return {
         key: trade.id,
-        account: <Tag>{trade.user.username}</Tag>,
+        account: <UserTag username={trade.user.username} />,
         type: trade.type === 'buy' ? 'buy' : 'sell',
         amount: <Text>{formatUnits(BigInt(trade.amountIn), 18)}</Text>,
         date: <Text>

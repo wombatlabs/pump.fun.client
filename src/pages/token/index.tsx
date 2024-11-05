@@ -1,5 +1,5 @@
 import {Box, Spinner, Text} from 'grommet'
-import {Button, Tag, Image} from "antd";
+import {Button, Image} from "antd";
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {Token} from "../../types.ts";
@@ -9,6 +9,7 @@ import {TradingForm} from "./TradingForm.tsx";
 import {TokenComments} from "./TokenComments.tsx";
 import { Radio } from 'antd';
 import {TokenTrades} from "./TokenTrades.tsx";
+import {UserTag} from "../../components/UserTag.tsx";
 
 export const TokenPage = () => {
   const navigate = useNavigate()
@@ -59,7 +60,7 @@ export const TokenPage = () => {
                 <Text size={'18px'}>{token.name}</Text>
                 <Text size={'18px'}>Ticker: {token.symbol}</Text>
                 <Text size={'18px'} color={'positiveValue'}>
-                    Created by: <Tag color={'magenta'} style={{ fontSize: '18px' }}>{token.user?.username}</Tag>
+                    Created by: <UserTag fontSize={'18px'} username={token.user?.username} />
                     {moment(+token.timestamp * 1000).fromNow()}
                 </Text>
             </Box>

@@ -1,32 +1,83 @@
-import {Box, Text} from "grommet";
+import {Box, Text, BoxExtendedProps} from "grommet";
 import {UserComment} from "../../types.ts";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {addComment, getTokenComments} from "../../api";
-import {Button, Input, message, Modal, Tag} from "antd";
+import {Button, Input, message, Modal} from "antd";
 import moment from "moment";
 import {useClientData} from "../../providers/DataProvider.tsx";
+import {UserTag} from "../../components/UserTag.tsx";
 
-const TokenCommentItem = (props: {
+interface TokenCommentItemProps extends BoxExtendedProps {
   data: UserComment
+  highlightCommentId: number
   onReplyClicked: () => void
-}) => {
-  const { data: {
-    id,
-    text,
-    user,
-    createdAt
-  }, onReplyClicked } = props
+  setHighlightCommentId: (id: number) => void
+}
 
-  return <Box background={'badgeBackground'} pad={'8px'} round={'6px'} margin={{ top: '4px' }}>
+const TokenCommentItem = (props: TokenCommentItemProps) => {
+  const {
+    data: {
+      id,
+      text,
+      user,
+      createdAt
+    },
+    highlightCommentId,
+    onReplyClicked,
+    setHighlightCommentId
+  } = props
+
+  const {
+    replyToCommentId,
+    message
+  } = useMemo(() => {
+    let replyToCommentId = 0
+    let message = text
+    const regex = /#(\d+)/;
+    if(text.startsWith(`#`)) {
+      const [firstPart, ...restPart] = text.split(' ')
+      if(firstPart.match(regex)) {
+        replyToCommentId = Number(firstPart.replace('#', ''))
+        message = restPart.join(' ')
+      }
+    }
+    return {
+      replyToCommentId,
+      message
+    }
+  }, [text])
+
+  const isHighlighted = highlightCommentId === id
+
+  return <Box
+    background={'badgeBackground'}
+    border={{ color: isHighlighted ? 'positiveValue' : 'transparent' }}
+    pad={'8px'}
+    round={'6px'}
+    margin={{ top: '4px' }}
+    {...props}
+  >
     <Box direction={'row'} gap={'6px'} align={'center'}>
-      <Tag color={'cyan'}>{user.username}</Tag>
+      <UserTag username={user.username} />
       <Text>{moment(createdAt).format('HH:MM:ss')}</Text>
       <Button type={'text'} size={'small'} onClick={onReplyClicked}>
         #{id} [reply]
       </Button>
     </Box>
     <Box margin={{ top: '4px' }}>
-      <Text>{text}</Text>
+      {replyToCommentId
+        ? <Box direction={'row'}>
+          <Text
+            weight={500}
+            color={'positiveValue'}
+            onMouseEnter={() => setHighlightCommentId(replyToCommentId)}
+          >
+            #{replyToCommentId}
+          </Text>
+          &nbsp;<Text>{message}</Text>
+        </Box>
+        : <Text>{message}</Text>
+      }
     </Box>
   </Box>
 }
@@ -40,6 +91,7 @@ export const TokenComments = (props: { tokenAddress: string }) => {
 
   const [showReplyModal, setShowReplyModal] = useState(false)
   const [replyMessage, setReplyMessage] = useState<string>('')
+  const [highlightCommentId, setHighlightCommentId] = useState(0)
 
   const loadComments = async () => {
     try {
@@ -86,6 +138,8 @@ export const TokenComments = (props: { tokenAddress: string }) => {
         setReplyMessage(`#${comment.id} `)
         setShowReplyModal(true)
       }}
+      highlightCommentId={highlightCommentId}
+      setHighlightCommentId={setHighlightCommentId}
     />)}
     <Box width={'200px'} margin={{ top: '32px' }}>
       <Button type={'primary'} onClick={() => setShowReplyModal(true)}>

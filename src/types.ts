@@ -7,7 +7,7 @@ export interface UserAccount {
 }
 
 export interface UserComment {
-  id: string
+  id: number
   text: string
   token: Token
   user: UserAccount

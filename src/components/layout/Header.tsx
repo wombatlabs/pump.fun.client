@@ -59,7 +59,7 @@ export const Header = () => {
 
   return <Box pad={'16px'} direction={'row'} justify={'between'}>
     <Box>
-      <Text size={'20px'}>Pump</Text>
+      <Text size={'22px'}>PumpOne</Text>
     </Box>
     <Box>
       {account.status === 'disconnected' &&
