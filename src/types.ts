@@ -54,6 +54,7 @@ export interface TokenTrade {
   blockNumber: number
   type: TokenTradeType
   user: UserAccount
+  token: Token
   amountIn: string
   amountOut: string
   fee: string

@@ -7,6 +7,7 @@ import {harmonyOne} from "wagmi/chains";
 import {ProfileModal} from "./ProfileModal.tsx";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {LatestUpdate} from "../latest-update";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -60,10 +61,15 @@ export const Header = () => {
   }
 
   return <Box pad={'16px'} direction={'row'} justify={'between'}>
-    <Box onClick={() => {
-      navigate('/')
-    }}>
-      <Text size={'22px'}>PumpOne</Text>
+    <Box direction={'row'} gap={'32px'}>
+      <Box onClick={() => {
+        navigate('/')
+      }}>
+        <Text size={'22px'}>PumpOne</Text>
+      </Box>
+      <Box>
+        <LatestUpdate />
+      </Box>
     </Box>
     <Box>
       {account.status === 'disconnected' &&

@@ -80,7 +80,7 @@ export const addTokenMetadata = async (payload: TokenMetadata) => {
 }
 
 export interface GetTradeParams {
-  tokenAddress: string
+  tokenAddress?: string
   offset?: number
   limit?: number
 }
