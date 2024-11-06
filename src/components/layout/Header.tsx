@@ -6,8 +6,10 @@ import {useClientData} from "../../providers/DataProvider.tsx";
 import {harmonyOne} from "wagmi/chains";
 import {ProfileModal} from "./ProfileModal.tsx";
 import {useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 export const Header = () => {
+  const navigate = useNavigate();
   const account = useAccount()
   const { switchChainAsync } = useSwitchChain()
   const { connectors, connectAsync, isPending } = useConnect()
@@ -58,7 +60,9 @@ export const Header = () => {
   }
 
   return <Box pad={'16px'} direction={'row'} justify={'between'}>
-    <Box>
+    <Box onClick={() => {
+      navigate('/')
+    }}>
       <Text size={'22px'}>PumpOne</Text>
     </Box>
     <Box>

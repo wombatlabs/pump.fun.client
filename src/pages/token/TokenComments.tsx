@@ -58,7 +58,7 @@ const TokenCommentItem = (props: TokenCommentItemProps) => {
     {...props}
   >
     <Box direction={'row'} gap={'6px'} align={'center'}>
-      <UserTag username={user.username} />
+      <UserTag user={user} />
       <Text>{moment(createdAt).format('HH:MM:ss')}</Text>
       <Button type={'text'} size={'small'} onClick={onReplyClicked}>
         #{id} [reply]

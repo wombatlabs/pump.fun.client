@@ -20,6 +20,11 @@ export const getUserByAddress = async (params: { address: string }) => {
   return data
 }
 
+export const getUserTokenCreated = async (params: { address: string }) => {
+  const {data} = await client.get<Token[]>(`/user/${params.address}/tokens/created`)
+  return data
+}
+
 export interface GetTokensParams {
   search?: string
   limit?: number

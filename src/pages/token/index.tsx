@@ -60,7 +60,7 @@ export const TokenPage = () => {
                 <Text size={'18px'}>{token.name}</Text>
                 <Text size={'18px'}>Ticker: {token.symbol}</Text>
                 <Text size={'18px'} color={'positiveValue'}>
-                    Created by: <UserTag fontSize={'18px'} username={token.user?.username} />
+                    Created by: <UserTag fontSize={'18px'} user={token.user} />
                     {moment(+token.timestamp * 1000).fromNow()}
                 </Text>
             </Box>

@@ -61,7 +61,7 @@ export const TokenTrades = (props: { tokenAddress: string }) => {
     return trades.map(trade => {
       return {
         key: trade.id,
-        account: <UserTag username={trade.user.username} />,
+        account: <UserTag user={trade.user} />,
         type: trade.type === 'buy' ? 'buy' : 'sell',
         amount: <Text>{formatUnits(BigInt(trade.amountIn), 18)}</Text>,
         date: <Text>

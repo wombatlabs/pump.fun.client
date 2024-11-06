@@ -4,6 +4,7 @@ export interface UserAccount {
   username: string
   createdAt: string
   updatedAt: string
+  tokens: Token[]
 }
 
 export interface UserComment {

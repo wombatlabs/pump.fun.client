@@ -1,6 +1,10 @@
 import { Tag } from 'antd'
+import { Text } from 'grommet'
 import {useMemo} from "react";
 import { blue, cyan, gold, green, volcanoDark, geekblue, purple, magenta, gray, red } from '@ant-design/colors';
+import {UserAccount} from "../types.ts";
+import {useNavigate} from "react-router-dom";
+import styled from "styled-components";
 
 const palette = [
   red[red.length / 2],
@@ -15,11 +19,22 @@ const palette = [
   blue[blue.length / 2],
 ]
 
+const TextWrapper = styled(Text)`
+  &:hover {
+      text-decoration: underline;
+  }
+`
+
 export const UserTag = (props: {
-  username?: string
+  user?: UserAccount | null
   fontSize?: string
+  linkEnabled?: boolean
 }) => {
-  const { fontSize, username = '' } = props
+  const { fontSize, user, linkEnabled = true } = props
+
+  const navigate = useNavigate()
+
+  const username = user?.username || ''
 
   const color = useMemo(() => {
     const sum = username.split('').reduce((sum, item) => {
@@ -28,7 +43,15 @@ export const UserTag = (props: {
     return palette[sum % 10]
   }, [username])
 
-  return <Tag color={color} style={{ fontSize: fontSize }}>
-    {username}
+  return <Tag
+    color={color}
+    style={{ cursor: 'pointer' }}
+    onClick={() => {
+      if(linkEnabled) {
+        navigate(`/profile/${user?.address}`)
+      }
+    }}
+  >
+    <TextWrapper size={fontSize}>{username}</TextWrapper>
   </Tag>
 }
