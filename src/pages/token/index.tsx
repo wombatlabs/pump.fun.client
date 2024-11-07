@@ -1,5 +1,5 @@
 import {Box, Spinner, Text} from 'grommet'
-import {Button, Image} from "antd";
+import {Button, Image, Skeleton} from "antd";
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {Token} from "../../types.ts";
@@ -10,6 +10,7 @@ import {TokenComments} from "./TokenComments.tsx";
 import { Radio } from 'antd';
 import {TokenTrades} from "./TokenTrades.tsx";
 import {UserTag} from "../../components/UserTag.tsx";
+import {TokenHolders} from "./TokenHolders.tsx";
 
 export const TokenPage = () => {
   const navigate = useNavigate()
@@ -54,49 +55,57 @@ export const TokenPage = () => {
           </Box>
       }
     </Box>
-    {token &&
-        <Box margin={{ top: '16px' }} width={'100%'}>
-            <Box direction={'row'} gap={'16px'} align={'baseline'}>
-                <Text size={'18px'}>{token.name}</Text>
-                <Text size={'18px'}>Ticker: {token.symbol}</Text>
-                <Text size={'18px'} color={'positiveValue'}>
-                    Created by: <UserTag fontSize={'18px'} user={token.user} />
-                    {moment(+token.timestamp * 1000).fromNow()}
-                </Text>
-            </Box>
-            <Box gap={'32px'} margin={{ top: '32px' }}>
-                <Box>
-                    <TradingForm token={token} />
-                </Box>
-                <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }}>
-                    <Box>
-                        <Image
-                            width={200}
-                            src={token.uriData?.image}
-                        />
-                    </Box>
-                    <Box style={{ maxWidth: 'calc(100% - 200px - 16px)' }}>
-                        <Text><b>{token.name} (ticker: {token.symbol})</b>: {token.uriData?.description}</Text>
-                    </Box>
-                </Box>
-            </Box>
+    <Box margin={{ top: '16px' }} width={'100%'}>
+      {token ? <Box direction={'row'} gap={'16px'} align={'baseline'}>
+        <Text size={'18px'}>{token.name}</Text>
+        <Text size={'18px'}>Ticker: {token.symbol}</Text>
+        <Text size={'18px'} color={'positiveValue'}>
+          Created by: <UserTag fontSize={'18px'} user={token.user} />
+          {moment(+token.timestamp * 1000).fromNow()}
+        </Text>
+      </Box> : <Skeleton.Input active={true} />}
+      <Box direction={'row'} justify={'between'} gap={'32px'}>
+        <Box width={'100%'} style={{ minWidth: '400px' }}>
+          {tokenAddress &&
+              <Box margin={{ top: '32px' }}>
+                  <Radio.Group onChange={(e) => setActiveTab(e.target.value)} value={activeTab} style={{ marginBottom: 8 }}>
+                      <Radio.Button value="thread">Thread</Radio.Button>
+                      <Radio.Button value="trades">Trades</Radio.Button>
+                  </Radio.Group>
+                  <Box margin={{ top: '16px' }}>
+                    {activeTab === 'thread' &&
+                        <TokenComments tokenAddress={tokenAddress} />
+                    }
+                    {activeTab === 'trades' &&
+                        <TokenTrades tokenAddress={tokenAddress} />
+                    }
+                  </Box>
+              </Box>
+          }
         </Box>
-    }
-    {tokenAddress &&
-        <Box margin={{ top: '32px' }}>
-            <Radio.Group onChange={(e) => setActiveTab(e.target.value)} value={activeTab} style={{ marginBottom: 8 }}>
-                <Radio.Button value="thread">Thread</Radio.Button>
-                <Radio.Button value="trades">Trades</Radio.Button>
-            </Radio.Group>
-            <Box margin={{ top: '16px' }}>
-              {activeTab === 'thread' &&
-                  <TokenComments tokenAddress={tokenAddress} />
-              }
-              {activeTab === 'trades' &&
-                  <TokenTrades tokenAddress={tokenAddress} />
-              }
-            </Box>
+        <Box style={{ minWidth: '600px' }}>
+          <TradingForm token={token} />
+          {token &&
+              <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }} margin={{ top: '32px' }}>
+                  <Box>
+                      <Image
+                          width={200}
+                          src={token.uriData?.image}
+                      />
+                  </Box>
+                  <Box style={{ maxWidth: 'calc(100% - 200px - 16px)' }}>
+                      <Text><b>{token.name} (ticker: {token.symbol})</b>: {token.uriData?.description}</Text>
+                  </Box>
+              </Box>
+          }
+          {
+            token &&
+              <Box margin={{ top: '32px' }}>
+                  <TokenHolders token={token} />
+              </Box>
+          }
         </Box>
-    }
+      </Box>
+    </Box>
   </Box>
 }

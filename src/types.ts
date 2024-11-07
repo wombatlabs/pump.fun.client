@@ -32,6 +32,7 @@ export interface Token {
   symbol: string
   uri: string
   uriData: TokenUriData | null
+  totalSupply: string
   timestamp: string
   createdAt: string
   updatedAt: string
@@ -60,4 +61,13 @@ export interface TokenTrade {
   fee: string
   timestamp: string
   createdAt: string
+}
+
+export interface TokenBalance {
+  id: string
+  user: UserAccount
+  token: Token
+  balance: string
+  createdAt: string
+  updatedAt: string
 }
