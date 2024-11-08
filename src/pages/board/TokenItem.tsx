@@ -12,6 +12,7 @@ const TokenContainer = styled(Box)`
     }
     max-width: 30%;
     width: 30%;
+    min-width: 400px;
     max-height: 350px;
     overflow: hidden;
 `

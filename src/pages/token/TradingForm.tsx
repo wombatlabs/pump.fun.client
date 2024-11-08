@@ -76,7 +76,7 @@ export const TradingForm = (props: {
         value: selectedSide === 'buy' ? value : undefined
       })
       console.log('txnHash:', txnHash)
-      setCurrentStatus('Finalizing the transaction...')
+      setCurrentStatus('Waiting for confirmation...')
       const receipt = await waitForTransactionReceipt(config, {
         hash: txnHash,
         confirmations: 4
@@ -96,7 +96,7 @@ export const TradingForm = (props: {
       }
     } catch (e) {
       console.log('Failed to trade:', e)
-      message.error(`Failed to trade: ${(e as Error).message}`)
+      message.error(`Failed to trade`)
     } finally {
       setAmount(null)
       setInProgress(false)

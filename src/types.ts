@@ -71,3 +71,13 @@ export interface TokenBalance {
   createdAt: string
   updatedAt: string
 }
+
+export interface TokenWinner {
+  id: string
+  txnHash: string
+  token: Token
+  user: UserAccount
+  timestamp: string
+  blockNumber: number
+  createdAt: string
+}

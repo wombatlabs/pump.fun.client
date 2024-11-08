@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {Token, TokenBalance, TokenMetadata, TokenTrade, UserAccount, UserComment} from "../types.ts";
+import {Token, TokenBalance, TokenMetadata, TokenTrade, TokenWinner, UserAccount, UserComment} from "../types.ts";
 import {appConfig} from "../config.ts";
 
 const baseURL = appConfig.apiUrl
@@ -52,6 +52,22 @@ export const getTokenBalances = async (params: {
   const {limit = 100, offset = 0} = params
 
   const {data} = await client.get<TokenBalance[]>('/token/balances', {
+    params: {
+      ...params,
+      offset,
+      limit
+    }
+  })
+  return data
+}
+
+export const getTokenWinners = async (params: {
+  limit?: number
+  offset?: number
+} = {}) => {
+  const {limit = 100, offset = 0} = params
+
+  const {data} = await client.get<TokenWinner[]>('/token/winners', {
     params: {
       ...params,
       offset,

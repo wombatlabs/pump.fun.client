@@ -11,11 +11,12 @@ import { Radio } from 'antd';
 import {TokenTrades} from "./TokenTrades.tsx";
 import {UserTag} from "../../components/UserTag.tsx";
 import {TokenHolders} from "./TokenHolders.tsx";
+import {PriceChart} from "./price-chart";
 
 export const TokenPage = () => {
   const navigate = useNavigate()
 
-  const { tokenAddress } = useParams()
+  const { tokenAddress = '' } = useParams()
 
   const [isLoading, setLoading] = useState(false)
   const [token, setToken] = useState<Token>()
@@ -39,7 +40,7 @@ export const TokenPage = () => {
   }, []);
 
   return <Box width={'100%'} pad={'32px'}>
-    <Box>
+    <Box align={'center'}>
       <Button
         type={'text'}
         style={{ fontSize: '22px' }}
@@ -56,32 +57,36 @@ export const TokenPage = () => {
       }
     </Box>
     <Box margin={{ top: '16px' }} width={'100%'}>
-      {token ? <Box direction={'row'} gap={'16px'} align={'baseline'}>
-        <Text size={'18px'}>{token.name}</Text>
-        <Text size={'18px'}>Ticker: {token.symbol}</Text>
-        <Text size={'18px'} color={'positiveValue'}>
-          Created by: <UserTag fontSize={'18px'} user={token.user} />
-          {moment(+token.timestamp * 1000).fromNow()}
-        </Text>
-      </Box> : <Skeleton.Input active={true} />}
-      <Box direction={'row'} justify={'between'} gap={'32px'}>
-        <Box width={'100%'} style={{ minWidth: '400px' }}>
-          {tokenAddress &&
-              <Box margin={{ top: '32px' }}>
-                  <Radio.Group onChange={(e) => setActiveTab(e.target.value)} value={activeTab} style={{ marginBottom: 8 }}>
-                      <Radio.Button value="thread">Thread</Radio.Button>
-                      <Radio.Button value="trades">Trades</Radio.Button>
-                  </Radio.Group>
-                  <Box margin={{ top: '16px' }}>
-                    {activeTab === 'thread' &&
-                        <TokenComments tokenAddress={tokenAddress} />
-                    }
-                    {activeTab === 'trades' &&
-                        <TokenTrades tokenAddress={tokenAddress} />
-                    }
-                  </Box>
-              </Box>
-          }
+      {token
+        ? <Box direction={'row'} gap={'16px'} align={'baseline'}>
+            <Text size={'18px'}>{token.name}</Text>
+            <Text size={'18px'}>Ticker: {token.symbol}</Text>
+            <Text size={'18px'} color={'positiveValue'}>
+              Created by: <UserTag fontSize={'18px'} user={token.user} />
+              {moment(+token.timestamp * 1000).fromNow()}
+            </Text>
+          </Box>
+        : <Skeleton.Input active={true} />
+      }
+      <Box direction={'row'} justify={'between'} gap={'48px'}>
+        <Box width={'100%'}>
+          <Box style={{ position: 'relative' }}>
+            <PriceChart />
+          </Box>
+          <Box margin={{ top: '32px' }}>
+            <Radio.Group onChange={(e) => setActiveTab(e.target.value)} value={activeTab} style={{ marginBottom: 8 }}>
+              <Radio.Button value="thread">Thread</Radio.Button>
+              <Radio.Button value="trades">Trades</Radio.Button>
+            </Radio.Group>
+            <Box margin={{ top: '16px' }}>
+              {activeTab === 'thread' &&
+                  <TokenComments tokenAddress={tokenAddress} />
+              }
+              {activeTab === 'trades' &&
+                  <TokenTrades tokenAddress={tokenAddress} />
+              }
+            </Box>
+          </Box>
         </Box>
         <Box style={{ minWidth: '600px' }}>
           <TradingForm token={token} />

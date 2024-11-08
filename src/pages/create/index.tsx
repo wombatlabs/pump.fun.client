@@ -60,14 +60,12 @@ export const CreatePage = () => {
         functionName: 'createToken'
       });
       console.log('Create contract hash:', txnHash)
-      setCurrentStatus('Contract minted, waiting for confirmation...')
+      setCurrentStatus('Waiting for confirmation...')
       const receipt = await waitForTransactionReceipt(config, {
         hash: txnHash,
         confirmations: 6
       })
       console.log('Create contract receipt:', receipt)
-      setCurrentStatus('Transaction confirmed, waiting for indexer...')
-
       let mintedToken: Token
 
       for(let i = 0; i < 20; i++) {

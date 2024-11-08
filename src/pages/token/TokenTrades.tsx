@@ -21,8 +21,13 @@ const columns = [
   },
   {
     title: 'Amount (ONE)',
-    dataIndex: 'amount',
-    key: 'amount',
+    dataIndex: 'amountOne',
+    key: 'amountOne',
+  },
+  {
+    title: 'Amount (Token)',
+    dataIndex: 'amountToken',
+    key: 'amountToken',
   },
   {
     title: 'Date',
@@ -59,11 +64,16 @@ export const TokenTrades = (props: { tokenAddress: string }) => {
 
   const dataSource: any = useMemo(() => {
     return trades.map(trade => {
+      const amountOne = formatUnits(BigInt(trade.type === 'buy' ? trade.amountIn : trade.amountOut), 18)
+      const amountToken = formatUnits(BigInt(trade.type === 'buy' ? trade.amountOut : trade.amountIn), 18)
+      const prefixOne = trade.type === 'buy' ? '-' : '+'
+      const prefixToken = trade.type === 'buy' ? '+' : '-'
       return {
         key: trade.id,
         account: <UserTag user={trade.user} />,
-        type: trade.type === 'buy' ? 'buy' : 'sell',
-        amount: <Text>{formatUnits(BigInt(trade.amountIn), 18)}</Text>,
+        type: <Text color={trade.type === 'buy' ? 'positiveValue' : 'negativeValue'}>{trade.type}</Text>,
+        amountOne: <Text>{prefixOne}{amountOne}</Text>,
+        amountToken: <Text>{prefixToken}{amountToken}</Text>,
         date: <Text>
           {moment(+trade.timestamp * 1000).fromNow()}
         </Text>,
