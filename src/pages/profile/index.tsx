@@ -5,6 +5,7 @@ import {message, Radio, Skeleton} from "antd";
 import {CoinsCreated} from "./CoinsCreated.tsx";
 import {UserAccount} from "../../types.ts";
 import {getUserByAddress} from "../../api";
+import {CoinsHeld} from "./CoinsHeld.tsx";
 
 export type ProfileTab = 'coinsCreated' | 'coinsHeld'
 
@@ -58,6 +59,9 @@ export const ProfilePage = () => {
     <Box margin={{ top: '16px' }}>
       {activeTab === 'coinsCreated' &&
         <CoinsCreated userAddress={userAddress} />
+      }
+      {activeTab === 'coinsHeld' &&
+          <CoinsHeld userAddress={userAddress} />
       }
     </Box>
   </Box>

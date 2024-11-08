@@ -45,7 +45,8 @@ export const getTokens = async (params: GetTokensParams = {}) => {
 }
 
 export const getTokenBalances = async (params: {
-  tokenAddress: string
+  tokenAddress?: string
+  userAddress?: string
   limit?: number
   offset?: number
 }) => {
