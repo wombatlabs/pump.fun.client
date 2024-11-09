@@ -33,6 +33,8 @@ export interface Token {
   uri: string
   uriData: TokenUriData | null
   totalSupply: string
+  price: string
+  marketCap: string
   timestamp: string
   createdAt: string
   updatedAt: string

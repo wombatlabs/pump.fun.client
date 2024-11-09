@@ -12,9 +12,29 @@ import {TokenTrades} from "./TokenTrades.tsx";
 import {UserTag} from "../../components/UserTag.tsx";
 import {TokenHolders} from "./TokenHolders.tsx";
 import {PriceChart} from "./price-chart";
+import usePoller from "../../hooks/usePoller.ts";
+import useActiveTab from "../../hooks/useActiveTab.ts";
+import Decimal from "decimal.js";
+
+const TokenHeader = (props: { data: Token }) => {
+  const { data: token } = props
+
+  const marketCap = new Decimal(token.marketCap)
+
+  return <Box direction={'row'} gap={'16px'} align={'baseline'}>
+    <Text size={'16px'}>{token.name}</Text>
+    <Text size={'16px'}>Ticker: {token.symbol}</Text>
+    <Text size={'16px'} color={'positiveValue'}>Market cap: {marketCap.gt(0) ? marketCap.toFixed(4) : '0'} ONE</Text>
+    <Text size={'16px'}>
+      Created by: <UserTag fontSize={'18px'} user={token.user} />
+      {moment(+token.timestamp * 1000).fromNow()}
+    </Text>
+  </Box>
+}
 
 export const TokenPage = () => {
   const navigate = useNavigate()
+  const isTabActive = useActiveTab()
 
   const { tokenAddress = '' } = useParams()
 
@@ -22,22 +42,31 @@ export const TokenPage = () => {
   const [token, setToken] = useState<Token>()
   const [activeTab, setActiveTab] = useState<'thread' | 'trades'>('thread')
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
+  const loadData = async (updateStatus = false) => {
+    try {
+      if(updateStatus) {
         setLoading(true)
-        const [tokenData] = await getTokens({ search: tokenAddress })
-        if(tokenData) {
-          setToken(tokenData)
-        }
-      } catch (e) {
-        console.error('Failed to load token', e)
-      } finally {
-        setLoading(false)
       }
+      const [tokenData] = await getTokens({ search: tokenAddress })
+      if(tokenData) {
+        setToken(tokenData)
+      }
+    } catch (e) {
+      console.error('Failed to load token', e)
+    } finally {
+      setLoading(false)
     }
-    loadData()
+  }
+
+  useEffect(() => {
+    loadData(true)
   }, []);
+
+  usePoller(() => {
+    if(isTabActive) {
+      loadData()
+    }
+  }, 2000)
 
   return <Box width={'100%'} pad={'32px'}>
     <Box align={'center'}>
@@ -58,15 +87,8 @@ export const TokenPage = () => {
     </Box>
     <Box margin={{ top: '16px' }} width={'100%'}>
       {token
-        ? <Box direction={'row'} gap={'16px'} align={'baseline'}>
-            <Text size={'18px'}>{token.name}</Text>
-            <Text size={'18px'}>Ticker: {token.symbol}</Text>
-            <Text size={'18px'} color={'positiveValue'}>
-              Created by: <UserTag fontSize={'18px'} user={token.user} />
-              {moment(+token.timestamp * 1000).fromNow()}
-            </Text>
-          </Box>
-        : <Skeleton.Input active={true} />
+        ? <TokenHeader data={token} />
+        : <Skeleton.Input active={true} style={{ width: '300px' }} />
       }
       <Box direction={'row'} justify={'between'} gap={'48px'}>
         <Box width={'100%'}>
