@@ -55,7 +55,7 @@ export const TokensList = () => {
             <Box>
                 <Text size={'20px'} color={'golden'}>Daily Meme King 👑</Text>
             </Box>
-            <Box border={{ color: 'golden' }} round={'6px'} margin={{ top: '2px' }}>
+            <Box border={{ color: 'golden', size: '1px' }} round={'6px'} margin={{ top: '4px' }}>
                 <TokenItem
                     key={currentWinner.id}
                     data={currentWinner.token}

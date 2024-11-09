@@ -1,4 +1,4 @@
-import { Box } from 'grommet'
+import { Box, Text } from 'grommet'
 import {Button} from "antd";
 import {TokensList} from "./TokensList.tsx";
 import {useNavigate} from "react-router-dom";
@@ -9,8 +9,8 @@ export const BoardPage = () => {
   return <Box>
     <Box>
       <Box align={'center'}>
-        <Button type={'text'} style={{ fontSize: '22px' }} onClick={() => navigate('/create')}>
-          Start a new coin
+        <Button type={'text'} onClick={() => navigate('/create')}>
+          <Text color={'accentWhite'} size={'22px'}>Start a new coin</Text>
         </Button>
       </Box>
       {/*<Box margin={{ top: '32px' }} align={'center'}>*/}

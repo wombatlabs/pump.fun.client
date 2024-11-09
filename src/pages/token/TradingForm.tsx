@@ -1,7 +1,7 @@
 import {Box, Spinner, Text} from "grommet";
 import {Button, InputNumber, message} from "antd";
 import styled from "styled-components";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import {useAccount, useBalance, useWriteContract} from "wagmi";
 import TokenFactoryABI from '../../abi/TokenFactory.json'
 import {appConfig} from "../../config.ts";
@@ -11,6 +11,7 @@ import {waitForTransactionReceipt} from "wagmi/actions";
 import {config} from "../../wagmi.ts";
 import {getTrades} from "../../api";
 import {harmonyOne} from "wagmi/chains";
+import Decimal from "decimal.js";
 
 const TradeButton = styled(Box)`
     padding: 8px 16px;
@@ -38,10 +39,20 @@ export const TradingForm = (props: {
     address: account?.address,
     chainId: harmonyOne.id,
   })
+  const tokenBalanceFormatted = useMemo(() => {
+    return tokenBalance && tokenBalance.value > 0n
+      ? new Decimal(formatUnits(tokenBalance.value, tokenBalance.decimals)).toFixed(4)
+      : '0'
+  }, [tokenBalance])
   const { data: oneBalance, refetch: refetchTokenBalance } = useBalance({
     address: account?.address,
     chainId: harmonyOne.id,
   })
+  const oneBalanceFormatted = useMemo(() => {
+    return oneBalance && oneBalance.value > 0n
+      ? new Decimal(formatUnits(oneBalance.value, oneBalance.decimals)).toFixed(4)
+      : '0'
+  }, [oneBalance])
 
   const { writeContractAsync } = useWriteContract()
 
@@ -132,18 +143,10 @@ export const TradingForm = (props: {
       />
       <Box margin={{ top: '4px' }} align={'end'}>
         {selectedSide === 'buy' &&
-            <Text>Balance: {
-              oneBalance
-                ? formatUnits(oneBalance.value, oneBalance.decimals)
-                : '0'
-            } ONE</Text>
+            <Text>Balance: {oneBalanceFormatted} ONE</Text>
         }
         {selectedSide === 'sell' &&
-            <Text>Balance: {
-              tokenBalance
-                ? formatUnits(tokenBalance.value, tokenBalance.decimals)
-                : '0'
-            } {token?.symbol}</Text>
+            <Text>Balance: {tokenBalanceFormatted} {token?.symbol}</Text>
         }
       </Box>
     </Box>
