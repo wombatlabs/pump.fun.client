@@ -6,6 +6,7 @@ import {TokenItem} from "./TokenItem.tsx";
 import {Spin} from "antd";
 import styled from "styled-components";
 import {useNavigate} from "react-router-dom";
+import moment from "moment";
 
 const TokensContainer = styled(Box)`
     display: flex;
@@ -55,7 +56,15 @@ export const TokensList = () => {
             <Box>
                 <Text size={'20px'} color={'golden'}>Daily Meme King 👑</Text>
             </Box>
-            <Box border={{ color: 'golden', size: '1px' }} round={'6px'} margin={{ top: '4px' }}>
+            <Box
+                border={{ color: 'golden', size: '1px' }}
+                round={'6px'}
+                margin={{ top: '4px' }}
+                style={{ position: 'relative' }}
+            >
+                <Box style={{ position: 'absolute', right: 0, top: '-24px' }}>
+                    <Text>{moment(+currentWinner.timestamp * 1000).format('MMM DD, YYYY')}</Text>
+                </Box>
                 <TokenItem
                     key={currentWinner.id}
                     data={currentWinner.token}

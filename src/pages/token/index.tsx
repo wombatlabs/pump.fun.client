@@ -110,7 +110,7 @@ export const TokenPage = () => {
             </Box>
           </Box>
         </Box>
-        <Box style={{ minWidth: '600px' }}>
+        <Box style={{ minWidth: '420px' }}>
           <TradingForm token={token} />
           {token &&
               <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }} margin={{ top: '32px' }}>
