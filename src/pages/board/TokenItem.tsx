@@ -3,6 +3,7 @@ import {Token} from "../../types.ts";
 import styled from "styled-components";
 import moment from 'moment'
 import { Image } from 'antd'
+import Decimal from "decimal.js";
 
 const TokenContainer = styled(Box)`
     border: 1px solid transparent;
@@ -26,8 +27,10 @@ export const TokenItem = (props: {
     name,
     timestamp,
     user,
-    uriData
+    uriData,
   } } = props
+
+  const marketCap = new Decimal(props.data.marketCap)
 
   return <TokenContainer onClick={props.onClick} direction={'row'} gap={'16px'}>
     <Box>
@@ -37,7 +40,8 @@ export const TokenItem = (props: {
       <Text color={'accentWhite'}>
         Created by {user?.username} {moment(+timestamp * 1000).fromNow()}
       </Text>
-      <Text><b>{name} (ticker: {symbol})</b>: {uriData?.description}</Text>
+      <Text color={'positiveValue'}>Market cap: {marketCap.gt(0) ? marketCap.toFixed(4) : '0'} ONE</Text>
+      <Text color={'accentWhite'}><b>{name} (ticker: {symbol})</b>: {uriData?.description}</Text>
     </Box>
   </TokenContainer>
 }
