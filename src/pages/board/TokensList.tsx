@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import {getTokens, getTokenWinners} from "../../api";
 import {Token, TokenWinner} from "../../types.ts";
 import {TokenItem} from "./TokenItem.tsx";
-import {Spin} from "antd";
+import {Skeleton} from "antd";
 import styled from "styled-components";
 import {useNavigate} from "react-router-dom";
 import moment from "moment";
@@ -47,10 +47,20 @@ export const TokensList = () => {
   }, []);
 
   return <Box>
-    {tokens.length > 0 && isInitialLoading && <Box direction={'row'} gap={'8px'} align={'center'} justify={'center'}>
-        <Text>Loading...</Text>
-        <Spin />
-    </Box>}
+    {(tokens.length === 0 && isInitialLoading) &&
+        <Box direction={'row'} gap={'48px'} align={'center'} justify={'center'}>
+          {Array(3).fill(null).map(() => {
+            return <Box direction={'row'} gap={'8px'}>
+              <Skeleton.Avatar active={true} shape={'square'} style={{ width: '130px', height: '130px' }} />
+              <Box>
+                <Skeleton.Input active={true} style={{ width: '150px', height: '12px' }} />
+                <Skeleton.Input active={true} style={{ width: '150px', height: '12px' }} />
+                <Skeleton.Input active={true} style={{ width: '150px', height: '12px' }} />
+              </Box>
+            </Box>
+          })}
+        </Box>
+    }
     {currentWinner &&
         <Box align={'center'}>
             <Box>
