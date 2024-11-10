@@ -104,7 +104,7 @@ export const Header = () => {
       }
     </Box>
     <Modal
-      title="Profile"
+      title={null}
       footer={null}
       open={isProfileModalOpen}
       onOk={() => setIsProfileModalOpen(false)}
