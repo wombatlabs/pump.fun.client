@@ -85,12 +85,14 @@ export const Header = () => {
         <Box gap={'8px'}>
           <Box>
               <Button
-                  size={'large'}
+                  // size={'large'}
                   onClick={() => setIsProfileModalOpen(true)}
                   style={{ minWidth: '160px' }}
               >
-                  <Text>{clientState.userAccount?.username}</Text>
-                  <Text size={'12px'}>▼</Text>
+                  <Box width={'100%'} justify={'between'} direction={'row'} align={'center'}>
+                      <Text>{clientState.userAccount?.username.slice(0, 10)}</Text>
+                      <Text size={'12px'}>▼</Text>
+                  </Box>
               </Button>
           </Box>
             {/*<Box width={'120px'}>*/}
