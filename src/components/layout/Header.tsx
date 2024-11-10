@@ -8,12 +8,13 @@ import {ProfileModal} from "./ProfileModal.tsx";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {LatestUpdate} from "../latest-update";
+import {GradientButtonText} from "../button";
 
 export const Header = () => {
   const navigate = useNavigate();
   const account = useAccount()
   const { connectors, connectAsync, isPending } = useConnect()
-  const { state: clientState, setState: setClientState, onDisconnect } = useClientData()
+  const { state: clientState, setState: setClientState } = useClientData()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
 
   const onConnectClicked = async () => {
@@ -58,16 +59,17 @@ export const Header = () => {
     }
   }
 
-  const onDisconnectClicked = () => {
-    onDisconnect()
-  }
+  // const onDisconnectClicked = () => {
+  //   onDisconnect()
+  // }
 
   return <Box pad={'16px'} direction={'row'} justify={'between'}>
-    <Box direction={'row'} gap={'32px'}>
+    <Box direction={'row'} gap={'24px'}>
       <Box onClick={() => {
         navigate('/')
       }}>
-        <Text size={'22px'}>PumpOne</Text>
+        {/*<Text size={'22px'}>PumpOne</Text>*/}
+        <GradientButtonText size={'24px'}>PumpOne</GradientButtonText>
       </Box>
       <Box>
         <LatestUpdate />
@@ -82,16 +84,20 @@ export const Header = () => {
       {account.status === 'connected' &&
         <Box gap={'8px'}>
           <Box>
-              <Button onClick={() => setIsProfileModalOpen(true)}>
+              <Button
+                  size={'large'}
+                  onClick={() => setIsProfileModalOpen(true)}
+                  style={{ minWidth: '160px' }}
+              >
                   <Text>{clientState.userAccount?.username}</Text>
                   <Text size={'12px'}>▼</Text>
               </Button>
           </Box>
-            <Box width={'120px'}>
-                <Button type={'primary'} loading={isPending} onClick={onDisconnectClicked}>
-                    Disconnect
-                </Button>
-            </Box>
+            {/*<Box width={'120px'}>*/}
+            {/*    <Button type={'primary'} loading={isPending} onClick={onDisconnectClicked}>*/}
+            {/*        Disconnect*/}
+            {/*    </Button>*/}
+            {/*</Box>*/}
         </Box>
       }
     </Box>

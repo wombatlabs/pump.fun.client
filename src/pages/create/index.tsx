@@ -208,7 +208,7 @@ export const CreatePage = () => {
         disabled={Object.values(tokenForm).includes('') || inProgress || !account.address || !userAccount?.address}
         onClick={onCreateClicked}
       >
-        Create Coin
+        Create Token
       </Button>
       <Box align={'center'} direction={'row'} gap={'16px'} justify={'center'}>
         {inProgress && <Spinner color={'activeStatus'} />}

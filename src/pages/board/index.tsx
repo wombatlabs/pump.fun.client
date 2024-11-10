@@ -10,7 +10,7 @@ export const BoardPage = () => {
     <Box>
       <Box align={'center'}>
         <Button type={'text'} onClick={() => navigate('/create')}>
-          <Text color={'accentWhite'} size={'22px'}>Start a new coin</Text>
+          <Text color={'accentWhite'} size={'22px'}>Create New Token</Text>
         </Button>
       </Box>
       {/*<Box margin={{ top: '32px' }} align={'center'}>*/}
