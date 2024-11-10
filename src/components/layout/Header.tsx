@@ -1,5 +1,5 @@
 import {Box, Text} from "grommet";
-import {useAccount, useConnect, useSwitchChain} from "wagmi";
+import {useAccount, useConnect} from "wagmi";
 import {Button, message, Modal} from "antd";
 import {createUser, getUserByAddress} from "../../api";
 import {useClientData} from "../../providers/DataProvider.tsx";
@@ -12,7 +12,6 @@ import {LatestUpdate} from "../latest-update";
 export const Header = () => {
   const navigate = useNavigate();
   const account = useAccount()
-  const { switchChainAsync } = useSwitchChain()
   const { connectors, connectAsync, isPending } = useConnect()
   const { state: clientState, setState: setClientState, onDisconnect } = useClientData()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
@@ -20,20 +19,23 @@ export const Header = () => {
   const onConnectClicked = async () => {
     const metamaskConnector = connectors.find(c => c.name === 'MetaMask')
     if(!metamaskConnector) {
+      message.error('MetaMask not installed')
       return
     }
 
     let userAddress = ''
 
     try {
-      await switchChainAsync({ chainId: harmonyOne.id })
-      const data = await connectAsync({ connector: metamaskConnector })
+      const data = await connectAsync({
+        connector: metamaskConnector,
+        chainId: harmonyOne.id
+      })
       if(data.accounts.length > 0) {
         userAddress = data.accounts[0]
       }
     } catch (e) {
       console.error('Failed to connect wallet', e)
-      message.error(`Failed to connect wallet`);
+      message.error(`Failed to connect a wallet`);
     }
 
     console.log('Address connected:', userAddress)

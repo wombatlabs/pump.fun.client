@@ -96,6 +96,7 @@ export const CreatePage = () => {
 
   const uploadProps: UploadProps = {
     name: 'file',
+    accept: '.jpg,.jpeg,.png,.webp',
     disabled: !account.address || !userAccount?.address,
     headers: {
       'meta_user_address': userAccount?.address || '',
