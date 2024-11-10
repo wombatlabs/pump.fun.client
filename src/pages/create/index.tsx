@@ -97,13 +97,14 @@ export const CreatePage = () => {
   const uploadProps: UploadProps = {
     name: 'file',
     accept: '.jpg,.jpeg,.png,.webp',
-    disabled: !account.address || !userAccount?.address,
+    disabled: !account.address || !userAccount?.address || inProgress,
     headers: {
       'meta_user_address': userAccount?.address || '',
       'meta_file_name': userAccount?.address || ''
     },
     multiple: false,
     listType: 'picture',
+    maxCount: 1,
     action: `${appConfig.apiUrl}/uploadImage`,
     onChange(info) {
       const { status } = info.file;

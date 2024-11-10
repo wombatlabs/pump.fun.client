@@ -1,4 +1,4 @@
-import {Box, Spinner, Text} from 'grommet'
+import {Box, Text} from 'grommet'
 import {Button, Image, Skeleton} from "antd";
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
@@ -35,7 +35,6 @@ const TokenHeader = (props: { data: Token }) => {
 export const TokenPage = () => {
   const navigate = useNavigate()
   const isTabActive = useActiveTab()
-
   const { tokenAddress = '' } = useParams()
 
   const [isLoading, setLoading] = useState(false)
@@ -68,7 +67,7 @@ export const TokenPage = () => {
     }
   }, 2000)
 
-  return <Box width={'100%'} pad={'32px'}>
+  return <Box width={'100%'} pad={'32px'} style={{ maxWidth: '1300px', minWidth: '1000px' }}>
     <Box align={'center'}>
       <Button
         type={'text'}
@@ -78,17 +77,12 @@ export const TokenPage = () => {
         Go back
       </Button>
     </Box>
-    <Box>
-      {isLoading &&
-          <Box margin={{ top: '16px' }} align={'center'} justify={'center'} direction={'row'} gap={'16px'}>
-              <Text>Loading...</Text><Spinner />
-          </Box>
-      }
-    </Box>
     <Box margin={{ top: '16px' }} width={'100%'}>
-      {token
-        ? <TokenHeader data={token} />
-        : <Skeleton.Input active={true} style={{ width: '300px' }} />
+      {isLoading
+        ? <Skeleton.Input active={true} style={{ width: '300px' }} />
+        : token
+          ? <TokenHeader data={token} />
+          : <Box><Text>Token not found</Text></Box>
       }
       <Box direction={'row'} justify={'between'} gap={'48px'}>
         <Box width={'100%'}>

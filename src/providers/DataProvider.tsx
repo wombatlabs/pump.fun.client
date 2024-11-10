@@ -77,17 +77,23 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
       try {
         if(account.address) {
           const userAddress = account.address
-          let user = await getUserByAddress({ address: userAddress }).catch(_ => _)
+          let user
+          try {
+            user = await getUserByAddress({ address: userAddress })
+          } catch (e) {}
           if(!user) {
-            user = await createUser({ address: userAddress })
+            await createUser({ address: userAddress })
+            user = await getUserByAddress({ address: userAddress })
             console.log('Autologin: create user account', userAddress, user)
           }
-          setState(current => {
-            return {
-              ...current,
-              userAccount: user
-            }
-          })
+          if(user) {
+            setState(current => {
+              return {
+                ...current,
+                userAccount: user
+              }
+            })
+          }
           console.log('Autologin: connected user account', user)
         }
       } catch (e) {
