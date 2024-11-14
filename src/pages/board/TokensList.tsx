@@ -49,8 +49,8 @@ export const TokensList = () => {
   return <Box>
     {(tokens.length === 0 && isInitialLoading) &&
         <Box direction={'row'} gap={'48px'} align={'center'} justify={'center'}>
-          {Array(3).fill(null).map(() => {
-            return <Box direction={'row'} gap={'8px'}>
+          {Array(3).fill(null).map((_, index) => {
+            return <Box direction={'row'} gap={'8px'} key={index}>
               <Skeleton.Avatar active={true} shape={'square'} style={{ width: '130px', height: '130px' }} />
               <Box>
                 <Skeleton.Input active={true} style={{ width: '150px', height: '12px' }} />

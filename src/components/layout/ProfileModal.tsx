@@ -30,7 +30,7 @@ export const ProfileModal = (props: {
         </Typography.Text>
       </Box>
     </Box>
-    <Box margin={{ top: '32px' }} gap={'16px'}>
+    <Box margin={{ top: '32px' }} gap={'16px'} direction={'row'}>
       <Button type={'primary'} onClick={() => {
         onDisconnect()
         onClose()

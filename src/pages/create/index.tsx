@@ -31,7 +31,7 @@ const defaultFormState: CreateTokenForm = {
 export const CreatePage = () => {
   const navigate = useNavigate();
   const account = useAccount()
-  const { state: { userAccount } } = useClientData()
+  const { state: { userAccount, jwtTokens } } = useClientData()
 
   const [tokenForm, setTokenForm] = useState<CreateTokenForm>(defaultFormState)
   const [currentStatus, setCurrentStatus] = useState('')
@@ -39,16 +39,18 @@ export const CreatePage = () => {
 
   const onCreateClicked = async () => {
     try {
+      if(!jwtTokens) {
+        return
+      }
       setInProgress(true)
       setCurrentStatus('Uploading token metadata...')
       const payload: TokenMetadata = {
-        userAddress: userAccount?.address || '',
         name: tokenForm.name,
         symbol: tokenForm.symbol,
         description: tokenForm.description,
         image: tokenForm.image,
       }
-      const metadataUrl = await addTokenMetadata(payload)
+      const metadataUrl = await addTokenMetadata(payload, { accessToken: jwtTokens.accessToken })
       console.log('metadataUrl:', metadataUrl)
 
       setCurrentStatus('Minting contract...')
@@ -97,10 +99,9 @@ export const CreatePage = () => {
   const uploadProps: UploadProps = {
     name: 'file',
     accept: '.jpg,.jpeg,.png,.webp',
-    disabled: !account.address || !userAccount?.address || inProgress,
+    disabled: !account.address || !userAccount?.address || inProgress || !jwtTokens,
     headers: {
-      'meta_user_address': userAccount?.address || '',
-      'meta_file_name': userAccount?.address || ''
+      'Authorization': `Bearer ${jwtTokens ? jwtTokens.accessToken : ''}`
     },
     multiple: false,
     listType: 'picture',

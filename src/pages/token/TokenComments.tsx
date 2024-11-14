@@ -84,7 +84,7 @@ const TokenCommentItem = (props: TokenCommentItemProps) => {
 
 export const TokenComments = (props: { tokenAddress: string }) => {
   const {tokenAddress} = props
-  const { state: { userAccount } } = useClientData()
+  const { state: { jwtTokens } } = useClientData()
 
   const [isInitialLoading, setInitialLoading] = useState(true);
   const [comments, setComments] = useState<UserComment[]>([]);
@@ -109,10 +109,13 @@ export const TokenComments = (props: { tokenAddress: string }) => {
 
   const onPostReplyClicked = async () => {
     try {
+      if(!jwtTokens) {
+        return
+      }
       const id = await addComment({
         tokenAddress,
-        userAddress: userAccount?.address || '',
-        text: replyMessage
+        text: replyMessage,
+        accessToken: jwtTokens.accessToken
       })
       console.log('Reply id: ', id)
       setReplyMessage('')

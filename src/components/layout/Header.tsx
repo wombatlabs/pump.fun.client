@@ -1,7 +1,7 @@
 import {Box, Text} from "grommet";
 import {useAccount, useConnect} from "wagmi";
 import {Button, message, Modal} from "antd";
-import {createUser, getUserByAddress} from "../../api";
+import {getNonce, getUserByAddress, verifySignature} from "../../api";
 import {useClientData} from "../../providers/DataProvider.tsx";
 import {harmonyOne} from "wagmi/chains";
 import {ProfileModal} from "./ProfileModal.tsx";
@@ -9,6 +9,8 @@ import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {LatestUpdate} from "../latest-update";
 import {GradientButtonText} from "../button";
+import {storeJWTTokens} from "../../utils/localStorage.ts";
+import {JWTTokensPair} from "../../types.ts";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -18,13 +20,14 @@ export const Header = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
 
   const onConnectClicked = async () => {
+    let userAddress = ''
+    let jwtTokens: JWTTokensPair
+
     const metamaskConnector = connectors.find(c => c.name === 'MetaMask')
     if(!metamaskConnector) {
       message.error('MetaMask not installed')
       return
     }
-
-    let userAddress = ''
 
     try {
       const data = await connectAsync({
@@ -39,36 +42,50 @@ export const Header = () => {
       message.error(`Failed to connect a wallet`);
     }
 
-    console.log('Address connected:', userAddress)
+    console.log('User address connected:', userAddress)
 
     if(userAddress) {
       try {
-        let user = await getUserByAddress({ address: userAddress }).catch(_ => {})
-        if(!user) {
-          user = await createUser({ address: userAddress })
-        }
-        console.log('User account:', user)
-
-        setClientState({
-          ...clientState,
-          userAccount: user
+        const nonce = await getNonce(userAddress)
+        console.log('Nonce:', nonce)
+        const rawMessage = `I'm signing my one-time nonce: ${nonce}`
+        const signature = await window.ethereum.request({
+          method: "personal_sign",
+          params: [rawMessage, userAddress],
         })
+        jwtTokens = await verifySignature(userAddress, signature)
+        console.log('jwtTokens:', jwtTokens)
       } catch (e) {
-        console.error('Failed to create user', e)
+        console.error('Failed to get JWT tokens:', e)
+        message.error('Failed to get access tokens')
+      }
+
+      // @ts-ignore
+      if(jwtTokens) {
+        try {
+          storeJWTTokens(jwtTokens)
+          const user = await getUserByAddress({ address: userAddress }).catch(_ => {})
+          if(user) {
+            setClientState({
+              ...clientState,
+              jwtTokens,
+              userAccount: user
+            })
+            console.log('User account:', user)
+          }
+        } catch (e) {
+          console.error('Failed to get user account:', e)
+          message.error('Failed to get user account. Try again later.')
+        }
       }
     }
   }
-
-  // const onDisconnectClicked = () => {
-  //   onDisconnect()
-  // }
 
   return <Box pad={'16px'} direction={'row'} justify={'between'}>
     <Box direction={'row'} gap={'24px'}>
       <Box onClick={() => {
         navigate('/')
       }}>
-        {/*<Text size={'22px'}>PumpOne</Text>*/}
         <GradientButtonText size={'24px'}>PumpOne</GradientButtonText>
       </Box>
       <Box>

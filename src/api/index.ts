@@ -1,5 +1,14 @@
 import axios from 'axios'
-import {Token, TokenBalance, TokenMetadata, TokenTrade, TokenWinner, UserAccount, UserComment} from "../types.ts";
+import {
+  JWTTokensPair,
+  Token,
+  TokenBalance,
+  TokenMetadata,
+  TokenTrade,
+  TokenWinner,
+  UserAccount,
+  UserComment
+} from "../types.ts";
 import {appConfig} from "../config.ts";
 
 const baseURL = appConfig.apiUrl
@@ -8,9 +17,44 @@ const client = axios.create({
   baseURL
 })
 
-export const createUser = async (params: { address: string }) => {
+export interface JwtParams {
+  accessToken: string
+}
+
+export const getNonce = async (address: string) => {
+  const { data } = await client.post<{ nonce: number }>('/user/nonce', {
+    address
+  })
+  return data.nonce
+}
+
+export const verifySignature = async (address: string, signature: string) => {
+  const { data } = await client.post<JWTTokensPair>('/user/verify', {
+    address,
+    signature
+  })
+  return data
+}
+
+export const createUser = async (params: { address: string } & JwtParams) => {
   const {data} = await client.post<UserAccount>('/user', {
     address: params.address
+  }, {
+    headers: {
+      'Authorization': `Bearer ${params.accessToken}`
+    }
+  })
+  return data
+}
+
+export const signIn = async (params: JwtParams) => {
+  const {data} = await client.get<{
+    user: UserAccount;
+    tokens: JWTTokensPair;
+  }>('/user/sign-in', {
+    headers: {
+      'Authorization': `Bearer ${params.accessToken}`
+    }
   })
   return data
 }
@@ -99,17 +143,24 @@ export const getTokenComments = async (params: GetCommentsParams) => {
 
 export interface PostCommentParams {
   tokenAddress: string
-  userAddress: string
   text: string
 }
 
-export const addComment = async (params: PostCommentParams) => {
-  const {data} = await client.post<number>('/comment', params)
+export const addComment = async (params: PostCommentParams & JwtParams) => {
+  const {data} = await client.post<number>('/comment', params, {
+    headers: {
+      'Authorization': `Bearer ${params.accessToken}`
+    }
+  })
   return data
 }
 
-export const addTokenMetadata = async (payload: TokenMetadata) => {
-  const {data} = await client.post<UserAccount>('/metadata', payload)
+export const addTokenMetadata = async (payload: TokenMetadata, jwt: JwtParams) => {
+  const {data} = await client.post<UserAccount>('/metadata', payload, {
+    headers: {
+      'Authorization': `Bearer ${jwt.accessToken}`
+    }
+  })
   return data
 }
 

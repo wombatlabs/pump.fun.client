@@ -42,7 +42,6 @@ export interface Token {
 }
 
 export interface TokenMetadata {
-  userAddress: string
   name: string
   symbol: string
   description: string
@@ -81,5 +80,17 @@ export interface TokenWinner {
   user: UserAccount
   timestamp: string
   blockNumber: number
+  createdAt: string
+}
+
+export interface JWTTokensPair {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+}
+
+export interface JwtTokenPayload {
+  address: string
+  username: string
   createdAt: string
 }

@@ -1,11 +1,14 @@
-import React, {createContext, useContext, useState, PropsWithChildren, useEffect} from 'react';
-import {Token, TokenTrade, UserAccount} from "../types.ts";
+import React, {createContext, useContext, useState, PropsWithChildren, useEffect, useMemo} from 'react';
+import {JWTTokensPair, Token, TokenTrade, UserAccount} from "../types.ts";
 import {useAccount, useDisconnect} from "wagmi";
-import {createUser, getTokens, getTrades, getUserByAddress} from "../api";
+import {getTokens, getTrades, signIn} from "../api";
 import useIsTabActive from "../hooks/useActiveTab.ts";
 import usePoller from "../hooks/usePoller.ts";
+import {clearJWTTokens, getJWTTokens} from "../utils/localStorage.ts";
+import {decodeJWT} from "../utils";
 
 interface ClientState {
+  jwtTokens?: JWTTokensPair
   userAccount?: UserAccount
   latestTrade?: TokenTrade
   latestToken?: Token
@@ -20,6 +23,7 @@ export interface RhoV2Data {
 const getInitialState = (): RhoV2Data => {
   return {
     state: {
+      jwtTokens: undefined,
       userAccount: undefined,
       latestTrade: undefined,
       latestToken: undefined
@@ -31,6 +35,7 @@ const getInitialState = (): RhoV2Data => {
 
 const defaultState = getInitialState()
 const UserDataContext = createContext(defaultState);
+const pageStartTimestamp = Date.now()
 
 export const useClientData = () => useContext(UserDataContext);
 
@@ -38,8 +43,19 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
   const [ state, setState ] = useState<ClientState>(defaultState.state)
   const [isLatestDataUpdating, setIsLatestDataUpdating] = useState(false)
   const account = useAccount()
-  const { disconnect } = useDisconnect()
+  const { disconnectAsync } = useDisconnect()
   const isTabActive = useIsTabActive()
+
+  const storedJwtTokens = getJWTTokens()
+  const jwtUserAddress = useMemo(() => {
+    if(storedJwtTokens) {
+      try {
+        const { address } = decodeJWT(storedJwtTokens.accessToken)
+        return address
+      } catch (e) {}
+    }
+    return ''
+  }, [storedJwtTokens])
 
   const updateLatestData = async () => {
     try {
@@ -70,51 +86,60 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
     if(isTabActive && !isLatestDataUpdating) {
       updateLatestData()
     }
-  }, 1000)
+  }, 5000)
 
   useEffect(() => {
     const autoLogin = async () => {
+      if(!storedJwtTokens) {
+        console.log('JWT tokens not found in localStorage')
+        return
+      }
       try {
-        if(account.address) {
-          const userAddress = account.address
-          let user
-          try {
-            user = await getUserByAddress({ address: userAddress })
-          } catch (e) {}
-          if(!user) {
-            await createUser({ address: userAddress })
-            user = await getUserByAddress({ address: userAddress })
-            console.log('Autologin: create user account', userAddress, user)
-          }
-          if(user) {
-            setState(current => {
-              return {
-                ...current,
-                userAccount: user
-              }
-            })
-          }
-          console.log('Autologin: connected user account', user)
+        console.log('Autologin: start...')
+        const data = await signIn({ accessToken: storedJwtTokens.accessToken })
+        const { user, tokens } = data
+        if(user && tokens) {
+          setState(current => {
+            return {
+              ...current,
+              userAccount: user,
+              jwtTokens: tokens
+            }
+          })
+          console.log('Autologin: connected user account', data)
+        } else {
+          console.error('Autologin failed: missing user or tokens', data)
         }
       } catch (e) {
         console.error('Autologin failed, disconnect wallet', e)
-        disconnect()
-      } finally {
-      }
+        onDisconnect()
+      } finally {}
     }
-    if(account.address && !state.userAccount?.address) {
+
+    if(Date.now() - pageStartTimestamp < 1000 && !storedJwtTokens && account.address && !state.userAccount?.address) {
+      onDisconnect()
+    } else if(
+      Date.now() - pageStartTimestamp < 1000
+      && account.address
+      && !state.userAccount?.address
+      && !!storedJwtTokens
+      && jwtUserAddress.toLowerCase() === account.address.toLowerCase()
+    ) {
       autoLogin()
     }
-  }, [account.address, state.userAccount?.address]);
+  }, [account.address, state.userAccount?.address, storedJwtTokens, jwtUserAddress, pageStartTimestamp]);
 
-  const onDisconnect = () => {
-    disconnect()
+  const onDisconnect = async () => {
+    await disconnectAsync()
+    console.log('Disconnected')
     setState(current => {
       return {
         ...current,
-        userAccount: undefined
+        userAccount: undefined,
+        jwtTokens: undefined,
       }
     })
+    clearJWTTokens()
   };
 
   return <UserDataContext.Provider value={{
