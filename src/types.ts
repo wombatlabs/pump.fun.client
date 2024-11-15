@@ -94,3 +94,10 @@ export interface JwtTokenPayload {
   username: string
   createdAt: string
 }
+
+export interface Candle {
+  highPrice: string
+  lowPrice: string
+  volume: string
+  time: string
+}

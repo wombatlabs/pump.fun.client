@@ -20,7 +20,6 @@ export const TokenHolders = (props: {
       try {
         const data = await getTokenBalances({ tokenAddress: token.address, limit: 20 })
         setHolders(data)
-        console.log('Token holders: ', data)
       } catch (e) {
         console.error('Failed to load holders', e)
       }

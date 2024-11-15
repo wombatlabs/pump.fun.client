@@ -114,7 +114,8 @@ export const TokenComments = (props: { tokenAddress: string }) => {
       }
       const id = await addComment({
         tokenAddress,
-        text: replyMessage,
+        text: replyMessage
+      }, {
         accessToken: jwtTokens.accessToken
       })
       console.log('Reply id: ', id)

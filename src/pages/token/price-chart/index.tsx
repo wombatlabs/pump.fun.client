@@ -1,43 +1,85 @@
-import {Box, Text} from "grommet";
-import {TradingView} from "./tradingView";
-import {chartItemsMock} from "./mocks";
+import {Box} from "grommet";
+import {TradingView, TradingViewItem} from "./tradingView";
+import {useEffect, useMemo, useState} from "react";
+import {Candle} from "../../../types.ts";
+import {getCandles} from "../../../api";
+import Decimal from "decimal.js";
+import moment from "moment";
+import {BarPrice, Time} from "lightweight-charts";
 
 const ChartHeight = 312
 
-export const PriceChart = () => {
+export const PriceChart = (props: {
+  tokenAddress: string
+}) => {
+  const { tokenAddress } = props
+  const [candles, setCandles] = useState<Candle[]>([])
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const items = await getCandles({ tokenAddress })
+        setCandles(items)
+        console.log('Loaded candles', items)
+      } catch (e) {
+        console.error('Failed to load candles', e)
+      }
+    }
+    if(tokenAddress) {
+      loadData()
+    }
+  }, [tokenAddress]);
+
+  const chartItems: TradingViewItem[] = useMemo(() => {
+    return candles.map(item => {
+      return {
+        time: moment(item.time).unix() as Time,
+        value: new Decimal(item.highPrice).toNumber(),
+      }
+    }).reverse()
+  }, [candles])
+
   return <Box
     style={{ minWidth: '500px' }}
   >
     <Box>
       <Box
         style={{
-          opacity: 0.3,
-          filter: 'blur(2px)',
-          pointerEvents: 'none'
+          // opacity: 0.3,
+          // filter: 'blur(2px)',
+          // pointerEvents: 'none'
         }}
       >
         <TradingView
           height={ChartHeight}
-          lineItems={chartItemsMock}
-          // priceFormatter={(value: BarPrice) => {
-          //   return abbreviateNumber(value, 2)
-          // }}
-          // tooltipFormatter={(tooltip) => {
-          //   const prefix = portfolio?.currency.id || ''
-          //   const suffix = portfolio?.portfolioId || ''
-          //   return {
-          //     ...tooltip,
-          //     title: chartType === 'margin' ? 'Margin' : 'Profit and Loss',
-          //     value: `${prefix}${abbreviateNumber(tooltip.value, 2)}${suffix}`,
-          //   }
-          // }}
+          lineItems={chartItems}
+          tickMarkFormatter={(timestamp, tickMarkType) => {
+            if(tickMarkType === 2) {
+              return moment(+timestamp * 1000).format('MM/D, HH:mm')
+            }
+            return ''
+          }}
+          priceFormatter={(value: BarPrice) => {
+            const borderValue = 0.0001
+            if(new Decimal(value).lt(new Decimal(borderValue))) {
+              return `<${borderValue}`
+            }
+            return new Decimal(value).toFixed(4)
+          }}
+          tooltipFormatter={(tooltip) => {
+            return {
+              ...tooltip,
+              title: 'Price (ONE)',
+              value: `${new Decimal(tooltip.value || 0).toFixed()}`,
+            }
+          }}
         />
       </Box>
-      <Box width={'100%'} height={'260px'} justify={'center'} align={'center'} style={{ position: 'absolute', zIndex: 1 }}>
-        <Box pad={'12px'}>
-          <Text size={'16px'} color={'accentWhite'}>COMING SOON</Text>
-        </Box>
-      </Box>
+      {/*<Box width={'100%'} height={'260px'} justify={'center'} align={'center'} style={{ position: 'absolute', zIndex: 1 }}>*/}
+      {/*  <Box pad={'12px'}>*/}
+      {/*    <Text size={'16px'} color={'accentWhite'}>COMING SOON</Text>*/}
+      {/*  </Box>*/}
+      {/*</Box>*/}
     </Box>
   </Box>
 }

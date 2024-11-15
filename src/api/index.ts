@@ -1,5 +1,6 @@
 import axios from 'axios'
 import {
+  Candle,
   JWTTokensPair,
   Token,
   TokenBalance,
@@ -96,7 +97,7 @@ export const getTokenBalances = async (params: {
 }) => {
   const {limit = 100, offset = 0} = params
 
-  const {data} = await client.get<TokenBalance[]>('/token/balances', {
+  const {data} = await client.get<TokenBalance[]>('/balances', {
     params: {
       ...params,
       offset,
@@ -112,7 +113,7 @@ export const getTokenWinners = async (params: {
 } = {}) => {
   const {limit = 100, offset = 0} = params
 
-  const {data} = await client.get<TokenWinner[]>('/token/winners', {
+  const {data} = await client.get<TokenWinner[]>('/winners', {
     params: {
       ...params,
       offset,
@@ -146,10 +147,10 @@ export interface PostCommentParams {
   text: string
 }
 
-export const addComment = async (params: PostCommentParams & JwtParams) => {
+export const addComment = async (params: PostCommentParams, jwt: JwtParams) => {
   const {data} = await client.post<number>('/comment', params, {
     headers: {
-      'Authorization': `Bearer ${params.accessToken}`
+      'Authorization': `Bearer ${jwt.accessToken}`
     }
   })
   return data
@@ -174,6 +175,25 @@ export const getTrades = async (params: GetTradeParams) => {
   const {limit = 100, offset = 0} = params
 
   const {data} = await client.get<TokenTrade[]>('/trades', {
+    params: {
+      ...params,
+      limit,
+      offset
+    }
+  })
+  return data
+}
+
+export interface GetCandlesParams {
+  tokenAddress: string
+  offset?: number
+  limit?: number
+}
+
+export const getCandles = async (params: GetCandlesParams) => {
+  const {limit = 100, offset = 0} = params
+
+  const {data} = await client.get<Candle[]>('/candles', {
     params: {
       ...params,
       limit,

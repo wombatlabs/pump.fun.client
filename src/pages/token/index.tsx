@@ -85,9 +85,9 @@ export const TokenPage = () => {
           : <Box><Text>Token not found</Text></Box>
       }
       <Box direction={'row'} justify={'between'} gap={'48px'}>
-        <Box width={'100%'}>
+        <Box width={'100%'} margin={{ top: '16px' }}>
           <Box style={{ position: 'relative' }}>
-            <PriceChart />
+            <PriceChart tokenAddress={tokenAddress} />
           </Box>
           <Box margin={{ top: '32px' }}>
             <Radio.Group onChange={(e) => setActiveTab(e.target.value)} value={activeTab} style={{ marginBottom: 8 }}>
@@ -104,7 +104,7 @@ export const TokenPage = () => {
             </Box>
           </Box>
         </Box>
-        <Box style={{ minWidth: '420px' }}>
+        <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }}>
           <TradingForm token={token} />
           {token &&
               <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }} margin={{ top: '32px' }}>
