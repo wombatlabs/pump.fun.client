@@ -19,6 +19,7 @@ const toolTipMargin = 15;
 
 const TooltipContainer = styled(Box)`
     position: absolute;
+    background-color: #1B1B1D;
     display: none;
     color: #ADAEB8;
     width: ${toolTipWidth + 16}px;

@@ -49,7 +49,7 @@ export const CoinsCreated = (props: {
         <Box align={'center'}><Spinner color={'activeStatus'} /></Box>
     }
     <Box>{tokens.map(token => {
-      return <TokenContainer onClick={() => navigate(`/${token.address}`)}>
+      return <TokenContainer key={token.id} onClick={() => navigate(`/${token.address}`)}>
         <Box direction={'row'} gap={'16px'}>
           <Box>
             <Image src={token.uriData?.image} width={'150px'} preview={false} />
