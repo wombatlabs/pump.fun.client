@@ -67,7 +67,7 @@ export const TokenPage = () => {
     }
   }, 2000)
 
-  return <Box width={'100%'} pad={'32px'} style={{ maxWidth: '1300px', minWidth: '1000px' }}>
+  return <Box width={'100%'} pad={'0 32px'} style={{ maxWidth: '1300px', minWidth: '1000px' }}>
     <Box align={'center'}>
       <Button
         type={'text'}

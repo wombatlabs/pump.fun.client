@@ -6,7 +6,7 @@ export const AppLayout = () => {
   return <Box>
     <Box width={'100%'}>
       <Header />
-      <Box align={'center'}>
+      <Box align={'center'} pad={{ bottom: '48px' }}>
         <Outlet />
       </Box>
     </Box>

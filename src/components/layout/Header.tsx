@@ -94,7 +94,7 @@ export const Header = () => {
     </Box>
     <Box>
       {account.status === 'disconnected' &&
-          <Button type={'primary'} loading={isPending} onClick={onConnectClicked}>
+          <Button type={'primary'} size={'large'} loading={isPending} onClick={onConnectClicked}>
               Connect Wallet
           </Button>
       }
@@ -102,12 +102,12 @@ export const Header = () => {
         <Box gap={'8px'}>
           <Box>
               <Button
-                  // size={'large'}
+                  size={'large'}
                   onClick={() => setIsProfileModalOpen(true)}
                   style={{ minWidth: '160px' }}
               >
                   <Box width={'100%'} justify={'between'} direction={'row'} align={'center'}>
-                      <Text>{clientState.userAccount?.username.slice(0, 10)}</Text>
+                      <Text size={'16px'}>{clientState.userAccount?.username.slice(0, 10)}</Text>
                       <Text size={'12px'}>▼</Text>
                   </Box>
               </Button>
@@ -121,6 +121,7 @@ export const Header = () => {
       }
     </Box>
     <Modal
+      centered
       title={null}
       footer={null}
       open={isProfileModalOpen}
@@ -133,7 +134,10 @@ export const Header = () => {
       }}
     >
       {clientState.userAccount &&
-          <ProfileModal user={clientState.userAccount} onClose={() => setIsProfileModalOpen(false)} />
+          <ProfileModal
+              user={clientState.userAccount}
+              onClose={() => setIsProfileModalOpen(false)}
+          />
       }
     </Modal>
   </Box>

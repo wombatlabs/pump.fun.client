@@ -37,12 +37,21 @@ export const verifySignature = async (address: string, signature: string) => {
   return data
 }
 
-export const createUser = async (params: { address: string } & JwtParams) => {
+export const createUser = async (params: { address: string }, jwtParams: JwtParams) => {
   const {data} = await client.post<UserAccount>('/user', {
     address: params.address
   }, {
     headers: {
-      'Authorization': `Bearer ${params.accessToken}`
+      'Authorization': `Bearer ${jwtParams.accessToken}`
+    }
+  })
+  return data
+}
+
+export const updateUser = async (params: { username: string }, jwtParams: JwtParams) => {
+  const {data} = await client.post<UserAccount>('/user/update', params, {
+    headers: {
+      'Authorization': `Bearer ${jwtParams.accessToken}`
     }
   })
   return data
