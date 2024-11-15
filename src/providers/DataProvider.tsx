@@ -43,7 +43,7 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
   const [ state, setState ] = useState<ClientState>(defaultState.state)
   const [isLatestDataUpdating, setIsLatestDataUpdating] = useState(false)
   const account = useAccount()
-  const { disconnectAsync } = useDisconnect()
+  const { disconnect } = useDisconnect()
   const isTabActive = useIsTabActive()
 
   const storedJwtTokens = getJWTTokens()
@@ -116,7 +116,11 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
       } finally {}
     }
 
-    if(Date.now() - pageStartTimestamp < 1000 && !storedJwtTokens && account.address && !state.userAccount?.address) {
+    if(
+      Date.now() - pageStartTimestamp < 1000
+      && !storedJwtTokens
+      && !state.userAccount?.address
+    ) {
       onDisconnect()
     } else if(
       Date.now() - pageStartTimestamp < 1000
@@ -130,8 +134,6 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
   }, [account.address, state.userAccount?.address, storedJwtTokens, jwtUserAddress, pageStartTimestamp]);
 
   const onDisconnect = async () => {
-    await disconnectAsync()
-    console.log('Disconnected')
     setState(current => {
       return {
         ...current,
@@ -140,6 +142,8 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
       }
     })
     clearJWTTokens()
+    disconnect()
+    console.log('User account disconnected')
   };
 
   return <UserDataContext.Provider value={{

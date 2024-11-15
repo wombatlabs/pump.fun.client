@@ -1,5 +1,5 @@
 import {Box, Text} from "grommet";
-import {useAccount, useConnect} from "wagmi";
+import {useAccount, useConnect, useDisconnect} from "wagmi";
 import {Button, message, Modal} from "antd";
 import {getNonce, getUserByAddress, verifySignature} from "../../api";
 import {useClientData} from "../../providers/DataProvider.tsx";
@@ -16,12 +16,17 @@ export const Header = () => {
   const navigate = useNavigate();
   const account = useAccount()
   const { connectors, connectAsync, isPending } = useConnect()
-  const { state: clientState, setState: setClientState } = useClientData()
+  const { disconnectAsync } = useDisconnect()
+  const { state: clientState, setState: setClientState, onDisconnect } = useClientData()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
 
   const onConnectClicked = async () => {
     let userAddress = ''
     let jwtTokens: JWTTokensPair
+
+    if(account.status !== 'disconnected') {
+      await disconnectAsync()
+    }
 
     const metamaskConnector = connectors.find(c => c.name === 'MetaMask')
     if(!metamaskConnector) {
@@ -72,6 +77,7 @@ export const Header = () => {
               userAccount: user
             })
             console.log('User account:', user)
+            return
           }
         } catch (e) {
           console.error('Failed to get user account:', e)
@@ -79,6 +85,9 @@ export const Header = () => {
         }
       }
     }
+
+    console.log('Disconnect user!')
+    onDisconnect()
   }
 
   return <Box pad={'16px'} direction={'row'} justify={'between'}>
@@ -93,12 +102,12 @@ export const Header = () => {
       </Box>
     </Box>
     <Box>
-      {account.status === 'disconnected' &&
+      {(!clientState.userAccount) &&
           <Button type={'primary'} size={'large'} loading={isPending} onClick={onConnectClicked}>
               Connect Wallet
           </Button>
       }
-      {account.status === 'connected' &&
+      {clientState.userAccount &&
         <Box gap={'8px'}>
           <Box>
               <Button
