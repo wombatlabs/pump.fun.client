@@ -78,6 +78,11 @@ export const ProfileModal = (props: {
                   >
                       Update
                   </Button>
+                  <Button
+                      onClick={() => setEditForm((current) => ({...current, isOpened: false}))}
+                  >
+                      Cancel
+                  </Button>
               </Box>
               {editErrorMessage &&
                 <Text color={'errorMessage'}>{editErrorMessage}</Text>
