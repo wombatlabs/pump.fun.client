@@ -19,3 +19,11 @@
     color: #181818;
   }
 }
+
+.pump_app_get_one_widget .ant-modal-content {
+  background: white;
+}
+
+.pump_app_get_one_widget iframe {
+  border-radius: 32px;
+}

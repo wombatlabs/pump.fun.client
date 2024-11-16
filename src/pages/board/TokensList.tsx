@@ -104,7 +104,7 @@ export const TokensList = () => {
             </Box>
         </Box>
     }
-    <Box margin={{ top: '32px' }} align={'center'}>
+    <Box margin={{ top: '16px' }} align={'center'}>
       <Box direction={'row'} gap={'16px'} align={'center'}>
         <Box width={'260px'} style={{ position: 'relative' }}>
           <Input
@@ -121,7 +121,7 @@ export const TokensList = () => {
         </Box>
       </Box>
     </Box>
-    <Box margin={{ top: '16px' }}>
+    <Box margin={{ top: '8px' }}>
       {tokens.length === 0 && !isInitialLoading && <Box align={'center'}>
           <Text size={'18px'}>No tokens found</Text>
       </Box>}

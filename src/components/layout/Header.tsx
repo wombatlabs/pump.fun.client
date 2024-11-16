@@ -19,6 +19,7 @@ export const Header = () => {
   const { disconnectAsync } = useDisconnect()
   const { state: clientState, setState: setClientState, onDisconnect } = useClientData()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
+  const [isSimpleSwapModalOpened, setSimpleSwapModalOpened] = useState(false)
 
   const onConnectClicked = async () => {
     let userAddress = ''
@@ -90,8 +91,15 @@ export const Header = () => {
     onDisconnect()
   }
 
-  return <Box pad={'16px'} direction={'row'} justify={'between'}>
-    <Box direction={'row'} gap={'24px'}>
+  return <Box
+    width={'100%'}
+    background={'#1E1E20'}
+    pad={'8px 16px'}
+    direction={'row'}
+    justify={'between'}
+    style={{ position: 'absolute', zIndex: 1 }}
+  >
+    <Box direction={'row'} gap={'16px'} align={'center'}>
       <Box onClick={() => {
         navigate('/')
       }}>
@@ -101,31 +109,27 @@ export const Header = () => {
         <LatestUpdate />
       </Box>
     </Box>
-    <Box>
+    <Box direction={'row'} align={'center'} gap={'16px'}>
+      <Box align={'center'} onClick={() => setSimpleSwapModalOpened(true)}>
+        <GradientButtonText size={'16px'}>Get ONE</GradientButtonText>
+      </Box>
       {(!clientState.userAccount) &&
           <Button type={'primary'} size={'large'} loading={isPending} onClick={onConnectClicked}>
               Connect Wallet
           </Button>
       }
       {clientState.userAccount &&
-        <Box gap={'8px'}>
-          <Box>
-              <Button
-                  size={'large'}
-                  onClick={() => setIsProfileModalOpen(true)}
-                  style={{ minWidth: '160px' }}
-              >
-                  <Box width={'100%'} justify={'between'} direction={'row'} align={'center'}>
-                      <Text size={'16px'}>{clientState.userAccount?.username.slice(0, 10)}</Text>
-                      <Text size={'12px'}>▼</Text>
-                  </Box>
-              </Button>
-          </Box>
-            {/*<Box width={'120px'}>*/}
-            {/*    <Button type={'primary'} loading={isPending} onClick={onDisconnectClicked}>*/}
-            {/*        Disconnect*/}
-            {/*    </Button>*/}
-            {/*</Box>*/}
+        <Box>
+            <Button
+              // size={'large'}
+                onClick={() => setIsProfileModalOpen(true)}
+                style={{ minWidth: '160px' }}
+            >
+                <Box width={'100%'} justify={'between'} direction={'row'} align={'center'}>
+                    <Text size={'16px'}>{clientState.userAccount?.username.slice(0, 10)}</Text>
+                    <Text size={'12px'}>▼</Text>
+                </Box>
+            </Button>
         </Box>
       }
     </Box>
@@ -142,12 +146,34 @@ export const Header = () => {
         },
       }}
     >
-      {clientState.userAccount &&
+      {clientState.userAccount ?
           <ProfileModal
               user={clientState.userAccount}
               onClose={() => setIsProfileModalOpen(false)}
-          />
+          /> : <Button type={'primary'} onClick={onDisconnect}>Disconnect</Button>
       }
+    </Modal>
+    <Modal
+      className={'pump_app_get_one_widget'}
+      centered
+      width={'536px'}
+      title={null}
+      footer={null}
+      open={isSimpleSwapModalOpened}
+      onOk={() => setSimpleSwapModalOpened(false)}
+      onCancel={() => setSimpleSwapModalOpened(false)}
+      styles={{
+        content: {
+          padding: '4px 4px 0px',
+          borderRadius: '32px'
+        },
+        mask: {
+          backdropFilter: 'blur(4px)',
+        },
+      }}
+    >
+      <iframe id="simpleswap-frame" name="SimpleSwap Widget" width="528px" height="392px"
+              src="https://simpleswap.io/widget/26484d8c-7182-44e6-8a5b-9feddeb6354b" frameBorder="0"></iframe>
     </Modal>
   </Box>
 }
