@@ -90,12 +90,12 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
 
   useEffect(() => {
     const autoLogin = async () => {
-      if(!storedJwtTokens) {
-        console.log('JWT tokens not found in localStorage')
-        return
-      }
       try {
         console.log('Autologin: start...')
+        if(!storedJwtTokens) {
+          console.log('JWT tokens not found in localStorage')
+          return
+        }
         const data = await signIn({ accessToken: storedJwtTokens.accessToken })
         const { user, tokens } = data
         if(user && tokens) {
@@ -113,17 +113,18 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
       } catch (e) {
         console.error('Autologin failed, disconnect wallet', e)
         onDisconnect()
-      } finally {}
+      } finally {
+      }
     }
 
     if(
-      Date.now() - pageStartTimestamp < 1000
+      Date.now() - pageStartTimestamp < 100
       && !storedJwtTokens
       && !state.userAccount?.address
     ) {
       onDisconnect()
     } else if(
-      Date.now() - pageStartTimestamp < 1000
+      Date.now() - pageStartTimestamp < 100
       && account.address
       && !state.userAccount?.address
       && !!storedJwtTokens
@@ -131,7 +132,13 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
     ) {
       autoLogin()
     }
-  }, [account.address, state.userAccount?.address, storedJwtTokens, jwtUserAddress, pageStartTimestamp]);
+  }, [
+    account.address,
+    state.userAccount?.address,
+    storedJwtTokens,
+    jwtUserAddress,
+    pageStartTimestamp
+  ]);
 
   const onDisconnect = async () => {
     setState(current => {
