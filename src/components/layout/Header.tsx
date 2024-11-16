@@ -93,11 +93,16 @@ export const Header = () => {
 
   return <Box
     width={'100%'}
+    height={'50px'}
     background={'#1E1E20'}
     pad={'8px 16px'}
     direction={'row'}
     justify={'between'}
-    style={{ position: 'absolute', zIndex: 1 }}
+    style={{
+      position: 'absolute',
+      zIndex: 1,
+      boxShadow: '0 -6px 10px 5px rgba(0, 0, 0, 0.6);'
+  }}
   >
     <Box direction={'row'} gap={'16px'} align={'center'}>
       <Box onClick={() => {
@@ -172,8 +177,27 @@ export const Header = () => {
         },
       }}
     >
-      <iframe id="simpleswap-frame" name="SimpleSwap Widget" width="528px" height="392px"
-              src="https://simpleswap.io/widget/26484d8c-7182-44e6-8a5b-9feddeb6354b" frameBorder="0"></iframe>
+      {isSimpleSwapModalOpened &&
+          <Box
+              width={'100%'}
+              height={'100%'}
+              align={'center'}
+              justify={'center'}
+              style={{ position: 'absolute', zIndex: 1 }}
+          >
+              <Box
+                  pad={'6px 16px'}
+                  background={'white'}
+                  round={'6px'}
+              >
+                  <Text color={'black'} size={'16px'}>Loading SimpleSwap widget...</Text>
+              </Box>
+          </Box>
+      }
+      <Box style={{ zIndex: 2, position: 'relative' }}>
+        <iframe id="simpleswap-frame" name="SimpleSwap Widget" width="528px" height="392px"
+                src="https://simpleswap.io/widget/26484d8c-7182-44e6-8a5b-9feddeb6354b" frameBorder="0"></iframe>
+      </Box>
     </Modal>
   </Box>
 }
