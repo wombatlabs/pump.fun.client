@@ -3,6 +3,7 @@ import {useClientData} from "../../providers/DataProvider.tsx";
 import {Token, TokenTrade} from "../../types.ts";
 import moment from "moment";
 import {formatUnits} from "viem";
+import {Skeleton} from "antd";
 
 const UpdateItem = (props: {
   type: 'token' | 'trade'
@@ -14,6 +15,10 @@ const UpdateItem = (props: {
   let background = '#4852FF'
   if(type === 'trade' && trade) {
     background = trade.type === 'buy' ? 'positiveValue' : 'negativeValue'
+  }
+
+  if((type === 'trade' && !trade) || (type === 'token' && !token)) {
+    return <Skeleton.Input active={true} />
   }
 
   return <Box background={background} pad={'6px 12px'} round={'6px'}>
