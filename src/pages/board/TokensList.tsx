@@ -1,12 +1,13 @@
-import {Box, Text} from "grommet";
+import {Box, Spinner, Text} from "grommet";
 import {useEffect, useState} from "react";
 import {getTokens, getTokenWinners} from "../../api";
 import {Token, TokenWinner} from "../../types.ts";
 import {TokenItem} from "./TokenItem.tsx";
-import {Skeleton} from "antd";
+import {Input, Skeleton} from "antd";
 import styled from "styled-components";
 import {useNavigate} from "react-router-dom";
 import moment from "moment";
+import useDebounce from "../../hooks/useDebounce.ts";
 
 const TokensContainer = styled(Box)`
     display: flex;
@@ -20,12 +21,41 @@ const TokensContainer = styled(Box)`
     }
 `
 
+const SkeletonToken = () => {
+  return <Box direction={'row'} gap={'8px'}>
+    <Skeleton.Avatar active={true} shape={'square'} style={{ width: '130px', height: '130px' }} />
+    <Box>
+      <Skeleton.Input active={true} style={{ width: '150px', height: '12px' }} />
+      <Skeleton.Input active={true} style={{ width: '150px', height: '12px' }} />
+      <Skeleton.Input active={true} style={{ width: '150px', height: '12px' }} />
+    </Box>
+  </Box>
+}
+
 export const TokensList = () => {
   const [tokens, setTokens] = useState<Token[]>([])
   const [currentWinner, setCurrentWinner] = useState<TokenWinner>()
   const [isInitialLoading, setInitialLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
+  const [searchValue, setSearchValue] = useState('')
+  const searchValueDebounced = useDebounce(searchValue, 300)
 
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true)
+        const data = await getTokens({ search: searchValueDebounced })
+        setTokens(data)
+      } catch (e) {
+        console.error('Failed to load data', e)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadData()
+  }, [searchValueDebounced]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -47,18 +77,9 @@ export const TokensList = () => {
   }, []);
 
   return <Box>
-    {(tokens.length === 0 && isInitialLoading) &&
-        <Box direction={'row'} gap={'48px'} align={'center'} justify={'center'}>
-          {Array(3).fill(null).map((_, index) => {
-            return <Box direction={'row'} gap={'8px'} key={index}>
-              <Skeleton.Avatar active={true} shape={'square'} style={{ width: '130px', height: '130px' }} />
-              <Box>
-                <Skeleton.Input active={true} style={{ width: '150px', height: '12px' }} />
-                <Skeleton.Input active={true} style={{ width: '150px', height: '12px' }} />
-                <Skeleton.Input active={true} style={{ width: '150px', height: '12px' }} />
-              </Box>
-            </Box>
-          })}
+    {(isInitialLoading && !currentWinner) &&
+        <Box align={'center'}>
+            <SkeletonToken />
         </Box>
     }
     {currentWinner &&
@@ -83,11 +104,35 @@ export const TokensList = () => {
             </Box>
         </Box>
     }
-    <Box margin={{ top: '32px' }}>
-      {tokens.length === 0 && !isInitialLoading && <Box>
-          <Text>No tokens found</Text>
+    <Box margin={{ top: '32px' }} align={'center'}>
+      <Box direction={'row'} gap={'16px'} align={'center'}>
+        <Box width={'260px'} style={{ position: 'relative' }}>
+          <Input
+            placeholder={'Search for a token'}
+            value={searchValue}
+            allowClear={true}
+            onChange={(e) => setSearchValue(e.target.value || '')}
+          />
+          {isLoading &&
+              <Box style={{ position: 'absolute', right: '-42px', top: '2px' }}>
+                  <Spinner color={'spinner'} />
+              </Box>
+          }
+        </Box>
+      </Box>
+    </Box>
+    <Box margin={{ top: '16px' }}>
+      {tokens.length === 0 && !isInitialLoading && <Box align={'center'}>
+          <Text size={'18px'}>No tokens found</Text>
       </Box>}
-      <TokensContainer direction={'row'}>
+      {(tokens.length === 0 && isInitialLoading) &&
+          <Box direction={'row'} gap={'48px'} align={'center'} justify={'center'}>
+            {Array(3).fill(null).map((_, index) => <SkeletonToken key={index} />)}
+          </Box>
+      }
+      <TokensContainer
+        direction={'row'}
+      >
         {tokens.map(token => {
           return <TokenItem key={token.id} data={token} onClick={() => navigate(`/${token.address}`)} />
         })}

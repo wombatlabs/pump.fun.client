@@ -13,15 +13,6 @@ export const BoardPage = () => {
           <Text color={'accentWhite'} size={'22px'}>Create New Token</Text>
         </Button>
       </Box>
-      {/*<Box margin={{ top: '32px' }} align={'center'}>*/}
-      {/*  <Box  width={'200px'}>*/}
-      {/*    <Input*/}
-      {/*      placeholder={'Search for a token'}*/}
-      {/*      size={'large'}*/}
-      {/*      // style={{ background: '#41ddcd', color: 'black' }}*/}
-      {/*    />*/}
-      {/*  </Box>*/}
-      {/*</Box>*/}
     </Box>
     <Box margin={{ top: '32px' }}>
       <TokensList />
