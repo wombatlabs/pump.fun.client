@@ -1,6 +1,7 @@
 import {Box, Text} from "grommet";
 import {useAccount, useConnect, useDisconnect} from "wagmi";
 import {Button, message, Modal} from "antd";
+import {UserOutlined} from "@ant-design/icons";
 import {getNonce, getUserByAddress, verifySignature} from "../../api";
 import {useClientData} from "../../providers/DataProvider.tsx";
 import {harmonyOne} from "wagmi/chains";
@@ -119,7 +120,7 @@ export const Header = () => {
         <GradientButtonText size={'16px'}>Get ONE</GradientButtonText>
       </Box>
       {(!clientState.userAccount) &&
-          <Button type={'primary'} size={'large'} loading={isPending} onClick={onConnectClicked}>
+          <Button type={'primary'} loading={isPending} onClick={onConnectClicked}>
               Connect Wallet
           </Button>
       }
@@ -128,10 +129,11 @@ export const Header = () => {
             <Button
               // size={'large'}
                 onClick={() => setIsProfileModalOpen(true)}
-                style={{ minWidth: '160px' }}
+                style={{ minWidth: '180px' }}
             >
-                <Box width={'100%'} justify={'between'} direction={'row'} align={'center'}>
-                    <Text size={'16px'}>{clientState.userAccount?.username.slice(0, 10)}</Text>
+                <UserOutlined />
+                <Box width={'100%'} justify={'between'} direction={'row'} align={'center'} gap={'8px'}>
+                    <Text size={'16px'}>{clientState.userAccount?.username}</Text>
                     <Text size={'12px'}>▼</Text>
                 </Box>
             </Button>
