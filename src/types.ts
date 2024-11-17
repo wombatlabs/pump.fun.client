@@ -35,7 +35,7 @@ export interface Token {
   totalSupply: string
   price: string
   marketCap: string
-  timestamp: string
+  timestamp: number
   createdAt: string
   updatedAt: string
   user: UserAccount | null

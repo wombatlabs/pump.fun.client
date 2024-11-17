@@ -12,6 +12,7 @@ import {config} from "../../wagmi.ts";
 import {getTrades} from "../../api";
 import {harmonyOne} from "wagmi/chains";
 import Decimal from "decimal.js";
+import moment from "moment";
 
 const TradeButton = styled(Box)`
     padding: 8px 16px;
@@ -117,6 +118,10 @@ export const TradingForm = (props: {
     }
   }
 
+  const isTodayToken = token
+    ? moment(token.timestamp * 1000).isSame(moment(), 'day')
+    : false
+
   return <Box background={'widgetBg'} pad={'16px'} round={'8px'} width={'330px'}>
     <Box direction={'row'} gap={'4px'}>
       <TradeButton
@@ -154,10 +159,10 @@ export const TradingForm = (props: {
       <Button
         type="primary"
         size={'large'}
-        disabled={inProgress}
+        disabled={inProgress || !isTodayToken}
         onClick={onTradeClicked}
       >
-        Place trade
+        {isTodayToken ? 'Place trade' : 'Trades unavailable'}
       </Button>
       {inProgress &&
           <Box margin={{ top: '16px' }} align={'center'} direction={'row'} gap={'16px'} justify={'center'}>
