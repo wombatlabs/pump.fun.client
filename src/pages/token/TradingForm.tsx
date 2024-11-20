@@ -42,7 +42,7 @@ export const TradingForm = (props: {
   })
   const tokenBalanceFormatted = useMemo(() => {
     return tokenBalance && tokenBalance.value > 0n
-      ? new Decimal(formatUnits(tokenBalance.value, tokenBalance.decimals)).toFixed(4)
+      ? new Decimal(formatUnits(tokenBalance.value, tokenBalance.decimals)).toFixed()
       : '0'
   }, [tokenBalance])
   const { data: oneBalance, refetch: refetchTokenBalance } = useBalance({
