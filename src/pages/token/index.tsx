@@ -15,6 +15,8 @@ import {PriceChart} from "./price-chart";
 import usePoller from "../../hooks/usePoller.ts";
 import useActiveTab from "../../hooks/useActiveTab.ts";
 import Decimal from "decimal.js";
+import {useClientData} from "../../providers/DataProvider.tsx";
+import {BurnTokenForm} from "./BurnTokenForm.tsx";
 
 const TokenHeader = (props: { data: Token }) => {
   const { data: token } = props
@@ -36,6 +38,8 @@ export const TokenPage = () => {
   const navigate = useNavigate()
   const isTabActive = useActiveTab()
   const { tokenAddress = '' } = useParams()
+
+  const { state: { latestWinner } } = useClientData()
 
   const [isLoading, setLoading] = useState(false)
   const [token, setToken] = useState<Token>()
@@ -66,6 +70,11 @@ export const TokenPage = () => {
       loadData()
     }
   }, 2000)
+
+  const isTradeAvailable = token && latestWinner
+    ? token.competitionId > +latestWinner.competitionId
+    : false
+  const isBurnAvailable = !isTradeAvailable
 
   return <Box width={'100%'} pad={'0 32px'} style={{ maxWidth: '1300px', minWidth: '1000px' }}>
     <Box align={'center'}>
@@ -105,7 +114,12 @@ export const TokenPage = () => {
           </Box>
         </Box>
         <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }}>
-          <TradingForm token={token} />
+          {isTradeAvailable &&
+              <TradingForm token={token} />
+          }
+          {isBurnAvailable &&
+            <BurnTokenForm token={token} />
+          }
           {token &&
               <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }} margin={{ top: '32px' }}>
                   <Box>

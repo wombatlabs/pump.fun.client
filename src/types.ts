@@ -25,6 +25,7 @@ export interface TokenUriData {
 
 export interface Token {
   id: string;
+  competitionId: number
   txnHash: string
   blockNumber: number
   address: string
@@ -75,6 +76,7 @@ export interface TokenBalance {
 
 export interface TokenWinner {
   id: string
+  competitionId: string
   txnHash: string
   token: Token
   user: UserAccount

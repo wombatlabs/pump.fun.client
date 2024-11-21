@@ -21,7 +21,6 @@ export const Header = () => {
   const { state: clientState, setState: setClientState, onDisconnect } = useClientData()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isSimpleSwapModalOpened, setSimpleSwapModalOpened] = useState(false)
-  const [isConnecting, setConnecting] = useState(false)
 
   const onConnectClicked = async () => {
     let userAddress = ''
@@ -123,7 +122,7 @@ export const Header = () => {
         <GradientButtonText size={'16px'}>Get ONE</GradientButtonText>
       </Box>
       {(!clientState.userAccount) &&
-          <Button type={'primary'} loading={isConnecting} onClick={onConnectClicked}>
+          <Button type={'primary'} loading={false} onClick={onConnectClicked}>
               Connect Wallet
           </Button>
       }
