@@ -145,7 +145,7 @@ export const TokenComments = (props: { tokenAddress: string }) => {
       highlightCommentId={highlightCommentId}
       setHighlightCommentId={setHighlightCommentId}
     />)}
-    <Box width={'200px'} margin={{ top: '32px' }}>
+    <Box width={'200px'} margin={{ top: '16px' }}>
       <Button type={'primary'} onClick={() => setShowReplyModal(true)}>
         Post a reply
       </Button>

@@ -37,6 +37,7 @@ export interface Token {
   price: string
   marketCap: string
   timestamp: number
+  isWinner: boolean
   createdAt: string
   updatedAt: string
   user: UserAccount | null

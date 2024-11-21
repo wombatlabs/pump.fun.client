@@ -3,7 +3,7 @@ import {Button, Image, Skeleton} from "antd";
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {Token} from "../../types.ts";
-import {getTokens} from "../../api";
+import {getTokenBalances, getTokens} from "../../api";
 import moment from "moment";
 import {TradingForm} from "./TradingForm.tsx";
 import {TokenComments} from "./TokenComments.tsx";
@@ -39,10 +39,11 @@ export const TokenPage = () => {
   const isTabActive = useActiveTab()
   const { tokenAddress = '' } = useParams()
 
-  const { state: { latestWinner } } = useClientData()
+  const { state: { latestWinner, userAccount } } = useClientData()
 
   const [isLoading, setLoading] = useState(false)
   const [token, setToken] = useState<Token>()
+  const [userIsHolder, setUserIsHolder] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState<'thread' | 'trades'>('thread')
 
   const loadData = async (updateStatus = false) => {
@@ -50,9 +51,19 @@ export const TokenPage = () => {
       if(updateStatus) {
         setLoading(true)
       }
-      const [tokenData] = await getTokens({ search: tokenAddress })
-      if(tokenData) {
-        setToken(tokenData)
+
+      const [tokens, holders] = await Promise.all([
+        getTokens({ search: tokenAddress, limit: 1 }),
+        getTokenBalances({ tokenAddress, userAddress: userAccount?.address || '', limit: 1 })
+      ])
+
+      if(tokens.length > 0) {
+        setToken(tokens[0])
+      }
+      if(holders.length > 0) {
+        if(new Decimal(holders[0].balance).gt(0)) {
+          setUserIsHolder(true)
+        }
       }
     } catch (e) {
       console.error('Failed to load token', e)
@@ -63,18 +74,19 @@ export const TokenPage = () => {
 
   useEffect(() => {
     loadData(true)
-  }, []);
+  }, [userAccount?.address]);
 
   usePoller(() => {
     if(isTabActive) {
       loadData()
     }
-  }, 2000)
+  }, 10000)
 
   const isTradeAvailable = token && latestWinner
     ? token.competitionId > +latestWinner.competitionId
     : false
-  const isBurnAvailable = !isTradeAvailable
+
+  const isBurnAvailable = !isTradeAvailable && !token?.isWinner && userIsHolder
 
   return <Box width={'100%'} pad={'0 32px'} style={{ maxWidth: '1300px', minWidth: '1000px' }}>
     <Box align={'center'}>
@@ -113,15 +125,21 @@ export const TokenPage = () => {
             </Box>
           </Box>
         </Box>
-        <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }}>
+        <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }} gap={'32px'}>
+          {token && token.isWinner &&
+              <Box>
+                  <Text size={'22px'} color={'golden'}>Daily Winner 👑</Text>
+                  <Text>{moment(token.timestamp * 1000).format('MMM DD, YYYY')}</Text>
+              </Box>
+          }
           {isTradeAvailable &&
               <TradingForm token={token} />
           }
           {isBurnAvailable &&
-            <BurnTokenForm token={token} />
+              <BurnTokenForm token={token} />
           }
           {token &&
-              <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }} margin={{ top: '32px' }}>
+              <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }}>
                   <Box>
                       <Image
                           width={200}
@@ -133,9 +151,8 @@ export const TokenPage = () => {
                   </Box>
               </Box>
           }
-          {
-            token &&
-              <Box margin={{ top: '32px' }}>
+          {token &&
+              <Box>
                   <TokenHolders token={token} />
               </Box>
           }

@@ -37,12 +37,10 @@ export const Header = () => {
     }
 
     try {
-      console.log('1')
       const data = await connectAsync({
         connector: metamaskConnector,
         chainId: harmonyOne.id
       })
-      console.log('2')
       if(data.accounts.length > 0) {
         userAddress = data.accounts[0]
       }

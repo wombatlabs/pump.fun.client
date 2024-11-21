@@ -63,7 +63,7 @@ export const BurnTokenForm = (props: {
         disabled={!token}
         onClick={onBurnClicked}
       >
-        Mint Winner
+        Burn Token and Mint Winner
       </Button>
     </Box>
     {inProgress &&
