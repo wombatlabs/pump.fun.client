@@ -16,11 +16,12 @@ import {JWTTokensPair} from "../../types.ts";
 export const Header = () => {
   const navigate = useNavigate();
   const account = useAccount()
-  const { connectors, connectAsync, isPending } = useConnect()
+  const { connectors, connectAsync } = useConnect()
   const { disconnectAsync } = useDisconnect()
   const { state: clientState, setState: setClientState, onDisconnect } = useClientData()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isSimpleSwapModalOpened, setSimpleSwapModalOpened] = useState(false)
+  const [isConnecting, setConnecting] = useState(false)
 
   const onConnectClicked = async () => {
     let userAddress = ''
@@ -37,16 +38,18 @@ export const Header = () => {
     }
 
     try {
+      console.log('1')
       const data = await connectAsync({
         connector: metamaskConnector,
         chainId: harmonyOne.id
       })
+      console.log('2')
       if(data.accounts.length > 0) {
         userAddress = data.accounts[0]
       }
     } catch (e) {
       console.error('Failed to connect wallet', e)
-      message.error(`Failed to connect a wallet`);
+      message.error(`Failed to connect wallet`);
     }
 
     console.log('User address connected:', userAddress)
@@ -120,7 +123,7 @@ export const Header = () => {
         <GradientButtonText size={'16px'}>Get ONE</GradientButtonText>
       </Box>
       {(!clientState.userAccount) &&
-          <Button type={'primary'} loading={isPending} onClick={onConnectClicked}>
+          <Button type={'primary'} loading={isConnecting} onClick={onConnectClicked}>
               Connect Wallet
           </Button>
       }

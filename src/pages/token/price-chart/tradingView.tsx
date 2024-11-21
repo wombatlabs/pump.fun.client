@@ -13,7 +13,7 @@ import styled from "styled-components";
 import moment from 'moment';
 import { Text, Box } from 'grommet';
 
-const toolTipWidth = 130;
+const toolTipWidth = 180;
 const toolTipHeight = 84;
 const toolTipMargin = 15;
 
@@ -278,7 +278,7 @@ export const TradingView = (props: TradingViewProps) => {
                     {tooltip.title}
                   </Text>
               }
-                <Text color={'accentWhite'} size={'18px'}>
+                <Text color={'accentWhite'}>
                   {tooltip.value}
                 </Text>
             </Box>

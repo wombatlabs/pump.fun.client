@@ -60,11 +60,17 @@ export const PriceChart = (props: {
             return ''
           }}
           priceFormatter={(value: BarPrice) => {
-            const borderValue = 0.0001
-            if(new Decimal(value).lt(new Decimal(borderValue))) {
-              return `<${borderValue}`
+            const decimal = new Decimal(value)
+            if(decimal.lt(0.0001)) {
+              return `<${0.0001}`
             }
-            return new Decimal(value).toFixed(4)
+            if(decimal.lt(1)) {
+              return decimal.toFixed(4)
+            }
+            if(decimal.lt(1000)) {
+              return decimal.toFixed(1)
+            }
+            return decimal.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
           }}
           tooltipFormatter={(tooltip) => {
             return {

@@ -91,7 +91,7 @@ export const TradingForm = (props: {
       setCurrentStatus('Waiting for confirmation...')
       const receipt = await waitForTransactionReceipt(config, {
         hash: txnHash,
-        confirmations: 4
+        confirmations: 2
       })
       console.log('Txn receipt:', receipt)
       let tokenTrade: TokenTrade | undefined

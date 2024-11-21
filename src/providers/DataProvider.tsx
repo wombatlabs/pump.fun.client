@@ -122,6 +122,7 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
       && !storedJwtTokens
       && !state.userAccount?.address
     ) {
+      console.log('Metamask not connected, disconnect user')
       onDisconnect()
     } else if(
       Date.now() - pageStartTimestamp < 100

@@ -21,9 +21,9 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
     "styled-components": "^5.3.11",
-    "viem": "2.21.37",
-    "vite-plugin-svgr": "^4.2.0",
-    "wagmi": "2.12.25"
+    "viem": "2.21.48",
+    "vite-plugin-svgr": "^4.3.0",
+    "wagmi": "2.13.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.0",
@@ -35,6 +35,6 @@
     "@wagmi/cli": "2.1.16",
     "buffer": "^6.0.3",
     "typescript": "^5.4.5",
-    "vite": "^5.2.11"
+    "vite": "^5.4.11"
   }
 }
