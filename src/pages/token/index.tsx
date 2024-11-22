@@ -54,16 +54,14 @@ export const TokenPage = () => {
 
       const [tokens, holders] = await Promise.all([
         getTokens({ search: tokenAddress, limit: 1 }),
-        getTokenBalances({ tokenAddress, userAddress: userAccount?.address || '', limit: 1 })
+        getTokenBalances({ tokenAddress, userAddress: userAccount?.address || 'address', limit: 1 })
       ])
 
       if(tokens.length > 0) {
         setToken(tokens[0])
       }
       if(holders.length > 0) {
-        if(new Decimal(holders[0].balance).gt(0)) {
-          setUserIsHolder(true)
-        }
+        setUserIsHolder(new Decimal(holders[0].balance).gt(0))
       }
     } catch (e) {
       console.error('Failed to load token', e)
@@ -80,7 +78,7 @@ export const TokenPage = () => {
     if(isTabActive) {
       loadData()
     }
-  }, 10000)
+  }, 2000)
 
   const isTradeAvailable = token && latestWinner
     ? token.competitionId > +latestWinner.competitionId
@@ -128,7 +126,7 @@ export const TokenPage = () => {
         <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }} gap={'32px'}>
           {token && token.isWinner &&
               <Box>
-                  <Text size={'22px'} color={'golden'}>Daily Winner 👑</Text>
+                  <Text size={'22px'} color={'golden'}>Winner 👑</Text>
                   <Text>{moment(token.timestamp * 1000).format('MMM DD, YYYY')}</Text>
               </Box>
           }
