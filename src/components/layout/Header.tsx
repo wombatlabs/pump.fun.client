@@ -153,11 +153,12 @@ export const Header = () => {
         },
       }}
     >
-      {clientState.userAccount ?
-          <ProfileModal
-              user={clientState.userAccount}
-              onClose={() => setIsProfileModalOpen(false)}
-          /> : <Button type={'primary'} onClick={onDisconnect}>Disconnect</Button>
+      {clientState.userAccount
+        ? <ProfileModal
+            user={clientState.userAccount}
+            onClose={() => setIsProfileModalOpen(false)}
+          />
+        : <Button type={'primary'} onClick={onDisconnect}>Disconnect</Button>
       }
     </Modal>
     <Modal

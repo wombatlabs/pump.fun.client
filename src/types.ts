@@ -104,3 +104,17 @@ export interface Candle {
   volume: string
   time: string
 }
+
+export interface TokenBurn {
+  id: string
+  txnHash: string
+  blockNumber: number
+  burnedAmount: string
+  receivedETH: string
+  mintedAmount: string
+  token: Token
+  winnerToken: Token
+  sender: UserAccount
+  timestamp: string
+  createdAt: string
+}

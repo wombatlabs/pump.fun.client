@@ -3,7 +3,7 @@ import {
   Candle,
   JWTTokensPair,
   Token,
-  TokenBalance,
+  TokenBalance, TokenBurn,
   TokenMetadata,
   TokenTrade,
   TokenWinner,
@@ -107,6 +107,24 @@ export const getTokenBalances = async (params: {
   const {limit = 100, offset = 0} = params
 
   const {data} = await client.get<TokenBalance[]>('/balances', {
+    params: {
+      ...params,
+      offset,
+      limit
+    }
+  })
+  return data
+}
+
+export const getTokenBurns = async (params: {
+  tokenAddress: string
+  userAddress?: string
+  limit?: number
+  offset?: number
+}) => {
+  const {limit = 100, offset = 0} = params
+
+  const {data} = await client.get<TokenBurn[]>('/tokenBurns', {
     params: {
       ...params,
       offset,
