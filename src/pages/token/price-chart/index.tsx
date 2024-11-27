@@ -6,6 +6,8 @@ import {getCandles} from "../../../api";
 import Decimal from "decimal.js";
 import moment from "moment";
 import {BarPrice, Time} from "lightweight-charts";
+import usePoller from "../../../hooks/usePoller.ts";
+import useIsTabActive from "../../../hooks/useActiveTab.ts";
 
 const ChartHeight = 312
 
@@ -13,22 +15,30 @@ export const PriceChart = (props: {
   tokenAddress: string
 }) => {
   const { tokenAddress } = props
+
   const [candles, setCandles] = useState<Candle[]>([])
+  const isTabActive = useIsTabActive()
+
+  const loadData = async () => {
+    try {
+      const items = await getCandles({ tokenAddress })
+      setCandles(items)
+    } catch (e) {
+      console.error('Failed to load candles', e)
+    }
+  }
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const items = await getCandles({ tokenAddress })
-        setCandles(items)
-        console.log('Loaded candles', items)
-      } catch (e) {
-        console.error('Failed to load candles', e)
-      }
-    }
     if(tokenAddress) {
       loadData()
     }
   }, [tokenAddress]);
+
+  usePoller(() => {
+    if(tokenAddress && isTabActive) {
+      loadData()
+    }
+  }, 5000)
 
   const chartItems: TradingViewItem[] = useMemo(() => {
     return candles.map(item => {

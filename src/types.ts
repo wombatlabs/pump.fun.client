@@ -61,6 +61,7 @@ export interface TokenTrade {
   token: Token
   amountIn: string
   amountOut: string
+  price: string
   fee: string
   timestamp: string
   createdAt: string

@@ -76,8 +76,14 @@ export const TradingForm = (props: {
         await switchNetwork(config, { chainId: harmonyOne.id })
         console.log('Network switched')
       }
-      const amountFormatted = (amount || 0).toString()
+      const amountFormatted = new Decimal(amount || 0).toFixed()
+      console.log('amount formatted:', amountFormatted)
       const value = parseUnits(amountFormatted, 18)
+
+      if(value === 0n) {
+        message.error(`Amount should be greater than 0`)
+        return
+      }
 
       setCurrentStatus('Signing the transaction...')
       const args: any[] = [token?.address]
@@ -108,7 +114,10 @@ export const TradingForm = (props: {
         }
       }
       if(tokenTrade) {
-        message.success(`Trade success! ${token.symbol} / ${selectedSide}`);
+        console.log('token trade:', tokenTrade)
+        const price = new Decimal(tokenTrade.price)
+          .toFixed(4)
+        message.success(`${tokenTrade.type} ${tokenTrade.token.name} (${tokenTrade.token.symbol}) at ${price} ONE`, 5);
       }
     } catch (e) {
       console.log('Failed to trade:', e)
