@@ -12,6 +12,7 @@ import {config} from "../../wagmi.ts";
 import {getTrades} from "../../api";
 import {harmonyOne} from "wagmi/chains";
 import Decimal from "decimal.js";
+import {switchNetwork} from "@wagmi/core";
 
 const TradeButton = styled(Box)`
     padding: 8px 16px;
@@ -70,6 +71,10 @@ export const TradingForm = (props: {
       if(!amount) {
         message.error(`Enter amount to trade`)
         return
+      }
+      if(account.chainId !== harmonyOne.id) {
+        await switchNetwork(config, { chainId: harmonyOne.id })
+        console.log('Network switched')
       }
       const amountFormatted = (amount || 0).toString()
       const value = parseUnits(amountFormatted, 18)

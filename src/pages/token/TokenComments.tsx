@@ -110,6 +110,7 @@ export const TokenComments = (props: { tokenAddress: string }) => {
   const onPostReplyClicked = async () => {
     try {
       if(!jwtTokens) {
+        message.error('Connect your Wallet to post')
         return
       }
       const id = await addComment({
