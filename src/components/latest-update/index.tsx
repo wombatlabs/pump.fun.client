@@ -4,6 +4,7 @@ import {Token, TokenTrade} from "../../types.ts";
 import moment from "moment";
 import {formatUnits} from "viem";
 import {Skeleton} from "antd";
+import Decimal from "decimal.js";
 
 const UpdateItem = (props: {
   type: 'token' | 'trade'
@@ -21,10 +22,14 @@ const UpdateItem = (props: {
     return <Skeleton.Input active={true} />
   }
 
+  const tradeAmount = trade
+    ? new Decimal(formatUnits(BigInt(trade.amountIn), 18)).toFixed(4)
+    : ''
+
   return <Box background={background} pad={'6px 12px'} round={'6px'}>
     {(type === 'trade' && trade) &&
       <Text color={'black'}>
-        {trade.user.username} {trade.type === 'buy' ? 'bought' : 'sold'} {formatUnits(BigInt(trade.amountIn), 18)} {trade.token.name}
+        {trade.user.username} {trade.type === 'buy' ? 'bought' : 'sold'} {tradeAmount} {trade.token.name}
       </Text>
     }
     {(type === 'token' && token) &&

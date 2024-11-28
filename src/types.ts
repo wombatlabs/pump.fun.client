@@ -81,7 +81,6 @@ export interface TokenWinner {
   competitionId: string
   txnHash: string
   token: Token
-  user: UserAccount
   timestamp: string
   blockNumber: number
   createdAt: string
