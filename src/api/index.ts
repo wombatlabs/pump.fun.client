@@ -8,7 +8,7 @@ import {
   TokenTrade,
   TokenWinner,
   UserAccount,
-  UserComment
+  UserComment, WinnerLiquidityProvision
 } from "../types.ts";
 import {appConfig} from "../config.ts";
 
@@ -141,6 +141,24 @@ export const getTokenWinners = async (params: {
   const {limit = 100, offset = 0} = params
 
   const {data} = await client.get<TokenWinner[]>('/winners', {
+    params: {
+      ...params,
+      offset,
+      limit
+    }
+  })
+  return data
+}
+
+export const getWinnerLiquidityProvisions = async (params: {
+  tokenAddress: string
+  sender?: string
+  limit?: number
+  offset?: number
+}) => {
+  const {limit = 100, offset = 0} = params
+
+  const {data} = await client.get<WinnerLiquidityProvision[]>('/winnerLiquidityProvisions', {
     params: {
       ...params,
       offset,

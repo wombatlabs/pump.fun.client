@@ -1,9 +1,9 @@
 import {Box, Text} from 'grommet'
 import {Button, Image, Skeleton} from "antd";
 import {useNavigate, useParams} from "react-router-dom";
-import {useEffect, useState} from "react";
-import {Token} from "../../types.ts";
-import {getTokenBalances, getTokens} from "../../api";
+import {useEffect, useMemo, useState} from "react";
+import {Token, WinnerLiquidityProvision} from "../../types.ts";
+import {getTokenBalances, getTokens, getWinnerLiquidityProvisions} from "../../api";
 import moment from "moment";
 import {TradingForm} from "./TradingForm.tsx";
 import {TokenComments} from "./TokenComments.tsx";
@@ -17,6 +17,7 @@ import useActiveTab from "../../hooks/useActiveTab.ts";
 import Decimal from "decimal.js";
 import {useClientData} from "../../providers/DataProvider.tsx";
 import {BurnTokenForm} from "./BurnTokenForm.tsx";
+import {formatUnits} from "viem";
 
 const TokenHeader = (props: { data: Token }) => {
   const { data: token } = props
@@ -44,6 +45,7 @@ export const TokenPage = () => {
   const [isLoading, setLoading] = useState(false)
   const [token, setToken] = useState<Token>()
   const [userIsHolder, setUserIsHolder] = useState<boolean>(false)
+  const [winnerLiquidityProvision, setWinnerLiquidityProvision] = useState<WinnerLiquidityProvision>()
   const [activeTab, setActiveTab] = useState<'thread' | 'trades'>('thread')
 
   const loadData = async (updateStatus = false) => {
@@ -52,9 +54,10 @@ export const TokenPage = () => {
         setLoading(true)
       }
 
-      const [tokens, holders] = await Promise.all([
+      const [tokens, holders, liquidityProvisionItems] = await Promise.all([
         getTokens({ search: tokenAddress, limit: 1 }),
-        getTokenBalances({ tokenAddress, userAddress: userAccount?.address || 'address', limit: 1 })
+        getTokenBalances({ tokenAddress, userAddress: userAccount?.address || 'address', limit: 1 }),
+        getWinnerLiquidityProvisions({ tokenAddress })
       ])
 
       if(tokens.length > 0) {
@@ -63,6 +66,7 @@ export const TokenPage = () => {
       if(holders.length > 0) {
         setUserIsHolder(new Decimal(holders[0].balance).gt(0))
       }
+      setWinnerLiquidityProvision(liquidityProvisionItems[0])
     } catch (e) {
       console.error('Failed to load token', e)
     } finally {
@@ -78,13 +82,30 @@ export const TokenPage = () => {
     if(isTabActive) {
       loadData()
     }
-  }, 2000)
+  }, 3000)
 
-  const isTradeAvailable = token && latestWinner
-    ? token.competitionId > +latestWinner.competitionId
-    : false
+  const isTradeAvailable = useMemo(() => {
+    if(token) {
+      if(latestWinner) {
+       return token.competitionId > +latestWinner.competitionId
+      } else {
+        // enable trade for the first token created
+        return true
+      }
+    }
+    return false
+  }, [token, latestWinner])
 
-  const isBurnAvailable = !isTradeAvailable && !token?.isWinner && userIsHolder
+  const isBurnAvailable = useMemo(() => {
+    if(!token) {
+      return false
+    }
+    if(token.isWinner) {
+      return !winnerLiquidityProvision
+    } else {
+      return !isTradeAvailable && userIsHolder
+    }
+  }, [isTradeAvailable, token, userIsHolder, winnerLiquidityProvision])
 
   return <Box width={'100%'} pad={'0 32px'} style={{ maxWidth: '1300px', minWidth: '1000px' }}>
     <Box align={'center'}>
@@ -126,8 +147,16 @@ export const TokenPage = () => {
         <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }} gap={'32px'}>
           {token && token.isWinner &&
               <Box>
-                  <Text size={'22px'} color={'golden'}>Winner 👑</Text>
-                  <Text>{moment(token.timestamp * 1000).format('MMM DD, YYYY')}</Text>
+                  <Box>
+                      <Text size={'22px'} color={'golden'}>Winner 👑</Text>
+                      <Text>{moment(token.timestamp * 1000).format('MMM DD, YYYY')}</Text>
+                  </Box>
+                  {winnerLiquidityProvision &&
+                    <Box margin={{ top: '8px' }}>
+                        <Text>Pool: {winnerLiquidityProvision.pool}</Text>
+                        <Text>Liquidity: {formatUnits(BigInt(winnerLiquidityProvision.liquidity), 18)}</Text>
+                    </Box>
+                  }
               </Box>
           }
           {isTradeAvailable &&

@@ -55,22 +55,25 @@ export const BurnTokenForm = (props: {
       })
       console.log('Burn tx receipt:', receipt)
 
-      let tokenBurn: TokenBurn
-
-      for(let i = 0; i < 20; i++) {
-        await new Promise(resolve => setTimeout(resolve, 500))
-        const items = await getTokenBurns({ tokenAddress, userAddress, limit: 1 })
-        if(items.length === 1) {
-          tokenBurn = items[0]
-          break;
-        }
-      }
-      // @ts-ignore
-      if(tokenBurn) {
-        const winnerAmount = formatUnits(BigInt(tokenBurn.mintedAmount), 18)
-        message.success(`Token ${tokenBurn.token.name} successfully burned, minted ${winnerAmount} ${tokenBurn.winnerToken.name} (daily winner)`, 20000);
+      if(token.isWinner) {
+        message.success(`Winner token ${token.name} (${token.symbol}) successfully burned`, 5);
       } else {
-        message.error(`Failed to confirm token status`);
+        let tokenBurn: TokenBurn
+        for(let i = 0; i < 20; i++) {
+          await new Promise(resolve => setTimeout(resolve, 500))
+          const items = await getTokenBurns({ tokenAddress, userAddress, limit: 1 })
+          if(items.length === 1) {
+            tokenBurn = items[0]
+            break;
+          }
+        }
+        // @ts-ignore
+        if(tokenBurn) {
+          const winnerAmount = formatUnits(BigInt(tokenBurn.mintedAmount), 18)
+          message.success(`Token ${tokenBurn.token.name} successfully burned, minted ${winnerAmount} ${tokenBurn.winnerToken.name} (daily winner)`, 5);
+        } else {
+          message.error(`Failed to confirm token status`);
+        }
       }
     } catch (e) {
       console.error('Failed to burn token:', e)

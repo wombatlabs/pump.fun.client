@@ -118,3 +118,19 @@ export interface TokenBurn {
   timestamp: string
   createdAt: string
 }
+
+export interface WinnerLiquidityProvision {
+  id: string
+  txnHash: string
+  blockNumber: number
+  pool: string
+  sender: string
+  tokenId: string
+  liquidity: string
+  amount0: string
+  amount1: string
+  timestamp: string
+  createdAt: string
+  token: Token
+  tokenCreator: UserAccount
+}

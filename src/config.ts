@@ -1,6 +1,6 @@
 export const appConfig = {
-  apiUrl: 'https://pump-fun-backend.fly.dev',
-  tokenFactoryAddress: '0xa30497127591d7DAAbd468df7985a8Af94529582'
+  apiUrl: 'http://localhost:8085',
+  tokenFactoryAddress: '0xFbcb8EA97A13a2C5Ea146f5807DC84D4923C0e6a'
 }
 
 // apiUrl:
