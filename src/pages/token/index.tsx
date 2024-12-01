@@ -152,9 +152,15 @@ export const TokenPage = () => {
                       <Text>{moment(token.timestamp * 1000).format('MMM DD, YYYY')}</Text>
                   </Box>
                   {winnerLiquidityProvision &&
-                    <Box margin={{ top: '8px' }}>
-                        <Text>Pool: {winnerLiquidityProvision.pool}</Text>
-                        <Text>Liquidity: {formatUnits(BigInt(winnerLiquidityProvision.liquidity), 18)}</Text>
+                    <Box margin={{ top: '8px' }} gap={'8px'}>
+                        <Box>
+                            <Text>Uniswap Pool</Text>
+                            <Text>{winnerLiquidityProvision.pool}</Text>
+                        </Box>
+                        <Box>
+                            <Text>Liquidity</Text>
+                            <Text>{formatUnits(BigInt(winnerLiquidityProvision.liquidity), 18)}</Text>
+                        </Box>
                     </Box>
                   }
               </Box>
