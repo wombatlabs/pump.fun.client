@@ -81,16 +81,17 @@ export const getUserTokenCreated = async (params: { address: string }) => {
 
 export interface GetTokensParams {
   search?: string
+  isWinner?: boolean
   limit?: number
   offset?: number
 }
 
 export const getTokens = async (params: GetTokensParams = {}) => {
-  const {limit = 100, offset = 0, search = ''} = params
+  const {limit = 100, offset = 0} = params
 
   const {data} = await client.get<TokenEnriched[]>('/tokens', {
     params: {
-      search,
+      ...params,
       limit,
       offset
     }

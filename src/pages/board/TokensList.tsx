@@ -1,7 +1,7 @@
 import {Box, Spinner, Text} from "grommet";
 import {useEffect, useState} from "react";
-import {getTokens, getTokenWinners} from "../../api";
-import {TokenEnriched, TokenWinner} from "../../types.ts";
+import {getTokens} from "../../api";
+import {TokenEnriched} from "../../types.ts";
 import {TokenItem} from "./TokenItem.tsx";
 import {Input, Skeleton} from "antd";
 import styled from "styled-components";
@@ -34,7 +34,7 @@ const SkeletonToken = () => {
 
 export const TokensList = () => {
   const [tokens, setTokens] = useState<TokenEnriched[]>([])
-  const [currentWinner, setCurrentWinner] = useState<TokenWinner>()
+  const [currentWinner, setCurrentWinner] = useState<TokenEnriched>()
   const [isInitialLoading, setInitialLoading] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
   const [searchValue, setSearchValue] = useState('')
@@ -63,7 +63,7 @@ export const TokensList = () => {
         setInitialLoading(true)
         const [tokensData, winnersData] = await Promise.all([
           getTokens(),
-          getTokenWinners()
+          getTokens({ isWinner: true, limit: 1 })
         ])
         setTokens(tokensData)
         setCurrentWinner(winnersData[0])
@@ -98,8 +98,8 @@ export const TokensList = () => {
                 </Box>
                 <TokenItem
                     key={currentWinner.id}
-                    data={currentWinner.token}
-                    onClick={() => navigate(`/${currentWinner.token.address}`)}
+                    data={currentWinner}
+                    onClick={() => navigate(`/${currentWinner.address}`)}
                 />
             </Box>
         </Box>
