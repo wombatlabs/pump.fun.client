@@ -1,5 +1,5 @@
 import {Box, Spinner, Text} from 'grommet'
-import {Token, TokenBurn} from "../../types.ts";
+import {Token, TokenBurn, WinnerLiquidityProvision} from "../../types.ts";
 import {Button, message} from "antd";
 import {useState} from "react";
 import {useWriteContract} from "wagmi";
@@ -7,7 +7,7 @@ import TokenFactoryABI from "../../abi/TokenFactory.json";
 import {appConfig} from "../../config.ts";
 import {waitForTransactionReceipt} from "wagmi/actions";
 import {config} from "../../wagmi.ts";
-import {getTokenBurns} from "../../api";
+import {getTokenBurns, getWinnerLiquidityProvisions} from "../../api";
 import {useClientData} from "../../providers/DataProvider.tsx";
 import {formatUnits} from "viem";
 
@@ -15,13 +15,10 @@ export const BurnTokenForm = (props: {
   token?: Token
 }) => {
   const { token } = props
-
   const [inProgress, setInProgress] = useState(false)
   const [currentStatus, setCurrentStatus] = useState('')
   const { state: { userAccount } } = useClientData()
-
   const { writeContractAsync } = useWriteContract()
-
   const userAddress = userAccount?.address
 
   const onBurnClicked = async () => {
@@ -56,7 +53,20 @@ export const BurnTokenForm = (props: {
       console.log('Burn tx receipt:', receipt)
 
       if(token.isWinner) {
-        message.success(`Winner token ${token.name} (${token.symbol}) successfully burned`, 5);
+        let winnerLiquidityProvision: WinnerLiquidityProvision
+        for(let i = 0; i < 20; i++) {
+          await new Promise(resolve => setTimeout(resolve, 500))
+          const items = await getWinnerLiquidityProvisions({ tokenAddress })
+          if(items.length === 1) {
+            winnerLiquidityProvision = items[0]
+            break;
+          }
+        }
+
+        // @ts-ignore
+        if(winnerLiquidityProvision) {
+          message.success(`Winner token ${winnerLiquidityProvision.token.name} (${winnerLiquidityProvision.token.symbol}) burned, created liquidity pool on swap.country`, 5);
+        }
       } else {
         let tokenBurn: TokenBurn
         for(let i = 0; i < 20; i++) {
@@ -87,7 +97,9 @@ export const BurnTokenForm = (props: {
   return <Box>
     <Box gap={'4px'}>
       <Text weight={500}>Daily competition is over</Text>
-      <Text>You can burn "{token?.name}" (ticker: ${token?.symbol}) and get some amount of the winner's token.</Text>
+      {!token?.isWinner &&
+          <Text>You can burn "{token?.name}" (ticker: ${token?.symbol}) and get some amount of the winner's token.</Text>
+      }
     </Box>
     <Box margin={{ top: '16px' }}>
       <Button
@@ -96,7 +108,7 @@ export const BurnTokenForm = (props: {
         disabled={!token}
         onClick={onBurnClicked}
       >
-        Burn Token and Mint Winner
+        Burn Token
       </Button>
     </Box>
     {inProgress &&

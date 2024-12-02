@@ -1,6 +1,6 @@
 import {Box, Text} from 'grommet'
 import {Button, Image, Skeleton} from "antd";
-import {useNavigate, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
 import {Token, WinnerLiquidityProvision} from "../../types.ts";
 import {getTokenBalances, getTokens, getWinnerLiquidityProvisions} from "../../api";
@@ -17,7 +17,6 @@ import useActiveTab from "../../hooks/useActiveTab.ts";
 import Decimal from "decimal.js";
 import {useClientData} from "../../providers/DataProvider.tsx";
 import {BurnTokenForm} from "./BurnTokenForm.tsx";
-import {formatUnits} from "viem";
 
 const TokenHeader = (props: { data: Token }) => {
   const { data: token } = props
@@ -154,13 +153,26 @@ export const TokenPage = () => {
                   {winnerLiquidityProvision &&
                     <Box margin={{ top: '8px' }} gap={'8px'}>
                         <Box>
-                            <Text>Uniswap Pool</Text>
-                            <Text>{winnerLiquidityProvision.pool}</Text>
+                            <Link
+                                to={`https://swap.country/#/swap?inputCurrency=0xcf664087a5bb0237a0bad6742852ec6c8d69a27a&outputCurrency=${token.address}`}
+                                target={'_blank'}
+                            >
+                                <Text weight={500}>Trade on swap.country</Text>
+                            </Link>
                         </Box>
                         <Box>
-                            <Text>Liquidity</Text>
-                            <Text>{formatUnits(BigInt(winnerLiquidityProvision.liquidity), 18)}</Text>
+                            <Text>Liquidity Pool:</Text>
+                            <Link
+                                to={`https://info.swap.harmony.one/#/harmony/pools/${winnerLiquidityProvision.pool}`}
+                                target={'_blank'}
+                            >
+                              {winnerLiquidityProvision.pool}
+                            </Link>
                         </Box>
+                        {/*<Box>*/}
+                        {/*    <Text>Liquidity Amount</Text>*/}
+                        {/*    <Text>{formatUnits(BigInt(winnerLiquidityProvision.liquidity), 18)}</Text>*/}
+                        {/*</Box>*/}
                     </Box>
                   }
               </Box>
