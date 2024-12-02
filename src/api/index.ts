@@ -3,7 +3,7 @@ import {
   Candle,
   JWTTokensPair,
   Token,
-  TokenBalance, TokenBurn,
+  TokenBalance, TokenBurn, TokenEnriched,
   TokenMetadata,
   TokenTrade,
   TokenWinner,
@@ -88,7 +88,7 @@ export interface GetTokensParams {
 export const getTokens = async (params: GetTokensParams = {}) => {
   const {limit = 100, offset = 0, search = ''} = params
 
-  const {data} = await client.get<Token[]>('/tokens', {
+  const {data} = await client.get<TokenEnriched[]>('/tokens', {
     params: {
       search,
       limit,

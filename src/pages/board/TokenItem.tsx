@@ -1,5 +1,5 @@
 import {Box, Text} from "grommet";
-import {Token} from "../../types.ts";
+import {TokenEnriched} from "../../types.ts";
 import styled from "styled-components";
 import moment from 'moment'
 import { Image } from 'antd'
@@ -19,7 +19,7 @@ const TokenContainer = styled(Box)`
 `
 
 export const TokenItem = (props: {
-  data: Token
+  data: TokenEnriched
   onClick?: () => void
 }) => {
   const { data: {
@@ -28,6 +28,7 @@ export const TokenItem = (props: {
     timestamp,
     user,
     uriData,
+    commentsCount
   } } = props
 
   const marketCap = new Decimal(props.data.marketCap)
@@ -41,7 +42,8 @@ export const TokenItem = (props: {
         Created by {user?.username} {moment(+timestamp * 1000).fromNow()}
       </Text>
       <Text color={'positiveValue'}>Market cap: {marketCap.gt(0) ? marketCap.toFixed(4) : '0'} ONE</Text>
-      <Text color={'accentWhite'}><b>{name} (ticker: {symbol})</b>: {uriData?.description}</Text>
+      <Text>replies: {commentsCount}</Text>
+      <Text><b>{name} (ticker: {symbol})</b>: {uriData?.description}</Text>
     </Box>
   </TokenContainer>
 }

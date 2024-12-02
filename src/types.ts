@@ -43,6 +43,11 @@ export interface Token {
   user: UserAccount | null
 }
 
+// GET /tokens enriched token response
+export interface TokenEnriched extends Token {
+  commentsCount: number
+}
+
 export interface TokenMetadata {
   name: string
   symbol: string

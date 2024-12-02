@@ -1,7 +1,7 @@
 import {Box, Spinner, Text} from "grommet";
 import {useEffect, useState} from "react";
 import {getTokens, getTokenWinners} from "../../api";
-import {Token, TokenWinner} from "../../types.ts";
+import {TokenEnriched, TokenWinner} from "../../types.ts";
 import {TokenItem} from "./TokenItem.tsx";
 import {Input, Skeleton} from "antd";
 import styled from "styled-components";
@@ -33,7 +33,7 @@ const SkeletonToken = () => {
 }
 
 export const TokensList = () => {
-  const [tokens, setTokens] = useState<Token[]>([])
+  const [tokens, setTokens] = useState<TokenEnriched[]>([])
   const [currentWinner, setCurrentWinner] = useState<TokenWinner>()
   const [isInitialLoading, setInitialLoading] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
