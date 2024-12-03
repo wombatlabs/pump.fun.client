@@ -1,5 +1,5 @@
 import {Box, Spinner, Text} from "grommet";
-import {Button, InputNumber, message} from "antd";
+import {Button, Image, InputNumber, message} from "antd";
 import styled from "styled-components";
 import {useMemo, useState} from "react";
 import {useAccount, useBalance, useWriteContract} from "wagmi";
@@ -13,15 +13,17 @@ import {getTrades} from "../../api";
 import {harmonyOne} from "wagmi/chains";
 import Decimal from "decimal.js";
 import {switchNetwork} from "@wagmi/core";
+// @ts-ignore
+import { ReactComponent as HarmonyLogo } from '../../assets/harmony-one.svg'
 
 const TradeButton = styled(Box)`
     padding: 8px 16px;
-    background-color: #292933;
     border-radius: 6px;
     flex: 1;
     text-align: center;
     font-size: 16px;
     color: white;
+    border: 1px solid #2D2E43;
 `
 
 export const TradingForm = (props: {
@@ -131,44 +133,100 @@ export const TradingForm = (props: {
     }
   }
 
+  const tradingToken = selectedSide === 'buy' ? 'ONE' : token?.symbol
+  const tradingTokenBalance = selectedSide === 'buy'
+    ? oneBalance
+    : tokenBalance
+  const isTradeAvailable = useMemo(() => {
+    try {
+      const formAmount = parseUnits((amount || 0).toString(), 18)
+      if(formAmount > 0) {
+        if(tradingTokenBalance && formAmount <= tradingTokenBalance.value) {
+          return true
+        }
+      }
+    } catch (e) {}
+    return false
+  }, [amount, tradingTokenBalance])
+
   return <Box background={'widgetBg'} pad={'16px'} round={'8px'} width={'330px'}>
-    <Box direction={'row'} gap={'4px'}>
+    <Box direction={'row'} gap={'6px'}>
       <TradeButton
         onClick={() => setSelectedSide('buy')}
-        style={{ background: selectedSide === 'buy' ? '#70D693' : 'unset' }}
+        background={selectedSide === 'buy' ? '#70D693' : 'optionBg'}
+        style={{
+          opacity: selectedSide === 'buy' ? 1 : 0.4
+      }}
       >
         Buy
       </TradeButton>
       <TradeButton
+        background={selectedSide === 'sell' ? '#F06666' : 'optionBg'}
         onClick={() => setSelectedSide('sell')}
-        style={{ background: selectedSide === 'sell' ? '#F06666' : 'unset' }}
+        style={{
+          opacity: selectedSide === 'sell' ? 1 : 0.4
+      }}
       >
         Sell
       </TradeButton>
     </Box>
-    <Box margin={{ top: '24px' }}>
+    <Box margin={{ top: '24px' }} gap={'8px'}>
+      <Box margin={{ top: '4px' }} align={'end'}>
+        <Text color={'textSecondary'}>
+          Balance: {selectedSide === 'buy'
+          ? `${oneBalanceFormatted} ${tradingToken}`
+          : `${tokenBalanceFormatted} ${tradingToken}`
+        }
+        </Text>
+      </Box>
       <InputNumber
         disabled={inProgress}
         placeholder={'0.0'}
         value={amount}
         size={'large'}
-        onChange={(value) => setAmount(value)}
+        addonAfter={selectedSide === 'buy'
+          ? <Box direction={'row'} gap={'8px'} align={'center'}>
+              <Text>ONE</Text><Box width={'16px'} height={'16px'}><HarmonyLogo /></Box>
+            </Box>
+          : <Box direction={'row'} gap={'8px'} align={'center'}>
+            <Text>{token?.symbol}</Text><Image width={'20px'} height={'20px'} src={token?.uriData?.image} preview={false} />
+            </Box>
+        }
         style={{ width: '100%' }}
+        onChange={(value) => setAmount(value)}
       />
-      <Box margin={{ top: '4px' }} align={'end'}>
-        {selectedSide === 'buy' &&
-            <Text>Balance: {oneBalanceFormatted} ONE</Text>
-        }
-        {selectedSide === 'sell' &&
-            <Text>Balance: {tokenBalanceFormatted} {token?.symbol}</Text>
-        }
-      </Box>
+    </Box>
+    <Box
+      direction={'row'}
+      justify={'between'}
+      width={'60%'}
+      margin={{ top: '16px' }}
+      gap={'12px'}
+    >
+      <Button
+        size={'small'}
+        style={{ width: '100%' }}
+        onClick={() => { setAmount(0) }}
+      >
+        <Text color={'textSecondary'} size={'small'}>reset</Text>
+      </Button>
+      {[0.1, 0.5, 1].map((value) => {
+        return <Button
+          key={value}
+          size={'small'}
+          style={{ width: '100%' }}
+          onClick={() => { setAmount(value) }}
+        >
+            <Text color={'textSecondary'} size={'small'}>{value} {tradingToken}</Text>
+        </Button>
+
+      })}
     </Box>
     <Box margin={{ top: '24px' }}>
       <Button
         type="primary"
         size={'large'}
-        disabled={inProgress}
+        disabled={inProgress || !isTradeAvailable}
         onClick={onTradeClicked}
       >
         {'Place trade'}
