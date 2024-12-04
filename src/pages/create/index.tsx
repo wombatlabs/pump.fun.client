@@ -1,7 +1,7 @@
 import {Box, Spinner, Text} from 'grommet'
 import {Button, Input, message, Upload, UploadProps} from "antd";
 import {useNavigate} from "react-router-dom";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import {writeContract, waitForTransactionReceipt} from "wagmi/actions";
 import {appConfig} from "../../config.ts";
 import TokenFactoryABI from '../../abi/TokenFactory.json'
@@ -21,13 +21,19 @@ interface CreateTokenForm {
   symbol: string
   description: string
   image: string
+  twitterLink: string
+  telegramLink: string
+  websiteLink: string
 }
 
 const defaultFormState: CreateTokenForm = {
   name: '',
   symbol: '',
   description: '',
-  image: ''
+  image: '',
+  twitterLink: '',
+  telegramLink: '',
+  websiteLink: ''
 }
 
 export const CreatePage = () => {
@@ -38,6 +44,7 @@ export const CreatePage = () => {
   const [tokenForm, setTokenForm] = useState<CreateTokenForm>(defaultFormState)
   const [currentStatus, setCurrentStatus] = useState('')
   const [inProgress, setInProgress] = useState(false)
+  const [isOptionalFieldVisible, setOptionalFieldVisible] = useState(false)
 
   const onCreateClicked = async () => {
     try {
@@ -54,9 +61,13 @@ export const CreatePage = () => {
         symbol: tokenForm.symbol,
         description: tokenForm.description,
         image: tokenForm.image,
+        twitterLink: tokenForm.twitterLink,
+        telegramLink: tokenForm.telegramLink,
+        websiteLink: tokenForm.websiteLink,
       }
+      console.log('Uploading token metadata...', payload)
       const metadataUrl = await addTokenMetadata(payload, { accessToken: jwtTokens.accessToken })
-      console.log('metadataUrl:', metadataUrl)
+      console.log('Token metadata uploaded, url:', metadataUrl)
 
       setCurrentStatus('Minting contract...')
       const txnHash = await writeContract(config, {
@@ -150,6 +161,10 @@ export const CreatePage = () => {
     },
   };
 
+  const isFormFilled = useMemo(() => {
+    return !!tokenForm.symbol && !!tokenForm.name && !!tokenForm.image && !!tokenForm.description
+  }, [tokenForm])
+
   return <Box width={'400px'}>
     <Box>
       <Button type={'text'} style={{ fontSize: '22px' }} onClick={() => navigate('/board')}>
@@ -209,10 +224,53 @@ export const CreatePage = () => {
           </p>
         </Dragger>
       </Box>
+    </Box>
+    <Box margin={{ top: '16px' }}>
+      <Text
+        color={'activeStatus'}
+        style={{ cursor: 'pointer' }}
+        onClick={() => setOptionalFieldVisible(!isOptionalFieldVisible)}
+      >{isOptionalFieldVisible ? 'hide more options ↑' : 'show more options ↓'}</Text>
+      {isOptionalFieldVisible &&
+          <Box margin={{ top: '16px', bottom: '16px' }} gap={'16px'}>
+              <Box>
+                  <Text color={'accentLabel'} weight={500}>twitter link</Text>
+                  <Input
+                      value={tokenForm.twitterLink}
+                      size={'large'}
+                      onChange={(e) => setTokenForm(current => {
+                        return { ...current, twitterLink: e.target.value }
+                      })}
+                  />
+              </Box>
+              <Box>
+                  <Text color={'accentLabel'} weight={500}>telegram link</Text>
+                  <Input
+                      value={tokenForm.telegramLink}
+                      size={'large'}
+                      onChange={(e) => setTokenForm(current => {
+                        return { ...current, telegramLink: e.target.value }
+                      })}
+                  />
+              </Box>
+              <Box>
+                  <Text color={'accentLabel'} weight={500}>website</Text>
+                  <Input
+                      value={tokenForm.websiteLink}
+                      size={'large'}
+                      onChange={(e) => setTokenForm(current => {
+                        return { ...current, websiteLink: e.target.value }
+                      })}
+                  />
+              </Box>
+          </Box>
+      }
+    </Box>
+    <Box margin={{ top: '16px' }} gap={'16px'}>
       <Button
         type={'primary'}
         size={'large'}
-        disabled={Object.values(tokenForm).includes('') || inProgress || !account.address || !userAccount?.address}
+        disabled={!isFormFilled || inProgress || !account.address || !userAccount?.address}
         onClick={onCreateClicked}
       >
         Create Token

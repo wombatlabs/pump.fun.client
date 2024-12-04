@@ -21,6 +21,9 @@ export interface TokenUriData {
   ticker: string
   description: string
   image: string
+  twitterLink: string
+  telegramLink: string
+  websiteLink: string
 }
 
 export interface Token {
@@ -53,6 +56,9 @@ export interface TokenMetadata {
   symbol: string
   description: string
   image: string
+  twitterLink: string
+  telegramLink: string
+  websiteLink: string
 }
 
 export type TokenTradeType = 'buy' | 'sell'

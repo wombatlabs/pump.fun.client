@@ -40,7 +40,7 @@ export const TokenHolders = (props: {
     <Box>
       <Text size={'20px'}>Holder distribution</Text>
     </Box>
-    <Box margin={{ top: '16px' }}>
+    <Box margin={{ top: '8px' }}>
       {holders.length === 0 &&
         <Text>No holders found</Text>
       }

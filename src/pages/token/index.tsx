@@ -1,5 +1,5 @@
 import {Box, Text} from 'grommet'
-import {Button, Image, Skeleton} from "antd";
+import {Button, Image, Skeleton, Tag} from "antd";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
 import {Token, WinnerLiquidityProvision} from "../../types.ts";
@@ -143,7 +143,7 @@ export const TokenPage = () => {
             </Box>
           </Box>
         </Box>
-        <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }} gap={'32px'}>
+        <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }} gap={'24px'}>
           {token && token.isWinner &&
               <Box>
                   <Box>
@@ -196,10 +196,27 @@ export const TokenPage = () => {
                   </Box>
               </Box>
           }
+          {token && token.uriData &&
+            <Box direction={'row'}>
+              {token.uriData.twitterLink &&
+                  <Box onClick={() => window.open(token.uriData!.twitterLink, '_blank')}>
+                      <Tag>Twitter</Tag>
+                  </Box>
+              }
+              {token.uriData.telegramLink &&
+                  <Box onClick={() => window.open(token.uriData!.telegramLink, '_blank')}>
+                      <Tag>Telegram</Tag>
+                  </Box>
+              }
+              {token.uriData.websiteLink &&
+                  <Box onClick={() => window.open(token.uriData!.websiteLink, '_blank')}>
+                      <Tag>Website</Tag>
+                  </Box>
+              }
+            </Box>
+          }
           {token &&
-              <Box>
-                  <TokenHolders token={token} />
-              </Box>
+              <TokenHolders token={token} />
           }
         </Box>
       </Box>

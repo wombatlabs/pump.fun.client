@@ -203,7 +203,7 @@ export const addComment = async (params: PostCommentParams, jwt: JwtParams) => {
 }
 
 export const addTokenMetadata = async (payload: TokenMetadata, jwt: JwtParams) => {
-  const {data} = await client.post<UserAccount>('/metadata', payload, {
+  const {data} = await client.post<string>('/metadata', payload, {
     headers: {
       'Authorization': `Bearer ${jwt.accessToken}`
     }
