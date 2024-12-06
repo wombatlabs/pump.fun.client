@@ -1,13 +1,13 @@
 import {Box, Spinner, Text} from "grommet";
-import {Button, Image, InputNumber, message} from "antd";
+import {Button, Image, Input, message} from "antd";
 import styled from "styled-components";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useAccount, useBalance, useWriteContract} from "wagmi";
 import TokenFactoryABI from '../../abi/TokenFactory.json'
 import {appConfig} from "../../config.ts";
 import { parseUnits, formatUnits } from 'viem'
 import {Token, TokenTrade} from "../../types.ts";
-import {waitForTransactionReceipt} from "wagmi/actions";
+import {waitForTransactionReceipt, readContract} from "wagmi/actions";
 import {config} from "../../wagmi.ts";
 import {getTrades} from "../../api";
 import {harmonyOne} from "wagmi/chains";
@@ -15,6 +15,7 @@ import Decimal from "decimal.js";
 import {switchNetwork} from "@wagmi/core";
 // @ts-ignore
 import { ReactComponent as HarmonyLogo } from '../../assets/harmony-one.svg'
+import useDebounce from "../../hooks/useDebounce.ts";
 
 const TradeButton = styled(Box)`
     padding: 8px 16px;
@@ -26,16 +27,33 @@ const TradeButton = styled(Box)`
     border: 1px solid #2D2E43;
 `
 
+interface TradeQuote {
+  amount: bigint
+  amountFormatted: string
+  isFetching: boolean
+  status: string
+}
+
+const defaultTradeQuote: TradeQuote = {
+  amount: 0n,
+  amountFormatted: '0',
+  isFetching: false,
+  status: '',
+}
+
 export const TradingForm = (props: {
   token?: Token
 }) => {
   const { token } = props
 
+  const { writeContractAsync } = useWriteContract()
   const account = useAccount()
   const [selectedSide, setSelectedSide] = useState<'buy' | 'sell'>('buy')
-  const [amount, setAmount] = useState<number | null>(null)
+  const [amount, setAmount] = useState<string>()
   const [currentStatus, setCurrentStatus] = useState('')
   const [inProgress, setInProgress] = useState(false)
+  const debouncedAmount = useDebounce(amount, 300)
+  const [tradeQuote, setTradeQuote] = useState<TradeQuote>(defaultTradeQuote)
 
   const { data: tokenBalance, refetch: refetchOneBalance } = useBalance({
     token: token?.address as `0x${string}`,
@@ -57,7 +75,43 @@ export const TradingForm = (props: {
       : '0'
   }, [oneBalance])
 
-  const { writeContractAsync } = useWriteContract()
+  useEffect(() => {
+    const loadEstimate = async () => {
+      try {
+        setTradeQuote(() => ({
+          ...defaultTradeQuote,
+          isFetching: true
+        }))
+        if(!token?.address) {
+          return
+        }
+        const functionName = selectedSide === 'buy'
+          ? '_buyReceivedAmount'
+          : '_sellReceivedAmount'
+        const amountString = new Decimal(debouncedAmount || 0).toFixed()
+        const amountBigInt = parseUnits(amountString, 18)
+        const amount = await readContract(config, {
+          address: appConfig.tokenFactoryAddress as `0x${string}`,
+          abi: TokenFactoryABI,
+          functionName,
+          args: [token.address, amountBigInt]
+        }) as bigint
+        console.log('Trade amount estimate:', amount)
+        setTradeQuote({
+          ...defaultTradeQuote,
+          amount,
+          amountFormatted: amount > 0n ? new Decimal(formatUnits(amount, 18)).toFixed(6) : '0',
+        })
+      } catch (e) {
+        console.error('Failed to load estimate:', e)
+      }
+    }
+    loadEstimate()
+  }, [debouncedAmount, selectedSide, token?.address]);
+
+  // useEffect(() => {
+  //   setTradeQuote(defaultTradeQuote)
+  // }, [selectedSide]);
 
   const onTradeClicked = async () => {
     try {
@@ -116,7 +170,6 @@ export const TradingForm = (props: {
         }
       }
       if(tokenTrade) {
-        console.log('token trade:', tokenTrade)
         const price = new Decimal(tokenTrade.price)
           .toFixed(4)
         message.success(`${tokenTrade.type} ${tokenTrade.token.name} (${tokenTrade.token.symbol}) at ${price} ONE`, 5);
@@ -125,7 +178,7 @@ export const TradingForm = (props: {
       console.log('Failed to trade:', e)
       message.error(`Failed to trade`)
     } finally {
-      setAmount(null)
+      setAmount(undefined)
       setInProgress(false)
       setCurrentStatus('')
       refetchOneBalance()
@@ -134,9 +187,11 @@ export const TradingForm = (props: {
   }
 
   const tradingToken = selectedSide === 'buy' ? 'ONE' : token?.symbol
+  const quoteToken = selectedSide === 'sell' ? 'ONE' : token?.symbol
   const tradingTokenBalance = selectedSide === 'buy'
     ? oneBalance
     : tokenBalance
+
   const isTradeAvailable = useMemo(() => {
     try {
       const formAmount = parseUnits((amount || 0).toString(), 18)
@@ -179,50 +234,58 @@ export const TradingForm = (props: {
         }
         </Text>
       </Box>
-      <InputNumber
-        disabled={inProgress}
-        placeholder={'0.0'}
-        value={amount}
-        size={'large'}
-        addonAfter={selectedSide === 'buy'
-          ? <Box direction={'row'} gap={'8px'} align={'center'}>
+      <Box>
+        <Input
+          disabled={inProgress}
+          placeholder={'0.0'}
+          value={amount}
+          size={'large'}
+          addonAfter={selectedSide === 'buy'
+            ? <Box direction={'row'} gap={'8px'} align={'center'}>
               <Text>ONE</Text><Box width={'16px'} height={'16px'}><HarmonyLogo /></Box>
             </Box>
-          : <Box direction={'row'} gap={'8px'} align={'center'}>
-            <Text>{token?.symbol}</Text><Image width={'20px'} height={'20px'} src={token?.uriData?.image} preview={false} />
+            : <Box direction={'row'} gap={'8px'} align={'center'}>
+              <Text>{token?.symbol}</Text><Image width={'20px'} height={'20px'} src={token?.uriData?.image} preview={false} />
             </Box>
-        }
-        style={{ width: '100%' }}
-        onChange={(value) => setAmount(value)}
-      />
+          }
+          style={{ width: '100%' }}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+        <Box margin={{ top: '4px' }}>
+          <Text>You receive: {tradeQuote.amountFormatted} {quoteToken}</Text>
+        </Box>
+      </Box>
     </Box>
     <Box
       direction={'row'}
       justify={'between'}
       width={'60%'}
       margin={{ top: '16px' }}
-      gap={'12px'}
+      gap={'6px'}
     >
-      <Button
-        size={'small'}
-        style={{ width: '100%' }}
-        onClick={() => { setAmount(0) }}
-      >
-        <Text color={'textSecondary'} size={'small'}>reset</Text>
-      </Button>
-      {[0.1, 0.5, 1].map((value) => {
+      {[0.1, 0.5].map((value) => {
         return <Button
           key={value}
           size={'small'}
           style={{ width: '100%' }}
-          onClick={() => { setAmount(value) }}
+          onClick={() => { setAmount(value.toString()) }}
         >
             <Text color={'textSecondary'} size={'small'}>{value} {tradingToken}</Text>
         </Button>
 
       })}
+      <Button
+        size={'small'}
+        style={{ width: '100%' }}
+        onClick={() => {
+          const amountNumber = formatUnits(tradingTokenBalance?.value || 0n, 18)
+          setAmount(amountNumber)
+        }}
+      >
+        <Text color={'textSecondary'} size={'small'}>max</Text>
+      </Button>
     </Box>
-    <Box margin={{ top: '24px' }}>
+    <Box margin={{ top: '16px' }}>
       <Button
         type="primary"
         size={'large'}

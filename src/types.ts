@@ -87,16 +87,6 @@ export interface TokenBalance {
   updatedAt: string
 }
 
-export interface TokenWinner {
-  id: string
-  competitionId: string
-  txnHash: string
-  token: Token
-  timestamp: string
-  blockNumber: number
-  createdAt: string
-}
-
 export interface JWTTokensPair {
   accessToken: string;
   refreshToken: string;
