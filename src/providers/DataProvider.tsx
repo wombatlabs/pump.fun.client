@@ -1,7 +1,7 @@
 import React, {createContext, useContext, useState, PropsWithChildren, useEffect, useMemo} from 'react';
-import {JWTTokensPair, Token, TokenTrade, TokenWinner, UserAccount} from "../types.ts";
+import {JWTTokensPair, Token, TokenTrade, UserAccount} from "../types.ts";
 import {useAccount, useDisconnect} from "wagmi";
-import {getTokens, getTokenWinners, getTrades, signIn} from "../api";
+import {getTokens, getTrades, signIn} from "../api";
 import useIsTabActive from "../hooks/useActiveTab.ts";
 import usePoller from "../hooks/usePoller.ts";
 import {clearJWTTokens, getJWTTokens} from "../utils/localStorage.ts";
@@ -12,7 +12,6 @@ interface ClientState {
   userAccount?: UserAccount
   latestTrade?: TokenTrade
   latestToken?: Token
-  latestWinner?: TokenWinner
 }
 
 export interface RhoV2Data {
@@ -62,10 +61,9 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
     try {
       setIsLatestDataUpdating(true)
       // const offset = Math.random() < 0.5 ? 0 : 1;
-      const [trades, tokens, winners] = await Promise.allSettled([
+      const [trades, tokens] = await Promise.allSettled([
         getTrades({ limit: 1 }),
         getTokens({ limit: 1 }),
-        getTokenWinners({ limit: 1 })
       ])
       setState(current => {
         const newState = {...current}
@@ -74,9 +72,6 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
         }
         if(tokens.status === 'fulfilled' && tokens.value.length > 0) {
           newState.latestToken = tokens.value[0]
-        }
-        if(winners.status === 'fulfilled' && winners.value.length > 0) {
-          newState.latestWinner = winners.value[0]
         }
         return newState
       })
