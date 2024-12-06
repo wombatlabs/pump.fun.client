@@ -2,7 +2,7 @@ import {Box, Text} from 'grommet'
 import {Button, Image, Skeleton, Tag} from "antd";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
-import {Token, WinnerLiquidityProvision} from "../../types.ts";
+import {Token, TokenEnriched, WinnerLiquidityProvision} from "../../types.ts";
 import {getTokenBalances, getTokens, getWinnerLiquidityProvisions} from "../../api";
 import moment from "moment";
 import {TradingForm} from "./TradingForm.tsx";
@@ -17,6 +17,7 @@ import useActiveTab from "../../hooks/useActiveTab.ts";
 import Decimal from "decimal.js";
 import {useClientData} from "../../providers/DataProvider.tsx";
 import {BurnTokenForm} from "./BurnTokenForm.tsx";
+import {PublishToUniswap} from "./PublishToUniswap.tsx";
 
 const TokenHeader = (props: { data: Token }) => {
   const { data: token } = props
@@ -39,10 +40,10 @@ export const TokenPage = () => {
   const isTabActive = useActiveTab()
   const { tokenAddress = '' } = useParams()
 
-  const { state: { latestWinner, userAccount } } = useClientData()
+  const { state: { userAccount } } = useClientData()
 
   const [isLoading, setLoading] = useState(false)
-  const [token, setToken] = useState<Token>()
+  const [token, setToken] = useState<TokenEnriched>()
   const [userIsHolder, setUserIsHolder] = useState<boolean>(false)
   const [winnerLiquidityProvision, setWinnerLiquidityProvision] = useState<WinnerLiquidityProvision>()
   const [activeTab, setActiveTab] = useState<'thread' | 'trades'>('thread')
@@ -56,7 +57,7 @@ export const TokenPage = () => {
       const [tokens, holders, liquidityProvisionItems] = await Promise.all([
         getTokens({ search: tokenAddress, limit: 1 }),
         getTokenBalances({ tokenAddress, userAddress: userAccount?.address || 'address', limit: 1 }),
-        getWinnerLiquidityProvisions({ tokenAddress })
+        getWinnerLiquidityProvisions({ tokenAddress }),
       ])
 
       if(tokens.length > 0) {
@@ -85,26 +86,35 @@ export const TokenPage = () => {
 
   const isTradeAvailable = useMemo(() => {
     if(token) {
-      if(latestWinner) {
-       return token.competitionId > +latestWinner.competitionId
-      } else {
-        // enable trade for the first token created
-        return true
-      }
+      return !token.competition.isCompleted
     }
     return false
-  }, [token, latestWinner])
+  }, [token])
 
   const isBurnAvailable = useMemo(() => {
-    if(!token) {
-      return false
+    if(!isTradeAvailable && token && !token.isWinner) {
+      const totalSupply = new Decimal(token.totalSupply)
+      return totalSupply.gt(0)
     }
-    if(token.isWinner) {
-      return !winnerLiquidityProvision
-    } else {
-      return !isTradeAvailable && userIsHolder
-    }
+    return false
   }, [isTradeAvailable, token, userIsHolder, winnerLiquidityProvision])
+
+  const isPublishToUniswapAvailable = useMemo(() => {
+    if(
+      !isBurnAvailable
+      && token
+      && token.isWinner
+      && token.user
+      && userAccount
+      && !winnerLiquidityProvision
+    ) {
+      if(token.user.address === userAccount?.address) {
+        return true
+      }
+      return true
+    }
+    return false
+  }, [token, userAccount, isBurnAvailable, winnerLiquidityProvision])
 
   return <Box width={'100%'} pad={'0 32px'} style={{ maxWidth: '1300px', minWidth: '1000px' }}>
     <Box align={'center'}>
@@ -182,6 +192,9 @@ export const TokenPage = () => {
           }
           {isBurnAvailable &&
               <BurnTokenForm token={token} />
+          }
+          {isPublishToUniswapAvailable &&
+              <PublishToUniswap token={token} />
           }
           {token &&
               <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }}>

@@ -104,7 +104,7 @@ export const CreatePage = () => {
       }
 
     } catch (e) {
-      message.error(`Failed to add token metadata`);
+      message.error(`Failed to send token metadata`);
       console.log('Failed to create metadata', e)
     } finally {
       setCurrentStatus('')

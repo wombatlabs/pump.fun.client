@@ -1,6 +1,6 @@
 export const appConfig = {
   apiUrl: 'http://localhost:8085',
-  tokenFactoryAddress: '0xFbcb8EA97A13a2C5Ea146f5807DC84D4923C0e6a'
+  tokenFactoryAddress: '0x73ad47dc977a4BecF63881b19d12bb81C0D608d5'
 }
 
 // apiUrl:

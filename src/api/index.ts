@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {
-  Candle,
+  Candle, Competition,
   JWTTokensPair,
   Token,
   TokenBalance, TokenBurn, TokenEnriched,
@@ -246,5 +246,10 @@ export const getCandles = async (params: GetCandlesParams) => {
       offset
     }
   })
+  return data
+}
+
+export const getCompetitions = async () => {
+  const {data} = await client.get<Competition[]>('/competitions', {})
   return data
 }

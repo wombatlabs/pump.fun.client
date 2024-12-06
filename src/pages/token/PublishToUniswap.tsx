@@ -1,5 +1,5 @@
 import {Box, Spinner, Text} from 'grommet'
-import {Token, TokenBurn} from "../../types.ts";
+import {Token, WinnerLiquidityProvision} from "../../types.ts";
 import {Button, message} from "antd";
 import {useState} from "react";
 import {useWriteContract} from "wagmi";
@@ -7,11 +7,10 @@ import TokenFactoryABI from "../../abi/TokenFactory.json";
 import {appConfig} from "../../config.ts";
 import {waitForTransactionReceipt} from "wagmi/actions";
 import {config} from "../../wagmi.ts";
-import {getTokenBurns} from "../../api";
+import {getWinnerLiquidityProvisions} from "../../api";
 import {useClientData} from "../../providers/DataProvider.tsx";
-import {formatUnits} from "viem";
 
-export const BurnTokenForm = (props: {
+export const PublishToUniswap = (props: {
   token?: Token
 }) => {
   const { token } = props
@@ -21,16 +20,16 @@ export const BurnTokenForm = (props: {
   const { writeContractAsync } = useWriteContract()
   const userAddress = userAccount?.address
 
-  const onBurnClicked = async () => {
+  const onPublishClicked = async () => {
     try {
       setInProgress(true)
 
       if(!token) {
-        console.error('Token not found, burn failed')
+        console.error('Token not found, publish failed')
         return
       }
       if(!userAddress) {
-        console.error('User account not found, burn failed')
+        console.error('User account not found, publish failed')
         return
       }
       const tokenAddress = token.address
@@ -39,38 +38,36 @@ export const BurnTokenForm = (props: {
       const txnHash = await writeContractAsync({
         abi: TokenFactoryABI,
         address: appConfig.tokenFactoryAddress as `0x${string}`,
-        functionName: 'burnTokenAndMintWinner',
+        functionName: 'publishToUniswap',
         args: [tokenAddress],
       })
 
-      console.log('Burn tx hash:', txnHash)
+      console.log('Publish tx hash:', txnHash)
 
       setCurrentStatus('Waiting for confirmation...')
       const receipt = await waitForTransactionReceipt(config, {
         hash: txnHash,
         confirmations: 2,
       })
-      console.log('Burn tx receipt:', receipt)
+      console.log('Publish tx receipt:', receipt)
 
-      let tokenBurn: TokenBurn
+      let winnerLiquidityProvision: WinnerLiquidityProvision
       for(let i = 0; i < 20; i++) {
         await new Promise(resolve => setTimeout(resolve, 500))
-        const items = await getTokenBurns({ tokenAddress, userAddress, limit: 1 })
+        const items = await getWinnerLiquidityProvisions({ tokenAddress })
         if(items.length === 1) {
-          tokenBurn = items[0]
+          winnerLiquidityProvision = items[0]
           break;
         }
       }
+
       // @ts-ignore
-      if(tokenBurn) {
-        const winnerAmount = formatUnits(BigInt(tokenBurn.mintedAmount), 18)
-        message.success(`Token ${tokenBurn.token.name} successfully burned, minted ${winnerAmount} ${tokenBurn.winnerToken.name} (daily winner)`, 5);
-      } else {
-        message.error(`Failed to confirm token status`);
+      if(winnerLiquidityProvision) {
+        message.success(`Winner token ${winnerLiquidityProvision.token.name} (${winnerLiquidityProvision.token.symbol}) published, created liquidity pool on swap.country`, 5);
       }
     } catch (e) {
-      console.error('Failed to burn token:', e)
-      message.error('Failed to burn token')
+      console.error('Failed to publish token:', e)
+      message.error('Failed to publish token to swap.country')
     } finally {
       setCurrentStatus('')
       setInProgress(false)
@@ -89,9 +86,9 @@ export const BurnTokenForm = (props: {
         type={'primary'}
         size={'large'}
         disabled={!token}
-        onClick={onBurnClicked}
+        onClick={onPublishClicked}
       >
-        Burn Token
+        Publish to swap.country
       </Button>
     </Box>
     {inProgress &&

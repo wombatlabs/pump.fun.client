@@ -28,7 +28,6 @@ export interface TokenUriData {
 
 export interface Token {
   id: string;
-  competitionId: number
   txnHash: string
   blockNumber: number
   address: string
@@ -49,6 +48,7 @@ export interface Token {
 // GET /tokens enriched token response
 export interface TokenEnriched extends Token {
   commentsCount: number
+  competition: Competition
 }
 
 export interface TokenMetadata {
@@ -144,4 +144,16 @@ export interface WinnerLiquidityProvision {
   createdAt: string
   token: Token
   tokenCreator: UserAccount
+}
+
+export interface Competition {
+  id: string
+  txnHash: string
+  blockNumber: string
+  competitionId: number
+  timestampStart: string
+  timestampEnd: string
+  isCompleted: boolean
+  winnerToken: Token | null
+  createdAt: string
 }
