@@ -1,18 +1,22 @@
 import { http, createConfig } from 'wagmi'
 import { harmonyOne } from 'wagmi/chains'
-import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors'
+import { getDefaultConfig } from "connectkit";
+import {appConfig} from "./config.ts";
 
-export const config = createConfig({
-  chains: [harmonyOne],
-  connectors: [
-    injected(),
-    coinbaseWallet(),
-    walletConnect({ projectId: import.meta.env.VITE_WC_PROJECT_ID }),
-  ],
-  transports: {
-    [harmonyOne.id]: http(),
-  },
-})
+export const config = createConfig(
+  getDefaultConfig({
+    // Your dApps chains
+    chains: [harmonyOne],
+    transports: {
+      [harmonyOne.id]: http(),
+    },
+    walletConnectProjectId: appConfig.walletConnectProjectId,
+    appName: "Pump.One",
+    appDescription: "Pump.One",
+    appUrl: "https://pump-app.netlify.app",
+    appIcon: "https://cryptologos.cc/logos/harmony-one-logo.png?v=040", // your app's icon, no bigger than 1024x1024px (max. 1MB)
+  }),
+);
 
 declare module 'wagmi' {
   interface Register {

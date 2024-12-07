@@ -1,96 +1,78 @@
 import {Box, Text} from "grommet";
-import {useAccount, useConnect, useDisconnect} from "wagmi";
-import {Button, message, Modal} from "antd";
+import {Button, Modal} from "antd";
 import {UserOutlined} from "@ant-design/icons";
-import {getNonce, getUserByAddress, verifySignature} from "../../api";
 import {useClientData} from "../../providers/DataProvider.tsx";
-import {harmonyOne} from "wagmi/chains";
 import {ProfileModal} from "./ProfileModal.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {LatestUpdate} from "../latest-update";
 import {GradientButtonText} from "../button";
-import {storeJWTTokens} from "../../utils/localStorage.ts";
-import {JWTTokensPair} from "../../types.ts";
+import { ConnectKitButton } from 'connectkit'
+import {useAccount, useSignMessage} from "wagmi";
+import {getJWTTokens, storeJWTTokens} from "../../utils/localStorage.ts";
+import {getNonce, getUserByAddress, signIn, verifySignature} from "../../api";
+import {JWTTokensPair, UserAccount} from "../../types.ts";
+import {decodeJWT} from "../../utils";
 
 export const Header = () => {
   const navigate = useNavigate();
-  const account = useAccount()
-  const { connectors, connectAsync } = useConnect()
-  const { disconnectAsync } = useDisconnect()
+  const { address: userAddress } = useAccount();
+  const { signMessageAsync } = useSignMessage()
   const { state: clientState, setState: setClientState, onDisconnect } = useClientData()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isSimpleSwapModalOpened, setSimpleSwapModalOpened] = useState(false)
 
-  const onConnectClicked = async () => {
-    let userAddress = ''
-    let jwtTokens: JWTTokensPair
+  useEffect(() => {
+    const loginUser = async (userAddress: string) => {
+      let userAccount: UserAccount
+      let jwtTokens: JWTTokensPair
 
-    if(account.status !== 'disconnected') {
-      await disconnectAsync()
-    }
+      try {
+        const storedJwtTokens = getJWTTokens()
+        if(storedJwtTokens) {
+          const { address: jwtTokensAddress } = decodeJWT(storedJwtTokens.accessToken)
+          if(jwtTokensAddress.toLowerCase() === userAddress.toLowerCase()) {
+            const data = await signIn({ accessToken: storedJwtTokens.accessToken })
+            console.log('User account restored from JWT:', data)
+            jwtTokens = data.tokens
+            userAccount = data.user
+          }
+        }
 
-    const metamaskConnector = connectors.find(c => c.name === 'MetaMask')
-    if(!metamaskConnector) {
-      message.error('MetaMask not installed')
-      return
-    }
+        if(!jwtTokens && !userAccount) {
+          const nonce = await getNonce(userAddress)
+          const rawMessage = `I'm signing my one-time nonce: ${nonce}`
+          // const signature = await window.ethereum.request({
+          //   method: "personal_sign",
+          //   params: [rawMessage, userAddress],
+          // })
+          const signature = await signMessageAsync({
+            message: rawMessage
+          })
+          jwtTokens = await verifySignature(userAddress, signature)
+          console.log('Signature is valid, JWT tokens:', jwtTokens)
+          userAccount = await getUserByAddress({ address: userAddress })
+        }
 
-    try {
-      const data = await connectAsync({
-        connector: metamaskConnector,
-        chainId: harmonyOne.id
-      })
-      if(data.accounts.length > 0) {
-        userAddress = data.accounts[0]
+        if(jwtTokens) {
+          storeJWTTokens(jwtTokens)
+        }
+        setClientState({
+          ...clientState,
+          jwtTokens,
+          userAccount
+        })
+      } catch (e) {
+        onDisconnect()
       }
-    } catch (e) {
-      console.error('Failed to connect wallet', e)
-      message.error(`Failed to connect wallet`);
-    }
 
-    console.log('User address connected:', userAddress)
+    }
 
     if(userAddress) {
-      try {
-        const nonce = await getNonce(userAddress)
-        console.log('Nonce:', nonce)
-        const rawMessage = `I'm signing my one-time nonce: ${nonce}`
-        const signature = await window.ethereum.request({
-          method: "personal_sign",
-          params: [rawMessage, userAddress],
-        })
-        jwtTokens = await verifySignature(userAddress, signature)
-        console.log('jwtTokens:', jwtTokens)
-      } catch (e) {
-        console.error('Failed to get JWT tokens:', e)
-        message.error('Failed to get access tokens')
-      }
-
-      // @ts-ignore
-      if(jwtTokens) {
-        try {
-          storeJWTTokens(jwtTokens)
-          const user = await getUserByAddress({ address: userAddress }).catch(_ => {})
-          if(user) {
-            setClientState({
-              ...clientState,
-              jwtTokens,
-              userAccount: user
-            })
-            console.log('User account:', user)
-            return
-          }
-        } catch (e) {
-          console.error('Failed to get user account:', e)
-          message.error('Failed to get user account. Try again later.')
-        }
-      }
+      console.log('Account connected:', userAddress)
+      loginUser(userAddress)
     }
-
-    console.log('Disconnect user!')
-    onDisconnect()
-  }
+  }, [userAddress]);
 
   return <Box
     width={'100%'}
@@ -102,7 +84,7 @@ export const Header = () => {
     style={{
       position: 'absolute',
       zIndex: 1,
-      boxShadow: '0 -6px 10px 5px rgba(0, 0, 0, 0.6);'
+      boxShadow: '0 -6px 10px 5px rgba(0, 0, 0, 0.6)'
   }}
   >
     <Box direction={'row'} gap={'16px'} align={'center'}>
@@ -123,9 +105,10 @@ export const Header = () => {
         <GradientButtonText size={'16px'}>Get ONE</GradientButtonText>
       </Box>
       {(!clientState.userAccount) &&
-          <Button type={'primary'} loading={false} onClick={onConnectClicked}>
-              Connect Wallet
-          </Button>
+          <ConnectKitButton />
+          // <Button type={'primary'} loading={false} onClick={onConnectClicked}>
+          //     Connect Wallet
+          // </Button>
       }
       {clientState.userAccount &&
         <Box>
