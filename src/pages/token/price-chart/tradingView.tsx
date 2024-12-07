@@ -181,6 +181,9 @@ export const TradingView = (props: TradingViewProps) => {
       chart.applyOptions(darkTheme.chart)
 
       let chartOptions: DeepPartial<ChartOptions> = {
+        layout: {
+          attributionLogo: false
+        },
         crosshair: {
           // hide the horizontal crosshair line
           horzLine: {

@@ -70,17 +70,20 @@ export const PriceChart = (props: {
             return ''
           }}
           priceFormatter={(value: BarPrice) => {
-            const decimal = new Decimal(value)
-            if(decimal.lt(0.0001)) {
-              return `<${0.0001}`
+            const amount = new Decimal(value)
+            let amountStr = ''
+            if(amount.lt(0.0001)) {
+              amountStr = `<${0.0001}`
             }
-            if(decimal.lt(1)) {
-              return decimal.toFixed(4)
+            if(amount.lt(1)) {
+              amountStr = amount.toFixed(4)
             }
-            if(decimal.lt(1000)) {
-              return decimal.toFixed(1)
+            if(amount.lt(1000)) {
+              amountStr = amount.toFixed(1)
             }
-            return decimal.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            // amountStr = amountStr.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+            return `${amountStr} ONE`
           }}
           tooltipFormatter={(tooltip) => {
             return {
