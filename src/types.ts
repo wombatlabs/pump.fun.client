@@ -147,3 +147,13 @@ export interface Competition {
   winnerToken: Token | null
   createdAt: string
 }
+
+export enum SortField {
+  timestamp = 'timestamp',
+  marketCap = 'marketCap'
+}
+
+export enum SortOrder {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}

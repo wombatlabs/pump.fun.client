@@ -2,7 +2,7 @@ import axios from 'axios'
 import {
   Candle,
   Competition,
-  JWTTokensPair,
+  JWTTokensPair, SortField, SortOrder,
   Token,
   TokenBalance, TokenBurn, TokenEnriched,
   TokenMetadata,
@@ -85,6 +85,8 @@ export interface GetTokensParams {
   isWinner?: boolean
   limit?: number
   offset?: number
+  sortingField?: SortField;
+  sortingOrder?: SortOrder;
 }
 
 export const getTokens = async (params: GetTokensParams = {}) => {

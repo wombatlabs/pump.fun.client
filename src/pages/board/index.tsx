@@ -7,13 +7,13 @@ export const BoardPage = () => {
   const navigate = useNavigate();
 
   return <Box>
-      <Box align={'center'}>
-        <Button type={'text'} onClick={() => navigate('/create')}>
-          <Text color={'accentWhite'} size={'22px'}>Create New Token</Text>
-        </Button>
-      </Box>
+    <Box align={'center'}>
+      <Button type={'text'} onClick={() => navigate('/create')}>
+        <Text color={'accentWhite'} size={'22px'}>Create New Token</Text>
+      </Button>
+    </Box>
     <Box margin={{top: '16px'}}>
-      <TokensList/>
+      <TokensList />
     </Box>
   </Box>
 }

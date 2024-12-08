@@ -1,18 +1,20 @@
 import {Box, Spinner, Text} from "grommet";
 import {useEffect, useState} from "react";
 import {getTokens} from "../../api";
-import {TokenEnriched} from "../../types.ts";
+import {SortField, SortOrder, TokenEnriched} from "../../types.ts";
 import {TokenItem} from "./TokenItem.tsx";
 import {Input, Skeleton} from "antd";
 import styled from "styled-components";
 import {useNavigate} from "react-router-dom";
-import moment from "moment";
 import useDebounce from "../../hooks/useDebounce.ts";
+import {CurrentWinner} from "./CurrentWinner.tsx";
+import {TokenFilters} from "./Filters.tsx";
 
 const TokensContainer = styled(Box)`
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
+    margin-left: -16px;
     
     > div {
         flex: 1 1 calc(33.333% - 16px); /* 3 columns, adjusting for gap */
@@ -32,12 +34,23 @@ const SkeletonToken = () => {
   </Box>
 }
 
+export interface SearchFilter {
+  sortingField: SortField,
+  sortingOrder: SortOrder
+}
+
+const defaultFilter: SearchFilter = {
+  sortingField: SortField.timestamp,
+  sortingOrder: SortOrder.DESC
+}
+
 export const TokensList = () => {
   const [tokens, setTokens] = useState<TokenEnriched[]>([])
   const [currentWinner, setCurrentWinner] = useState<TokenEnriched>()
   const [isInitialLoading, setInitialLoading] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
   const [searchValue, setSearchValue] = useState('')
+  const [searchFilter, setSearchFilter] = useState(defaultFilter)
   const searchValueDebounced = useDebounce(searchValue, 300)
 
   const navigate = useNavigate()
@@ -62,7 +75,10 @@ export const TokensList = () => {
       try {
         setInitialLoading(true)
         const [tokensData, winnersData] = await Promise.all([
-          getTokens(),
+          getTokens({
+            sortingField: searchFilter.sortingField,
+            sortingOrder: searchFilter.sortingOrder
+          }),
           getTokens({ isWinner: true, limit: 1 })
         ])
         setTokens(tokensData)
@@ -74,55 +90,49 @@ export const TokensList = () => {
       }
     }
     loadData()
-  }, []);
+  }, [searchFilter]);
 
-  return <Box>
+  return <Box
+    width={'100vw'}
+    pad={{ left: '16px', right: '16px' }}
+  >
     {(isInitialLoading && !currentWinner) &&
         <Box align={'center'}>
             <SkeletonToken />
         </Box>
     }
     {currentWinner &&
-        <Box align={'center'}>
-            <Box>
-                <Text size={'20px'} color={'golden'}>Past Meme King 👑</Text>
-            </Box>
-            <Box
-                border={{ color: 'golden', size: '1px' }}
-                round={'6px'}
-                margin={{ top: '4px' }}
-                style={{ position: 'relative' }}
-            >
-                <Box style={{ position: 'absolute', right: 0, top: '-24px' }}>
-                    <Text>{moment(+currentWinner.timestamp * 1000).format('MMM DD, YYYY')}</Text>
-                </Box>
-                <TokenItem
-                    key={currentWinner.id}
-                    data={currentWinner}
-                    onClick={() => navigate(`/${currentWinner.address}`)}
-                />
-            </Box>
-        </Box>
+        <CurrentWinner data={currentWinner} />
     }
-    <Box margin={{ top: '16px' }} align={'center'}>
-      <Box direction={'row'} gap={'16px'} align={'center'}>
-        <Box width={'260px'} style={{ position: 'relative' }}>
-          <Input
-            placeholder={'Search for a token'}
-            value={searchValue}
-            allowClear={true}
-            onChange={(e) => setSearchValue(e.target.value || '')}
-          />
-          {isLoading &&
-              <Box style={{ position: 'absolute', right: '-42px', top: '2px' }}>
-                  <Spinner color={'spinner'} />
-              </Box>
-          }
+    <Box margin={{ top: '16px' }} style={{ position: 'relative' }}>
+      <Box style={{ zIndex: 3 }} width={'300px'}>
+        <TokenFilters
+          filter={searchFilter}
+          onChange={(prop: string, value: string) => {
+            setSearchFilter(current => ({ ...current, [prop]: value }))
+          }}
+        />
+      </Box>
+      <Box style={{ position: 'absolute', zIndex: 2 }} width={'100%'} align={'center'}>
+        <Box width={'200px'} direction={'row'} gap={'16px'} align={'center'}>
+          <Box width={'260px'} style={{ position: 'relative' }}>
+            <Input
+              placeholder={'Search for a token'}
+              value={searchValue}
+              allowClear={true}
+              onChange={(e) => setSearchValue(e.target.value || '')}
+            />
+            {isLoading &&
+                <Box style={{ position: 'absolute', right: '-42px', top: '2px' }}>
+                    <Spinner color={'spinner'} />
+                </Box>
+            }
+          </Box>
         </Box>
       </Box>
     </Box>
-    <Box margin={{ top: '8px' }}>
-      {tokens.length === 0 && !isInitialLoading && <Box align={'center'}>
+    <Box align={'center'} margin={{ top: '8px' }}>
+      {tokens.length === 0 && !isInitialLoading && <Box align={'center'} margin={{ top: '8px' }}>
           <Text size={'18px'}>No tokens found</Text>
       </Box>}
       {(tokens.length === 0 && isInitialLoading) &&
@@ -130,9 +140,7 @@ export const TokensList = () => {
             {Array(3).fill(null).map((_, index) => <SkeletonToken key={index} />)}
           </Box>
       }
-      <TokensContainer
-        direction={'row'}
-      >
+      <TokensContainer direction={'row'} width={'100%'}>
         {tokens.map(token => {
           return <TokenItem key={token.id} data={token} onClick={() => navigate(`/${token.address}`)} />
         })}
