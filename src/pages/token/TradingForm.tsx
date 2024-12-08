@@ -187,9 +187,9 @@ export const TradingForm = (props: {
           .toString()
 
         if(type === 'buy') {
-          message.success(`Buy ${amountOutString} ${name} (${symbol}), spend ${amountInString} ONE`, 10);
+          message.success(`Bought ${amountOutString} ${name} (${symbol}), spent ${amountInString} ONE`, 10);
         } else {
-          message.success(`Sell ${amountInString} ${name} (${symbol}), received ${amountOutString} ONE`, 10);
+          message.success(`Sold ${amountInString} ${name} (${symbol}), received ${amountOutString} ONE`, 10);
         }
       }
     } catch (e) {

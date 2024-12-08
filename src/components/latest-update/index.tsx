@@ -124,7 +124,7 @@ export const LatestUpdate = () => {
     if(isTabActive && !isUpdating) {
       updateLatestData()
     }
-  }, 1 * 1000)
+  }, 2 * 1000)
 
   return <Box direction={'row'} gap={'16px'} style={{ position: 'relative', width: '100%' }}>
     <UpdateItem type={'trade'} trade={latestTrade} />
