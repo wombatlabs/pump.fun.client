@@ -24,7 +24,7 @@ export const Leaderboard = () => {
 
   return <Box align={'center'}>
     <Box>
-      <Text size={'20px'} color={'golden'}>Daily Winners 👑</Text>
+      <Text size={'20px'} color={'golden'}>Past Winners 👑</Text>
       <Box gap={'8px'} margin={{ top: '16px' }}>
         {competitions.map(item => {
           const { winnerToken } = item

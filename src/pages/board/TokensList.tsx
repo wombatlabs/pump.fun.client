@@ -85,7 +85,7 @@ export const TokensList = () => {
     {currentWinner &&
         <Box align={'center'}>
             <Box>
-                <Text size={'20px'} color={'golden'}>Daily Meme King 👑</Text>
+                <Text size={'20px'} color={'golden'}>Past Meme King 👑</Text>
             </Box>
             <Box
                 border={{ color: 'golden', size: '1px' }}
