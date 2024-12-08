@@ -273,7 +273,7 @@ export const TradingView = (props: TradingViewProps) => {
             key={tooltip.value}
         >
             <Text color={'accentWhite'}>
-              {moment(+tooltip.time * 1000).format('MMM D, YYYY')}
+              {moment(+tooltip.time * 1000).format('MMM D, YYYY, HH:mm:ss')}
             </Text>
             <Box justify={'between'} margin={{top: '2px'}} gap={'2px'}>
               {tooltip.title &&

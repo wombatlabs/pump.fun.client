@@ -131,27 +131,29 @@ export const TokenPage = () => {
         ? <Skeleton.Input active={true} style={{ width: '300px' }} />
         : token
           ? <TokenHeader data={token} />
-          : <Box><Text>Token not found</Text></Box>
+          : <Box><Text size={'18px'} weight={500}>Token not found</Text></Box>
       }
       <Box direction={'row'} justify={'between'} gap={'48px'}>
         <Box width={'100%'} margin={{ top: '16px' }}>
           <Box style={{ position: 'relative' }}>
             <PriceChart tokenAddress={tokenAddress} />
           </Box>
-          <Box margin={{ top: '32px' }}>
-            <Radio.Group onChange={(e) => setActiveTab(e.target.value)} value={activeTab} style={{ marginBottom: 8 }}>
-              <Radio.Button value="thread">Thread</Radio.Button>
-              <Radio.Button value="trades">Trades</Radio.Button>
-            </Radio.Group>
-            <Box margin={{ top: '16px' }}>
-              {activeTab === 'thread' &&
-                  <TokenComments tokenAddress={tokenAddress} />
-              }
-              {activeTab === 'trades' &&
-                  <TokenTrades tokenAddress={tokenAddress} />
-              }
-            </Box>
-          </Box>
+          {token &&
+              <Box margin={{ top: '32px' }}>
+                  <Radio.Group onChange={(e) => setActiveTab(e.target.value)} value={activeTab} style={{ marginBottom: 8 }}>
+                      <Radio.Button value="thread">Thread</Radio.Button>
+                      <Radio.Button value="trades">Trades</Radio.Button>
+                  </Radio.Group>
+                  <Box margin={{ top: '16px' }}>
+                    {activeTab === 'thread' &&
+                        <TokenComments tokenAddress={tokenAddress} />
+                    }
+                    {activeTab === 'trades' &&
+                        <TokenTrades tokenAddress={tokenAddress} />
+                    }
+                  </Box>
+              </Box>
+          }
         </Box>
         <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }} gap={'24px'}>
           {token && token.isWinner &&

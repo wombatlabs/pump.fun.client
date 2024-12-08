@@ -91,7 +91,7 @@ export const TokenTrades = (props: { tokenAddress: string }) => {
         dataSource={dataSource}
         columns={columns}
         pagination={{
-          pageSize: 100,
+          pageSize: 10,
           position: ['bottomCenter']
       }}
       />

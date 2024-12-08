@@ -170,9 +170,27 @@ export const TradingForm = (props: {
         }
       }
       if(tokenTrade) {
-        const price = new Decimal(tokenTrade.price)
-          .toFixed(4)
-        message.success(`${tokenTrade.type} ${tokenTrade.token.name} (${tokenTrade.token.symbol}) at ${price} ONE`, 5);
+        const {
+          type,
+          amountIn,
+          amountOut,
+          token: { name, symbol }
+        } = tokenTrade
+
+        // const price = new Decimal(tokenTrade.price)
+        //   .toFixed(4)
+        const amountInString = new Decimal(amountIn)
+          .div(10 ** 18)
+          .toString()
+        const amountOutString = new Decimal(amountOut)
+          .div(10 ** 18)
+          .toString()
+
+        if(type === 'buy') {
+          message.success(`Buy ${amountOutString} ${name} (${symbol})`, 10);
+        } else {
+          message.success(`Sell ${amountInString} ${name} (${symbol}), received ${amountOutString} ONE`, 10);
+        }
       }
     } catch (e) {
       console.log('Failed to trade:', e)
