@@ -24,10 +24,10 @@ export const Header = () => {
 
   useEffect(() => {
     const loginUser = async (userAddress: string) => {
-      let userAccount: UserAccount
-      let jwtTokens: JWTTokensPair
-
       try {
+        let userAccount: UserAccount
+        let jwtTokens: JWTTokensPair
+
         const storedJwtTokens = getJWTTokens()
         if(storedJwtTokens) {
           const { address: jwtTokensAddress } = decodeJWT(storedJwtTokens.accessToken)
@@ -36,36 +36,40 @@ export const Header = () => {
             console.log('User account restored from JWT:', data)
             jwtTokens = data.tokens
             userAccount = data.user
+            storeJWTTokens(jwtTokens)
+            setClientState({
+              ...clientState,
+              jwtTokens,
+              userAccount
+            })
+            console.log('Client is logged in using JWT tokens from localStorage', jwtTokens, userAccount)
+            return
           }
         }
 
-        if(!jwtTokens && !userAccount) {
-          const nonce = await getNonce(userAddress)
-          const rawMessage = `I'm signing my one-time nonce: ${nonce}`
-          // const signature = await window.ethereum.request({
-          //   method: "personal_sign",
-          //   params: [rawMessage, userAddress],
-          // })
-          const signature = await signMessageAsync({
-            message: rawMessage
-          })
-          jwtTokens = await verifySignature(userAddress, signature)
-          console.log('Signature is valid, JWT tokens:', jwtTokens)
-          userAccount = await getUserByAddress({ address: userAddress })
-        }
-
-        if(jwtTokens) {
-          storeJWTTokens(jwtTokens)
-        }
+        const nonce = await getNonce(userAddress)
+        const rawMessage = `I'm signing my one-time nonce: ${nonce}`
+        // const signature = await window.ethereum.request({
+        //   method: "personal_sign",
+        //   params: [rawMessage, userAddress],
+        // })
+        const signature = await signMessageAsync({
+          message: rawMessage
+        })
+        jwtTokens = await verifySignature(userAddress, signature)
+        console.log('Signature is valid, JWT tokens:', jwtTokens)
+        userAccount = await getUserByAddress({ address: userAddress })
+        storeJWTTokens(jwtTokens)
         setClientState({
           ...clientState,
           jwtTokens,
           userAccount
         })
+        console.log('Client is logged in', jwtTokens, userAccount)
       } catch (e) {
+        console.error('Failed to login user, disconnect', e)
         onDisconnect()
       }
-
     }
 
     if(userAddress) {
