@@ -8,6 +8,7 @@ import {getTokens, getTrades} from "../../api";
 import {useEffect, useState} from "react";
 import usePoller from "../../hooks/usePoller.ts";
 import useIsTabActive from "../../hooks/useActiveTab.ts";
+import {Link} from "react-router-dom";
 
 const UpdateItem = (props: {
   type: 'token' | 'trade'
@@ -32,12 +33,12 @@ const UpdateItem = (props: {
   return <Box background={background} pad={'6px 12px'} round={'6px'}>
     {(type === 'trade' && trade) &&
       <Text color={'black'}>
-        {trade.user.username} {trade.type === 'buy' ? 'bought' : 'sold'} {tradeAmount} {trade.token.name}
+        {trade.user.username} {trade.type === 'buy' ? 'bought' : 'sold'} {tradeAmount} of <Link to={`/${trade.token.address}`} style={{ color: 'inherit' }}>{trade.token.name}</Link>
       </Text>
     }
     {(type === 'token' && token) &&
         <Text color={'black'}>
-          {token.user?.username} created {token.name} {moment(+token.timestamp * 1000).format('DD/MM/YY')}
+          {token.user?.username} created <Link to={`/${token.address}`} style={{ color: 'inherit' }}>{token.name}</Link> on {moment(+token.timestamp * 1000).format('DD/MM/YY')}
         </Text>
     }
   </Box>
