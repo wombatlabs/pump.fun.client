@@ -1,10 +1,13 @@
 import {Box, Text} from "grommet";
-import {useClientData} from "../../providers/DataProvider.tsx";
-import {Token, TokenTrade} from "../../types.ts";
+import {Token, TokenEnriched, TokenTrade} from "../../types.ts";
 import moment from "moment";
 import {formatUnits} from "viem";
 import {Skeleton} from "antd";
 import Decimal from "decimal.js";
+import {getTokens, getTrades} from "../../api";
+import {useEffect, useState} from "react";
+import usePoller from "../../hooks/usePoller.ts";
+import useIsTabActive from "../../hooks/useActiveTab.ts";
 
 const UpdateItem = (props: {
   type: 'token' | 'trade'
@@ -41,7 +44,42 @@ const UpdateItem = (props: {
 }
 
 export const LatestUpdate = () => {
-  const { state: { latestToken, latestTrade } } = useClientData()
+  const isTabActive = useIsTabActive()
+
+  const [latestTrade, setLatestTrade] = useState<TokenTrade>()
+  const [latestToken, setLatestToken] = useState<TokenEnriched>()
+  const [isUpdating, setUpdating] = useState(false)
+
+  const updateLatestData = async () => {
+    try {
+      setUpdating(true)
+      // const offset = Math.random() < 0.5 ? 0 : 1;
+      const [trades, tokens] = await Promise.allSettled([
+        getTrades({ limit: 1 }),
+        getTokens({ limit: 1 }),
+      ])
+      if(trades.status === 'fulfilled' && trades.value.length > 0) {
+        setLatestTrade(trades.value[0])
+      }
+      if(tokens.status === 'fulfilled' && tokens.value.length > 0) {
+        setLatestToken(tokens.value[0])
+      }
+    } catch (e) {
+      console.error('Failed to update latest data', e)
+    } finally {
+      setUpdating(false)
+    }
+  }
+
+  useEffect(() => {
+    updateLatestData()
+  }, []);
+
+  usePoller(() => {
+    if(isTabActive && !isUpdating) {
+      updateLatestData()
+    }
+  }, 10 * 1000)
 
   return <Box direction={'row'} gap={'16px'}>
     <UpdateItem type={'trade'} trade={latestTrade} />
