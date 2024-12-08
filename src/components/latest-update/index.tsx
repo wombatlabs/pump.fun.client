@@ -9,6 +9,23 @@ import {useEffect, useState} from "react";
 import usePoller from "../../hooks/usePoller.ts";
 import useIsTabActive from "../../hooks/useActiveTab.ts";
 import {Link} from "react-router-dom";
+import styled, {css, keyframes} from "styled-components";
+
+const shake = keyframes`
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  50% { transform: translateX(10px); }
+  75% { transform: translateX(-15px); }
+  100% { transform: translateX(0); }
+`;
+
+const ShakeDiv = styled(Box)<{ isAnimating: boolean }>`
+    padding: 6px 12px;
+    animation: ${props => props.isAnimating
+            ? css`${shake} 200ms ease-in-out;`
+            : `unset`
+    };
+`
 
 const UpdateItem = (props: {
   type: 'token' | 'trade'
@@ -16,6 +33,29 @@ const UpdateItem = (props: {
   token?: Token
 }) => {
   const {type, token, trade} = props
+
+  const [latestActionId, setLatestActionId] = useState<string>('')
+  const [isAnimating, setIsAnimating] = useState(false)
+  const [animationDropTimeout, setAnimationDropTimeout] = useState<number>(0)
+
+  useEffect(() => {
+    const newId = type === 'trade' && trade
+      ? trade.id
+      : type === 'token' && token
+      ? token.id : ''
+
+    if(newId !== latestActionId) {
+      if(latestActionId) {
+        setIsAnimating(true)
+      }
+      setLatestActionId(newId)
+      const timeoutId = setTimeout(() => {
+        setIsAnimating(false)
+      }, 300)
+      clearTimeout(animationDropTimeout)
+      setAnimationDropTimeout(timeoutId)
+    }
+  }, [type, token, trade, animationDropTimeout, latestActionId]);
 
   let background = '#4852FF'
   if(type === 'trade' && trade) {
@@ -30,7 +70,11 @@ const UpdateItem = (props: {
     ? new Decimal(formatUnits(BigInt(trade.amountIn), 18)).toFixed(4)
     : ''
 
-  return <Box background={background} pad={'6px 12px'} round={'6px'}>
+  return <ShakeDiv
+    isAnimating={isAnimating}
+    background={background}
+    round={'6px'}
+  >
     {(type === 'trade' && trade) &&
       <Text color={'black'}>
         {trade.user.username} {trade.type === 'buy' ? 'bought' : 'sold'} {tradeAmount} of <Link to={`/${trade.token.address}`} style={{ color: 'inherit' }}>{trade.token.name}</Link>
@@ -41,7 +85,7 @@ const UpdateItem = (props: {
           {token.user?.username} created <Link to={`/${token.address}`} style={{ color: 'inherit' }}>{token.name}</Link> on {moment(+token.timestamp * 1000).format('DD/MM/YY')}
         </Text>
     }
-  </Box>
+  </ShakeDiv>
 }
 
 export const LatestUpdate = () => {
@@ -80,9 +124,9 @@ export const LatestUpdate = () => {
     if(isTabActive && !isUpdating) {
       updateLatestData()
     }
-  }, 10 * 1000)
+  }, 1 * 1000)
 
-  return <Box direction={'row'} gap={'16px'}>
+  return <Box direction={'row'} gap={'16px'} style={{ position: 'relative', width: '100%' }}>
     <UpdateItem type={'trade'} trade={latestTrade} />
     <UpdateItem type={'token'} token={latestToken} />
   </Box>
