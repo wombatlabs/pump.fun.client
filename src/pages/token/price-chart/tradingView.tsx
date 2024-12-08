@@ -6,7 +6,7 @@ import {
   Time,
   ChartOptions,
   ISeriesApi,
-  PriceFormatterFn
+  PriceFormatterFn, IChartApi
 } from 'lightweight-charts';
 import { darkTheme } from "./theme";
 import styled from "styled-components";
@@ -79,12 +79,12 @@ export const TradingView = (props: TradingViewProps) => {
     width,
     height,
     lineItems,
-    candleItems,
     tooltipFormatter
   } = props;
 
   const chartContainerRef = useRef<HTMLElement>();
-
+  const [chartInstance, setChartInstance] = useState<IChartApi>();
+  const [chartSeries, setChartSeries] = useState<ISeriesApi<"Area", Time>>();
   const [tooltipState, setTooltipState] = useState<TradingViewTooltipState>(defaultTooltipState)
 
   const onCrosshairMove = (param: any, series: ISeriesApi<'Area'>) => {
@@ -226,18 +226,10 @@ export const TradingView = (props: TradingViewProps) => {
       chart.applyOptions(chartOptions)
       chart.timeScale().fitContent();
 
-      if (lineItems) {
-        const newSeries = chart.addAreaSeries();
-        newSeries.setData(lineItems);
-        // newSeries.applyOptions(darkTheme.series)
-        chart.subscribeCrosshairMove((param) => onCrosshairMove(param, newSeries))
-      }
-
-      if (candleItems) {
-        const candlestickSeries = chart.addCandlestickSeries({})
-        candlestickSeries.setData(candleItems)
-      }
-
+      const series = chart.addAreaSeries()
+      chart.subscribeCrosshairMove((param) => onCrosshairMove(param, series))
+      setChartSeries(series)
+      setChartInstance(chart)
       window.addEventListener('resize', handleResize);
 
       return () => {
@@ -246,8 +238,17 @@ export const TradingView = (props: TradingViewProps) => {
         chart.remove();
       };
     },
-    [lineItems, candleItems, chartContainerRef.current]
+    [chartContainerRef.current]
   );
+
+  useEffect(() => {
+    if(chartInstance && chartSeries) {
+      if (lineItems) {
+        chartSeries.setData(lineItems);
+        chartInstance.timeScale().fitContent()
+      }
+    }
+  }, [chartInstance, chartSeries, lineItems]);
 
   const tooltip = useMemo(() => {
     return tooltipFormatter ? tooltipFormatter(tooltipState) : tooltipState

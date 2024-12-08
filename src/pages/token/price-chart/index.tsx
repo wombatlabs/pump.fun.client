@@ -41,6 +41,12 @@ export const PriceChart = (props: {
   }, 5000)
 
   const chartItems: TradingViewItem[] = useMemo(() => {
+    if(candles.length === 0) {
+      return [{
+        time: Date.now() as Time,
+        value: 0,
+      }]
+    }
     return candles.map(item => {
       return {
         time: moment(item.time).unix() as Time,
