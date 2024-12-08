@@ -16,7 +16,7 @@ import {decodeJWT} from "../../utils";
 
 export const Header = () => {
   const navigate = useNavigate();
-  const { address: userAddress } = useAccount();
+  const { address: userAddress, isDisconnected } = useAccount();
   const { signMessageAsync } = useSignMessage()
   const { state: clientState, setState: setClientState, onDisconnect } = useClientData()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
@@ -108,13 +108,24 @@ export const Header = () => {
       <Box align={'center'} onClick={() => setSimpleSwapModalOpened(true)}>
         <GradientButtonText size={'16px'}>Get ONE</GradientButtonText>
       </Box>
-      {(!clientState.userAccount) &&
+      {isDisconnected &&
           <ConnectKitButton />
           // <Button type={'primary'} loading={false} onClick={onConnectClicked}>
           //     Connect Wallet
           // </Button>
       }
-      {clientState.userAccount &&
+      {(!isDisconnected && !clientState.userAccount) &&
+          <Box>
+              <Button style={{ minWidth: '180px' }}>
+                  <UserOutlined />
+                  <Box width={'100%'} justify={'between'} direction={'row'} align={'center'} gap={'8px'}>
+                      <Text size={'16px'}>{userAddress ? userAddress.toLowerCase().slice(2, 8) : 'Connecting...'}</Text>
+                      <Text size={'12px'}>▼</Text>
+                  </Box>
+              </Button>
+          </Box>
+      }
+      {!isDisconnected && clientState.userAccount &&
         <Box>
             <Button
               // size={'large'}
