@@ -114,7 +114,7 @@ export const CreatePage = () => {
 
   const uploadProps: UploadProps = {
     name: 'file',
-    accept: '.jpg,.jpeg,.png,.webp',
+    accept: '.jpg,.jpeg,.png,.gif',
     disabled: !account.address || !userAccount?.address || inProgress || !jwtTokens,
     headers: {
       'Authorization': `Bearer ${jwtTokens ? jwtTokens.accessToken : ''}`
