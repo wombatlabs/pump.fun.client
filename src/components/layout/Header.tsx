@@ -102,8 +102,11 @@ export const Header = () => {
       </Box>
     </Box>
     <Box direction={'row'} align={'center'} gap={'16px'}>
-      <Box onClick={() => navigate('/leaderboard')}>
-        <Text size={'18px'}>Leaderboard</Text>
+      {/*<Box onClick={() => navigate('/leaderboard')}>*/}
+      {/*  <Text size={'18px'}>Leaderboard</Text>*/}
+      {/*</Box>*/}
+      <Box onClick={() => navigate('/rules')}>
+        <Text size={'18px'}>How it works</Text>
       </Box>
       <Box align={'center'} onClick={() => setSimpleSwapModalOpened(true)}>
         <GradientButtonText size={'16px'}>Get ONE</GradientButtonText>

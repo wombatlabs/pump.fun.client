@@ -6,6 +6,7 @@ import {TokenPage} from "./pages/token";
 import {CreatePage} from "./pages/create";
 import {ProfilePage} from "./pages/profile";
 import {Leaderboard} from "./pages/leaderboard";
+import {RulesPage} from "./pages/rules";
 
 export const AppRoutes = () => {
   return <Routes>
@@ -16,6 +17,7 @@ export const AppRoutes = () => {
       <Route path={'/profile/:userAddress'} element={<ProfilePage />} />
       <Route path={'/:tokenAddress'} element={<TokenPage />} />
       <Route path={'/leaderboard'} element={<Leaderboard />} />
+      <Route path={'/rules'} element={<RulesPage />} />
       <Route path={'*'} element={<Page404 />} />
     </Route>
   </Routes>
