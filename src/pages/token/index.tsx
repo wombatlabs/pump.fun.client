@@ -25,10 +25,10 @@ const TokenHeader = (props: { data: TokenEnriched }) => {
   const marketCap = new Decimal(token.marketCap)
 
   return <Box direction={'row'} gap={'16px'} align={'baseline'}>
-    <Text size={'16px'}>{token.name}</Text>
-    <Text size={'16px'}>Ticker: {token.symbol}</Text>
-    <Text size={'16px'} color={'positiveValue'}>Market cap: {marketCap.gt(0) ? marketCap.toFixed(4) : '0'} ONE</Text>
     <Text size={'16px'}>Competition #{token.competition.competitionId}</Text>
+    <Text size={'16px'}>Name: <b>{token.name}</b></Text>
+    <Text size={'16px'}>Ticker: <b>{token.symbol}</b></Text>
+    <Text size={'16px'} color={'positiveValue'}>Market cap: {marketCap.gt(0) ? marketCap.toFixed(4) : '0'} ONE</Text>
     <Text size={'16px'}>
       Created by: <UserTag fontSize={'18px'} user={token.user} />
       {moment(+token.timestamp * 1000).fromNow()}
@@ -166,7 +166,7 @@ export const TokenPage = () => {
         <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }} gap={'24px'}>
           {token && competition && competition.isCompleted && competition.winnerToken?.id !== token?.id &&
               <Box gap={'4px'}>
-                  <Text color={'golden'} size={'16px'}>Competition completed</Text>
+                  <Text color={'golden'} size={'16px'}>Competition is over</Text>
                   <Text size={'16px'}>Winner: <Link to={`/${competition.winnerToken?.address}`}>{competition.winnerToken?.name}</Link></Text>
               </Box>
           }
