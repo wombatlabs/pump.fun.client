@@ -236,7 +236,18 @@ export const getCandles = async (params: GetCandlesParams) => {
   return data
 }
 
-export const getCompetitions = async () => {
-  const {data} = await client.get<Competition[]>('/competitions', {})
+export const getCompetitions = async (params: {
+  competitionId?: number
+  offset?: number
+  limit?: number
+} = {}) => {
+  const {offset = 0, limit = 100} = params
+  const {data} = await client.get<Competition[]>('/competitions', {
+    params: {
+      ...params,
+      offset,
+      limit
+    }
+  })
   return data
 }

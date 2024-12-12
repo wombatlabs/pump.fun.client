@@ -2,8 +2,8 @@ import {Box, Text} from 'grommet'
 import {Button, Image, Skeleton, Tag} from "antd";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
-import {Token, TokenEnriched, WinnerLiquidityProvision} from "../../types.ts";
-import {getTokenBalances, getTokens, getWinnerLiquidityProvisions} from "../../api";
+import {Competition, TokenEnriched, WinnerLiquidityProvision} from "../../types.ts";
+import {getCompetitions, getTokenBalances, getTokens, getWinnerLiquidityProvisions} from "../../api";
 import moment from "moment";
 import {TradingForm} from "./TradingForm.tsx";
 import {TokenComments} from "./TokenComments.tsx";
@@ -19,7 +19,7 @@ import {useClientData} from "../../providers/DataProvider.tsx";
 import {BurnTokenForm} from "./BurnTokenForm.tsx";
 import {PublishToUniswap} from "./PublishToUniswap.tsx";
 
-const TokenHeader = (props: { data: Token }) => {
+const TokenHeader = (props: { data: TokenEnriched }) => {
   const { data: token } = props
 
   const marketCap = new Decimal(token.marketCap)
@@ -28,6 +28,7 @@ const TokenHeader = (props: { data: Token }) => {
     <Text size={'16px'}>{token.name}</Text>
     <Text size={'16px'}>Ticker: {token.symbol}</Text>
     <Text size={'16px'} color={'positiveValue'}>Market cap: {marketCap.gt(0) ? marketCap.toFixed(4) : '0'} ONE</Text>
+    <Text size={'16px'}>Competition #{token.competition.competitionId}</Text>
     <Text size={'16px'}>
       Created by: <UserTag fontSize={'18px'} user={token.user} />
       {moment(+token.timestamp * 1000).fromNow()}
@@ -46,6 +47,7 @@ export const TokenPage = () => {
   const [token, setToken] = useState<TokenEnriched>()
   const [userIsHolder, setUserIsHolder] = useState<boolean>(false)
   const [winnerLiquidityProvision, setWinnerLiquidityProvision] = useState<WinnerLiquidityProvision>()
+  const [competition, setCompetition] = useState<Competition>()
   const [activeTab, setActiveTab] = useState<'thread' | 'trades'>('thread')
 
   const loadData = async (updateStatus = false) => {
@@ -62,6 +64,12 @@ export const TokenPage = () => {
 
       if(tokens.length > 0) {
         setToken(tokens[0])
+        const competitionItems = await getCompetitions({
+          competitionId: tokens[0].competition.competitionId
+        })
+        if(competitionItems.length > 0) {
+          setCompetition(competitionItems[0])
+        }
       }
       if(holders.length > 0) {
         setUserIsHolder(new Decimal(holders[0].balance).gt(0))
@@ -156,7 +164,13 @@ export const TokenPage = () => {
           }
         </Box>
         <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }} gap={'24px'}>
-          {token && token.isWinner &&
+          {token && competition && competition.isCompleted && competition.winnerToken?.id !== token?.id &&
+              <Box gap={'4px'}>
+                  <Text color={'golden'} size={'16px'}>Competition completed</Text>
+                  <Text size={'16px'}>Winner: <Link to={`/${competition.winnerToken?.address}`}>{competition.winnerToken?.name}</Link></Text>
+              </Box>
+          }
+          {token && competition && competition.isCompleted && competition.winnerToken?.id === token?.id &&
               <Box>
                   <Box>
                       <Text size={'22px'} color={'golden'}>Winner 👑</Text>
