@@ -13,10 +13,11 @@ import {addTokenMetadata, getTokens} from "../../api";
 import {useAccount} from "wagmi";
 import {harmonyOne} from "wagmi/chains";
 import { switchNetwork } from '@wagmi/core'
+import {getFormError} from "./utils.ts";
 
 const { Dragger } = Upload;
 
-interface CreateTokenForm {
+export interface CreateTokenForm {
   name: string
   symbol: string
   description: string
@@ -161,9 +162,20 @@ export const CreatePage = () => {
     },
   };
 
+  const tokenFormError = useMemo(() => {
+    return getFormError(tokenForm)
+  }, [tokenForm])
+
   const isFormFilled = useMemo(() => {
     return !!tokenForm.symbol && !!tokenForm.name && !!tokenForm.image && !!tokenForm.description
   }, [tokenForm])
+
+  const isCreateTokenDisabled =
+    !isFormFilled
+    || !!tokenFormError
+    || inProgress
+    || !account.address
+    || !userAccount?.address
 
   return <Box width={'400px'}>
     <Box>
@@ -267,14 +279,21 @@ export const CreatePage = () => {
       }
     </Box>
     <Box margin={{ top: '16px' }} gap={'16px'}>
-      <Button
-        type={'primary'}
-        size={'large'}
-        disabled={!isFormFilled || inProgress || !account.address || !userAccount?.address}
-        onClick={onCreateClicked}
-      >
-        Create Token
-      </Button>
+      <Box>
+        <Button
+          type={'primary'}
+          size={'large'}
+          disabled={isCreateTokenDisabled}
+          onClick={onCreateClicked}
+        >
+          Create Token
+        </Button>
+        {tokenFormError &&
+            <Box>
+                <Text color={'errorMessage'}>{tokenFormError}</Text>
+            </Box>
+        }
+      </Box>
       <Box align={'center'} direction={'row'} gap={'16px'} justify={'center'}>
         {inProgress && <Spinner color={'activeStatus'} />}
         {currentStatus &&
