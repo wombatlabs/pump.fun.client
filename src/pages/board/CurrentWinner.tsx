@@ -27,6 +27,7 @@ export const CurrentWinner = (props: {
       <TokenItem
         key={currentWinner.id}
         data={currentWinner}
+        style={{ minWidth: '100%' }}
         onClick={() => navigate(`/${currentWinner.address}`)}
       />
     </Box>

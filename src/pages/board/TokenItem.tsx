@@ -4,6 +4,7 @@ import styled from "styled-components";
 import moment from 'moment'
 import { Image } from 'antd'
 import Decimal from "decimal.js";
+import {CSSProperties} from "react";
 
 const TokenContainer = styled(Box)`
     border: 1px solid transparent;
@@ -20,6 +21,7 @@ const TokenContainer = styled(Box)`
 
 export const TokenItem = (props: {
   data: TokenEnriched
+  style?: CSSProperties | undefined
   onClick?: () => void
 }) => {
   const { data: {
@@ -28,12 +30,12 @@ export const TokenItem = (props: {
     timestamp,
     user,
     uriData,
-    commentsCount
-  } } = props
+    commentsCount,
+  }} = props
 
   const marketCap = new Decimal(props.data.marketCap)
 
-  return <TokenContainer onClick={props.onClick} direction={'row'} gap={'16px'}>
+  return <TokenContainer onClick={props.onClick} direction={'row'} gap={'16px'} style={props.style}>
     <Box>
       <Image width={'150px'} src={uriData?.image} preview={false} />
     </Box>
