@@ -2,6 +2,8 @@ import {Box} from "grommet";
 import {SearchFilter} from "./TokensList.tsx";
 import {Select} from "antd";
 import {SortField, SortOrder} from "../../types.ts";
+import {useMediaQuery} from "react-responsive";
+import {breakpoints} from "../../utils/breakpoints.ts";
 
 export const TokenFilters = (props: {
   filter: SearchFilter
@@ -9,7 +11,9 @@ export const TokenFilters = (props: {
 }) => {
   const { filter } = props
 
-  return <Box direction={'row'} gap={'16px'}>
+  const isMobile = useMediaQuery({ query: `(max-width: ${breakpoints.mobile})` })
+
+  return <Box direction={isMobile ? 'column' : 'row'} gap={'16px'}>
     <Select
       value={filter.sortingField}
       options={[

@@ -13,6 +13,8 @@ import {getJWTTokens, storeJWTTokens} from "../../utils/localStorage.ts";
 import {getNonce, getUserByAddress, signIn, verifySignature} from "../../api";
 import {JWTTokensPair, UserAccount} from "../../types.ts";
 import {decodeJWT} from "../../utils";
+import {useMediaQuery} from "react-responsive";
+import {breakpoints} from "../../utils/breakpoints.ts";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -21,6 +23,8 @@ export const Header = () => {
   const { state: clientState, setState: setClientState, onDisconnect } = useClientData()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isSimpleSwapModalOpened, setSimpleSwapModalOpened] = useState(false)
+
+  const isMobile = useMediaQuery({ query: `(max-width: ${breakpoints.mobile})` })
 
   useEffect(() => {
     const loginUser = async (userAddress: string) => {
@@ -97,20 +101,20 @@ export const Header = () => {
       }}>
         <GradientButtonText size={'24px'}>PumpOne</GradientButtonText>
       </Box>
-      <Box>
-        <LatestUpdate />
-      </Box>
+      {!isMobile && <Box>
+          <LatestUpdate />
+      </Box>}
     </Box>
     <Box direction={'row'} align={'center'} gap={'16px'}>
       {/*<Box onClick={() => navigate('/leaderboard')}>*/}
       {/*  <Text size={'18px'}>Leaderboard</Text>*/}
       {/*</Box>*/}
-      <Box onClick={() => navigate('/rules')}>
-        <Text size={'18px'}>How it works</Text>
-      </Box>
-      <Box align={'center'} onClick={() => setSimpleSwapModalOpened(true)}>
-        <GradientButtonText size={'16px'}>Get ONE</GradientButtonText>
-      </Box>
+      {!isMobile && <Box onClick={() => navigate('/rules')}>
+          <Text size={'18px'}>How it works</Text>
+      </Box>}
+      {!isMobile && <Box align={'center'} onClick={() => setSimpleSwapModalOpened(true)}>
+          <GradientButtonText size={'16px'}>Get ONE</GradientButtonText>
+      </Box>}
       {isDisconnected &&
           <ConnectKitButton />
           // <Button type={'primary'} loading={false} onClick={onConnectClicked}>
