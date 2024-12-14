@@ -59,9 +59,9 @@ export const ProfileModal = (props: {
     <Box gap={'2px'}>
       <Box direction={'row'} gap={'16px'}>
         <Text size={'16px'}>@{user.username}</Text>
-        {!editForm.isOpened &&
-            <Button size={'small'} onClick={() => setEditForm(current => ({...current, isOpened: true}))}>Edit</Button>
-        }
+        {/*{!editForm.isOpened &&*/}
+        {/*    <Button size={'small'} onClick={() => setEditForm(current => ({...current, isOpened: true}))}>Edit</Button>*/}
+        {/*}*/}
       </Box>
       {editForm.isOpened &&
           <Box gap={'4px'}>

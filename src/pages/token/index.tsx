@@ -102,7 +102,7 @@ export const TokenPage = () => {
   const isBurnAvailable = useMemo(() => {
     if(!isTradeAvailable && token && !token.isWinner) {
       const totalSupply = new Decimal(token.totalSupply)
-      return totalSupply.gt(0)
+      return totalSupply.gt(0) && userIsHolder
     }
     return false
   }, [isTradeAvailable, token, userIsHolder, winnerLiquidityProvision])
