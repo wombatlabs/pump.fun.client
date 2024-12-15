@@ -91,7 +91,7 @@ export const Header = () => {
     justify={'between'}
     style={{
       position: 'absolute',
-      zIndex: 1,
+      zIndex: 10,
       boxShadow: '0 -6px 10px 5px rgba(0, 0, 0, 0.6)'
   }}
   >
