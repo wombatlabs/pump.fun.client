@@ -27,12 +27,12 @@ const TokenHeader = (props: { data: TokenEnriched }) => {
   return <Box direction={'row'} gap={'16px'} align={'baseline'}>
     <Tooltip
       title={<Box>
-        <Text>Started: {moment(+token.competition.timestampStart * 1000).format('DD MMM YY HH:mm:ss')}</Text>
+        <Text>Start: {moment(+token.competition.timestampStart * 1000).format('DD MMM YY HH:mm:ss')}</Text>
         {token.competition.timestampEnd &&
-            <Text>Finished: {moment(+token.competition.timestampEnd * 1000).format('DD MMM YY HH:mm:ss')}</Text>
+            <Text>Finish: {moment(+token.competition.timestampEnd * 1000).format('DD MMM YY HH:mm:ss')}</Text>
         }
         {!token.competition.timestampEnd &&
-            <Text>Finish (est.): {
+            <Text>Finish: after {
               moment(+token.competition.timestampStart * 1000 + 7 * 24 * 60 * 60 * 1000).format('DD MMM YY HH:mm:ss')
             }</Text>
         }
