@@ -9,8 +9,9 @@ import useActiveTab from "../../hooks/useActiveTab.ts";
 
 export const TokenHolders = (props: {
   token?: Token
+  limit?: number
 }) => {
-  const { token } = props
+  const { token, limit = 20 } = props
 
   const isTabActive = useActiveTab()
   const [holders, setHolders] = useState<TokenBalance[]>([])
@@ -18,7 +19,7 @@ export const TokenHolders = (props: {
   const loadData = async () => {
     if(token) {
       try {
-        const data = await getTokenBalances({ tokenAddress: token.address, limit: 20 })
+        const data = await getTokenBalances({ tokenAddress: token.address, limit })
         setHolders(data)
       } catch (e) {
         console.error('Failed to load holders', e)
@@ -38,7 +39,7 @@ export const TokenHolders = (props: {
 
   return <Box>
     <Box>
-      <Text size={'20px'}>Holder distribution</Text>
+      <Text size={'20px'}>Holder distribution{props.limit ? ` (Top ${props.limit})` : ''}</Text>
     </Box>
     <Box margin={{ top: '8px' }}>
       {holders.length === 0 &&

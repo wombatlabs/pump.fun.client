@@ -1,15 +1,13 @@
 import {Box, Text} from 'grommet'
-import {Button, Image, Skeleton, Tag, Tooltip} from "antd";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {Button, Image, Tag} from "antd";
+import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
 import {Competition, TokenEnriched, WinnerLiquidityProvision} from "../../types.ts";
 import {getCompetitions, getTokenBalances, getTokens, getWinnerLiquidityProvisions} from "../../api";
-import moment from "moment";
 import {TradingForm} from "./TradingForm.tsx";
 import {TokenComments} from "./TokenComments.tsx";
 import { Radio } from 'antd';
 import {TokenTrades} from "./TokenTrades.tsx";
-import {UserTag} from "../../components/UserTag.tsx";
 import {TokenHolders} from "./TokenHolders.tsx";
 import {PriceChart} from "./price-chart";
 import usePoller from "../../hooks/usePoller.ts";
@@ -18,42 +16,42 @@ import Decimal from "decimal.js";
 import {useClientData} from "../../providers/DataProvider.tsx";
 import {BurnTokenForm} from "./BurnTokenForm.tsx";
 import {PublishToUniswap} from "./PublishToUniswap.tsx";
+import {useMediaQuery} from "react-responsive";
+import {breakpoints} from "../../utils/breakpoints.ts";
+import {CompetitionWinner} from "./CompetitionWinner.tsx";
+import {TokenHeader} from "./TokenHeader.tsx";
 
-const TokenHeader = (props: { data: TokenEnriched }) => {
-  const { data: token } = props
+const ButtonBack = () => {
+  const navigate = useNavigate()
 
-  const marketCap = new Decimal(token.marketCap)
-
-  return <Box direction={'row'} gap={'16px'} align={'baseline'}>
-    <Tooltip
-      title={<Box>
-        <Text>Start: {moment(+token.competition.timestampStart * 1000).format('DD MMM YY HH:mm:ss')}</Text>
-        {token.competition.timestampEnd &&
-            <Text>Finish: {moment(+token.competition.timestampEnd * 1000).format('DD MMM YY HH:mm:ss')}</Text>
-        }
-        {!token.competition.timestampEnd &&
-            <Text>Finish: after {
-              moment(+token.competition.timestampStart * 1000 + 7 * 24 * 60 * 60 * 1000).format('DD MMM YY HH:mm:ss')
-            }</Text>
-        }
-      </Box>}
+  return <Box align={'center'}>
+    <Button
+      type={'text'}
+      style={{ fontSize: '22px' }}
+      onClick={() => navigate('/board')}
     >
-      <Text size={'16px'} style={{ borderBottom: '1px dashed gray', cursor: 'pointer' }}>
-        Competition #{token.competition.competitionId}
-      </Text>
-    </Tooltip>
-    <Text size={'16px'}>Name: <b>{token.name}</b></Text>
-    <Text size={'16px'}>Ticker: <b>{token.symbol}</b></Text>
-    <Text size={'16px'} color={'positiveValue'}>Market cap: {marketCap.gt(0) ? marketCap.toFixed(4) : '0'} ONE</Text>
-    <Text size={'16px'}>
-      Created by: <UserTag fontSize={'18px'} user={token.user} />
-      {moment(+token.timestamp * 1000).fromNow()}
-    </Text>
+      Go back
+    </Button>
+  </Box>
+}
+
+const TokenCard = (props: { token: TokenEnriched }) => {
+  const { token } = props
+
+  return <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }}>
+    <Box>
+      <Image
+        width={200}
+        src={token.uriData?.image}
+      />
+    </Box>
+    <Box style={{ maxWidth: 'calc(100% - 200px - 16px)' }}>
+      <Text><b>{token.name} (ticker: {token.symbol})</b>: {token.uriData?.description}</Text>
+    </Box>
   </Box>
 }
 
 export const TokenPage = () => {
-  const navigate = useNavigate()
   const isTabActive = useActiveTab()
   const { tokenAddress = '' } = useParams()
 
@@ -65,6 +63,7 @@ export const TokenPage = () => {
   const [winnerLiquidityProvision, setWinnerLiquidityProvision] = useState<WinnerLiquidityProvision>()
   const [competition, setCompetition] = useState<Competition>()
   const [activeTab, setActiveTab] = useState<'thread' | 'trades'>('thread')
+  const isMobile = useMediaQuery({ query: `(max-width: ${breakpoints.mobile})` })
 
   const loadData = async (updateStatus = false) => {
     try {
@@ -140,23 +139,37 @@ export const TokenPage = () => {
     return false
   }, [token, userAccount, isBurnAvailable, winnerLiquidityProvision])
 
-  return <Box width={'100%'} pad={'0 32px'} style={{ maxWidth: '1300px', minWidth: '1000px' }}>
-    <Box align={'center'}>
-      <Button
-        type={'text'}
-        style={{ fontSize: '22px' }}
-        onClick={() => navigate('/board')}
-      >
-        Go back
-      </Button>
-    </Box>
-    <Box margin={{ top: '16px' }} width={'100%'}>
-      {isLoading
-        ? <Skeleton.Input active={true} style={{ width: '300px' }} />
-        : token
-          ? <TokenHeader data={token} />
-          : <Box><Text size={'18px'} weight={500}>Token not found</Text></Box>
+  if(isMobile) {
+    return <Box gap={'24px'} pad={'8px'} align={'center'}>
+      <ButtonBack />
+      <TokenHeader isLoading={isLoading} data={token} />
+      <Box style={{ position: 'relative' }} width={'100%'}>
+        <PriceChart tokenAddress={tokenAddress} />
+      </Box>
+      {token &&
+          <TokenCard token={token} />
       }
+      <Box alignSelf={'start'}>
+        {token &&
+            <TokenHolders token={token} limit={5} />
+        }
+      </Box>
+      <Box alignSelf={'start'}>
+        {token && competition && competition.isCompleted &&
+            <CompetitionWinner
+                token={token}
+                winnerLiquidityProvision={winnerLiquidityProvision}
+                competition={competition}
+            />
+        }
+      </Box>
+    </Box>
+  }
+
+  return <Box width={'100%'} pad={'0 32px'} style={{ maxWidth: '1300px', minWidth: '1000px' }}>
+    <ButtonBack />
+    <Box margin={{ top: '16px' }} width={'100%'}>
+      <TokenHeader isLoading={isLoading} data={token} />
       <Box direction={'row'} justify={'between'} gap={'48px'}>
         <Box width={'100%'} margin={{ top: '16px' }}>
           <Box style={{ position: 'relative' }}>
@@ -180,44 +193,12 @@ export const TokenPage = () => {
           }
         </Box>
         <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }} gap={'24px'}>
-          {token && competition && competition.isCompleted && competition.winnerToken?.id !== token?.id &&
-              <Box gap={'4px'}>
-                  <Text color={'golden'} size={'16px'}>Competition is over</Text>
-                  <Text size={'16px'}>Winner: <Link to={`/${competition.winnerToken?.address}`}>{competition.winnerToken?.name}</Link></Text>
-              </Box>
-          }
-          {token && competition && competition.isCompleted && competition.winnerToken?.id === token?.id &&
-              <Box>
-                  <Box>
-                      <Text size={'22px'} color={'golden'}>Winner 👑</Text>
-                      <Text>{moment(token.timestamp * 1000).format('MMM DD, YYYY')}</Text>
-                  </Box>
-                  {winnerLiquidityProvision &&
-                    <Box margin={{ top: '8px' }} gap={'8px'}>
-                        <Box>
-                            <Link
-                                to={`https://swap.country/#/swap?inputCurrency=0xcf664087a5bb0237a0bad6742852ec6c8d69a27a&outputCurrency=${token.address}`}
-                                target={'_blank'}
-                            >
-                                <Text weight={500}>Trade on swap.country</Text>
-                            </Link>
-                        </Box>
-                        <Box>
-                            <Text>Liquidity Pool:</Text>
-                            <Link
-                                to={`https://info.swap.harmony.one/#/harmony/pools/${winnerLiquidityProvision.pool}`}
-                                target={'_blank'}
-                            >
-                              {winnerLiquidityProvision.pool}
-                            </Link>
-                        </Box>
-                        {/*<Box>*/}
-                        {/*    <Text>Liquidity Amount</Text>*/}
-                        {/*    <Text>{formatUnits(BigInt(winnerLiquidityProvision.liquidity), 18)}</Text>*/}
-                        {/*</Box>*/}
-                    </Box>
-                  }
-              </Box>
+          {token && competition && competition.isCompleted &&
+              <CompetitionWinner
+                  token={token}
+                  winnerLiquidityProvision={winnerLiquidityProvision}
+                  competition={competition}
+              />
           }
           {isTradeAvailable &&
               <TradingForm token={token} />
@@ -229,17 +210,7 @@ export const TokenPage = () => {
               <PublishToUniswap token={token} />
           }
           {token &&
-              <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }}>
-                  <Box>
-                      <Image
-                          width={200}
-                          src={token.uriData?.image}
-                      />
-                  </Box>
-                  <Box style={{ maxWidth: 'calc(100% - 200px - 16px)' }}>
-                      <Text><b>{token.name} (ticker: {token.symbol})</b>: {token.uriData?.description}</Text>
-                  </Box>
-              </Box>
+              <TokenCard token={token} />
           }
           {token && token.uriData &&
             <Box direction={'row'}>

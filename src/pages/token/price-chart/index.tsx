@@ -56,7 +56,6 @@ export const PriceChart = (props: {
   }, [candles])
 
   return <Box
-    style={{ minWidth: '500px' }}
   >
     <Box>
       <Box
