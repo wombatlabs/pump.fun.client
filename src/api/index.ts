@@ -82,6 +82,7 @@ export const getUserTokenCreated = async (params: { address: string }) => {
 
 export interface GetTokensParams {
   search?: string
+  symbol?: string
   isWinner?: boolean
   limit?: number
   offset?: number

@@ -1,7 +1,7 @@
 import {Box, Spinner, Text} from 'grommet'
 import {Button, Input, message, Upload, UploadProps} from "antd";
 import {useNavigate} from "react-router-dom";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {writeContract, waitForTransactionReceipt} from "wagmi/actions";
 import {appConfig} from "../../config.ts";
 import TokenFactoryABI from '../../abi/TokenFactory.json'
@@ -14,6 +14,7 @@ import {useAccount} from "wagmi";
 import {harmonyOne} from "wagmi/chains";
 import { switchNetwork } from '@wagmi/core'
 import {getFormError} from "./utils.ts";
+import useDebounce from "../../hooks/useDebounce.ts";
 
 const { Dragger } = Upload;
 
@@ -46,6 +47,26 @@ export const CreatePage = () => {
   const [currentStatus, setCurrentStatus] = useState('')
   const [inProgress, setInProgress] = useState(false)
   const [isOptionalFieldVisible, setOptionalFieldVisible] = useState(false)
+  const symbolDebounced = useDebounce(tokenForm.symbol, 300)
+  const [validationError, setValidationError] = useState<string>('')
+
+  useEffect(() => {
+    const validateForm = async () => {
+      try {
+        if(tokenForm.symbol.length > 0) {
+          const tokens = await getTokens({ symbol: tokenForm.symbol, limit: 1 })
+          if(tokens.length > 0) {
+            setValidationError('Symbol already exists')
+            return
+          }
+        }
+        setValidationError(getFormError(tokenForm))
+      } catch (e) {
+        console.error('Failed to validate form:', e)
+      }
+    }
+    validateForm()
+  }, [symbolDebounced, tokenForm.name, tokenForm.description])
 
   const onCreateClicked = async () => {
     try {
@@ -162,17 +183,13 @@ export const CreatePage = () => {
     },
   };
 
-  const tokenFormError = useMemo(() => {
-    return getFormError(tokenForm)
-  }, [tokenForm])
-
   const isFormFilled = useMemo(() => {
     return !!tokenForm.symbol && !!tokenForm.name && !!tokenForm.image && !!tokenForm.description
   }, [tokenForm])
 
   const isCreateTokenDisabled =
     !isFormFilled
-    || !!tokenFormError
+    || Boolean(validationError)
     || inProgress
     || !account.address
     || !userAccount?.address
@@ -288,9 +305,9 @@ export const CreatePage = () => {
         >
           Create Token
         </Button>
-        {tokenFormError &&
+        {validationError &&
             <Box>
-                <Text color={'errorMessage'}>{tokenFormError}</Text>
+                <Text color={'errorMessage'}>{validationError}</Text>
             </Box>
         }
       </Box>
