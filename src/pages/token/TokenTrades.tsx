@@ -2,11 +2,10 @@ import {Box, Text} from "grommet";
 import {TokenTrade} from "../../types.ts";
 import {useEffect, useMemo, useState} from "react";
 import {getTrades} from "../../api";
-import {Table, Typography} from "antd";
+import {Table, Tooltip, Typography} from "antd";
 import moment from "moment";
-import { formatUnits } from 'viem'
 import {UserTag} from "../../components/UserTag.tsx";
-
+import {NumberValue} from "../../components/number";
 
 const columns = [
   {
@@ -64,19 +63,19 @@ export const TokenTrades = (props: { tokenAddress: string }) => {
 
   const dataSource: any = useMemo(() => {
     return trades.map(trade => {
-      const amountOne = formatUnits(BigInt(trade.type === 'buy' ? trade.amountIn : trade.amountOut), 18)
-      const amountToken = formatUnits(BigInt(trade.type === 'buy' ? trade.amountOut : trade.amountIn), 18)
       const prefixOne = trade.type === 'buy' ? '-' : '+'
       const prefixToken = trade.type === 'buy' ? '+' : '-'
       return {
         key: trade.id,
         account: <UserTag user={trade.user} />,
         type: <Text color={trade.type === 'buy' ? 'positiveValue' : 'negativeValue'}>{trade.type}</Text>,
-        amountOne: <Text>{prefixOne}{amountOne}</Text>,
-        amountToken: <Text>{prefixToken}{amountToken}</Text>,
-        date: <Text>
-          {moment(+trade.timestamp * 1000).fromNow()}
-        </Text>,
+        amountOne: <Text>{prefixOne}<NumberValue value={trade.type === 'buy' ? trade.amountIn : trade.amountOut} /></Text>,
+        amountToken: <Text>{prefixToken}<NumberValue value={trade.type === 'buy' ? trade.amountOut : trade.amountIn} /></Text>,
+        date: <Tooltip title={<Text>{moment(+trade.timestamp * 1000).format('hh:mm:ss A')}</Text>}>
+          <Text style={{ cursor: 'pointer' }}>
+            {moment(+trade.timestamp * 1000).fromNow()}
+          </Text>
+        </Tooltip>,
         txn: <Typography.Link href={`https://explorer.harmony.one/tx/${trade.txnHash}?shard=0`} target="_blank">
           {trade.txnHash.slice(0, 8)}
         </Typography.Link>

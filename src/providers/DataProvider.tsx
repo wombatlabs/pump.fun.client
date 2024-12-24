@@ -8,6 +8,7 @@ interface ClientState {
   userAccount?: UserAccount
   latestTrade?: TokenTrade
   latestToken?: Token
+  feePercent: bigint
 }
 
 export interface RhoV2Data {
@@ -19,8 +20,7 @@ export interface RhoV2Data {
 const getInitialState = (): RhoV2Data => {
   return {
     state: {
-      jwtTokens: undefined,
-      userAccount: undefined,
+      feePercent: 0n,
     },
     setState: () => {},
     onDisconnect: () => {},
@@ -35,6 +35,26 @@ export const useClientData = () => useContext(UserDataContext);
 export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
   const [ state, setState ] = useState<ClientState>(defaultState.state)
   const { disconnect } = useDisconnect()
+
+  // useEffect(() => {
+  //   const loadContractParams = async () => {
+  //     try {
+  //       const feePercent = await readContract(config, {
+  //         address: appConfig.tokenFactoryAddress as `0x${string}`,
+  //         abi: TokenFactoryABI,
+  //         functionName: 'feePercent',
+  //         args: []
+  //       }) as bigint
+  //       setState(current => ({
+  //         ...current,
+  //         feePercent
+  //       }))
+  //     } catch (e) {
+  //       console.error('Failed to load contract params', e)
+  //     }
+  //   }
+  //   loadContractParams()
+  // }, []);
 
   const onDisconnect = async () => {
     setState(current => {

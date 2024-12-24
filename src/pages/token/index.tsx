@@ -1,5 +1,5 @@
 import {Box, Text} from 'grommet'
-import {Button, Image, Tag} from "antd";
+import {Button, Image, Tag, Typography} from "antd";
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
 import {Competition, TokenEnriched, WinnerLiquidityProvision} from "../../types.ts";
@@ -20,6 +20,7 @@ import {useMediaQuery} from "react-responsive";
 import {breakpoints} from "../../utils/breakpoints.ts";
 import {CompetitionWinner} from "./CompetitionWinner.tsx";
 import {TokenHeader} from "./TokenHeader.tsx";
+import {shortEthAddress} from "../../utils";
 
 const ButtonBack = () => {
   const navigate = useNavigate()
@@ -38,16 +39,21 @@ const ButtonBack = () => {
 const TokenCard = (props: { token: TokenEnriched }) => {
   const { token } = props
 
-  return <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }}>
-    <Box>
-      <Image
-        width={200}
-        src={token.uriData?.image}
-      />
+  return <Box gap={'8px'}>
+    <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }}>
+      <Box>
+        <Image
+          width={200}
+          src={token.uriData?.image}
+        />
+      </Box>
+      <Box style={{ maxWidth: 'calc(100% - 200px - 16px)' }}>
+        <Text><b>{token.name} (ticker: {token.symbol})</b>: {token.uriData?.description}</Text>
+      </Box>
     </Box>
-    <Box style={{ maxWidth: 'calc(100% - 200px - 16px)' }}>
-      <Text><b>{token.name} (ticker: {token.symbol})</b>: {token.uriData?.description}</Text>
-    </Box>
+    <Typography.Text copyable={{ text: token.address }}>
+      Contract address: {shortEthAddress(token.address)}
+    </Typography.Text>
   </Box>
 }
 
@@ -140,7 +146,7 @@ export const TokenPage = () => {
   }, [token, userAccount, isBurnAvailable, winnerLiquidityProvision])
 
   if(isMobile) {
-    return <Box gap={'24px'} pad={'8px'} align={'center'}>
+    return <Box gap={'16px'} pad={'8px'} align={'center'}>
       <ButtonBack />
       <TokenHeader isLoading={isLoading} data={token} />
       <Box style={{ position: 'relative' }} width={'100%'}>

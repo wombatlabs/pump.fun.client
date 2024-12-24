@@ -23,7 +23,7 @@ export const TokenHeader = (
 
   const marketCap = new Decimal(token.marketCap)
 
-  return <Box direction={'row'} wrap={true} gap={{ row: '8px', column: '10px' }}>
+  return <Box direction={'row'} align={'center'} wrap={true} gap={{ row: '8px', column: '10px' }}>
     <Tooltip
       title={<Box>
         <Text>Start: {moment(+token.competition.timestampStart * 1000).format('DD MMM YY HH:mm:ss')}</Text>

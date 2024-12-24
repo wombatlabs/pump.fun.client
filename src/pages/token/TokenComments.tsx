@@ -2,7 +2,7 @@ import {Box, Text, BoxExtendedProps} from "grommet";
 import {UserComment} from "../../types.ts";
 import {useEffect, useMemo, useState} from "react";
 import {addComment, getTokenComments} from "../../api";
-import {Button, Input, message, Modal} from "antd";
+import {Button, Input, message, Modal, Tooltip} from "antd";
 import moment from "moment";
 import {useClientData} from "../../providers/DataProvider.tsx";
 import {UserTag} from "../../components/UserTag.tsx";
@@ -59,7 +59,9 @@ const TokenCommentItem = (props: TokenCommentItemProps) => {
   >
     <Box direction={'row'} gap={'6px'} align={'center'}>
       <UserTag user={user} />
-      <Text>{moment(createdAt).format('HH:MM:ss')}</Text>
+      <Tooltip title={<Text>{moment(createdAt).format('DD MMM YYYY, hh:mm:ss A')}</Text>}>
+        <Text style={{ cursor: 'pointer' }}>{moment(createdAt).format('hh:mm:ss A')}</Text>
+      </Tooltip>
       <Button type={'text'} size={'small'} onClick={onReplyClicked}>
         #{id} [reply]
       </Button>
