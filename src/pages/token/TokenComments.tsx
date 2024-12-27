@@ -10,7 +10,7 @@ import {UserTag} from "../../components/UserTag.tsx";
 interface TokenCommentItemProps extends BoxExtendedProps {
   data: UserComment
   highlightCommentId: number
-  onReplyClicked: () => void
+  replyClicked: () => void
   setHighlightCommentId: (id: number) => void
 }
 
@@ -23,7 +23,7 @@ const TokenCommentItem = (props: TokenCommentItemProps) => {
       createdAt
     },
     highlightCommentId,
-    onReplyClicked,
+    replyClicked,
     setHighlightCommentId
   } = props
 
@@ -62,7 +62,7 @@ const TokenCommentItem = (props: TokenCommentItemProps) => {
       <Tooltip title={<Text>{moment(createdAt).format('DD MMM YYYY, hh:mm:ss A')}</Text>}>
         <Text style={{ cursor: 'pointer' }}>{moment(createdAt).format('hh:mm:ss A')}</Text>
       </Tooltip>
-      <Button type={'text'} size={'small'} onClick={onReplyClicked}>
+      <Button type={'text'} size={'small'} onClick={replyClicked}>
         #{id} [reply]
       </Button>
     </Box>
@@ -141,7 +141,7 @@ export const TokenComments = (props: { tokenAddress: string }) => {
     {comments.map((comment) => <TokenCommentItem
       key={comment.id}
       data={comment}
-      onReplyClicked={() => {
+      replyClicked={() => {
         setReplyMessage(`#${comment.id} `)
         setShowReplyModal(true)
       }}

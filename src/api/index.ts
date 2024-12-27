@@ -220,11 +220,15 @@ export const getTrades = async (params: GetTradeParams) => {
 
 export interface GetCandlesParams {
   tokenAddress: string
+  timestampFrom?: number
+  timestampTo?: number
   offset?: number
   limit?: number
 }
 
-export const getCandles = async (params: GetCandlesParams) => {
+export const getCandles = async (
+  params: GetCandlesParams
+) => {
   const {limit = 100, offset = 0} = params
 
   const {data} = await client.get<Candle[]>('/candles', {
