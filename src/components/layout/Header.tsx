@@ -18,7 +18,7 @@ import {breakpoints} from "../../utils/breakpoints.ts";
 
 export const Header = () => {
   const navigate = useNavigate();
-  const { address: userAddress, isDisconnected } = useAccount();
+  const { address: userAddress, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage()
   const { state: clientState, setState: setClientState, onDisconnect } = useClientData()
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
@@ -115,13 +115,13 @@ export const Header = () => {
       {!isMobile && <Box align={'center'} onClick={() => setSimpleSwapModalOpened(true)}>
           <GradientButtonText size={'16px'}>Get ONE</GradientButtonText>
       </Box>}
-      {isDisconnected &&
+      {!isConnected &&
           <ConnectKitButton />
           // <Button type={'primary'} loading={false} onClick={onConnectClicked}>
           //     Connect Wallet
           // </Button>
       }
-      {(!isDisconnected && !clientState.userAccount) &&
+      {(isConnected && !clientState.userAccount) &&
           <Box>
               <Button style={{ minWidth: '180px' }}>
                   <UserOutlined />
@@ -132,7 +132,7 @@ export const Header = () => {
               </Button>
           </Box>
       }
-      {!isDisconnected && clientState.userAccount &&
+      {isConnected && clientState.userAccount &&
         <Box>
             <Button
               // size={'large'}
