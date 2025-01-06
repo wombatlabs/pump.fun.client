@@ -47,11 +47,12 @@ const getTokenPriceBars = async (
 
   return candlesData.map(item => {
     return {
-      close: +item.highPrice,
-      high: +item.highPrice,
-      low: +item.highPrice,
-      open: +item.highPrice,
-      time: moment(item.time).unix() * 1000
+      low: item.lowPrice,
+      high: item.highPrice,
+      open: item.openPrice,
+      close: item.closePrice,
+      volume: item.volume,
+      time: moment(item.time).unix() * 1000,
     }
   })
 }
@@ -157,14 +158,10 @@ export const CreateDatafeed = (params: DatafeedParams) => {
       const runSubscribeUpdate = async () => {
         try {
           let bars: IBar[] = []
-          // const params = {
-          //   tokenAddress,
-          //   from: Math.round((Date.now() - 60_000) / 1000),
-          //   to: Math.round(Date.now() / 1000),
-          //   interval: Number(resolution) ? `${Number(resolution) / 60}h` : resolution.toLowerCase()
-          // }
           isSubscribeRequestRunning = true
-          bars = await getTokenPriceBars(tokenAddress)
+          const from = Math.round(Date.now() / 1000) - 60 * 60
+          const to = Math.round(Date.now() / 1000)
+          bars = await getTokenPriceBars(tokenAddress, from, to)
           // console.log('[subscribeBars] bars result: ', bars)
           bars.forEach((bar) => {
             onRealtimeCallback(bar);
@@ -176,12 +173,12 @@ export const CreateDatafeed = (params: DatafeedParams) => {
         }
       }
 
-      // subscribeIntervals[subscriberUID] = setInterval(() => {
-      //   if(!isSubscribeRequestRunning) {
-      //     runSubscribeUpdate()
-      //   } else {
-      //   }
-      // }, 5 * 1000)
+      subscribeIntervals[subscriberUID] = setInterval(() => {
+        if(!isSubscribeRequestRunning) {
+          runSubscribeUpdate()
+        } else {
+        }
+      }, 30 * 1000)
     },
     unsubscribeBars: (subscriberUID: string) => {
       console.log('[unsubscribeBars]: Method call with subscriberUID:', subscriberUID);

@@ -100,8 +100,10 @@ export interface JwtTokenPayload {
 }
 
 export interface Candle {
-  highPrice: string
-  lowPrice: string
+  highPrice: number
+  lowPrice: number
+  openPrice: number
+  closePrice: number
   volume: string
   time: string
 }

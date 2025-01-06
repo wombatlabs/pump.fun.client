@@ -43,7 +43,7 @@ export const customFormatters: CustomFormatters = {
   priceFormatterFactory: (symbolInfo: LibrarySymbolInfo | null) => {
     return {
       format(price: number, signPositive?: boolean): string {
-        return price && !isNaN(price) ? `${price.toFixed(2)}%` : '0.00%'
+        return price && !isNaN(price) ? `${price.toFixed(2)} ONE` : '0.00 ONE'
       },
       // formatChange(currentPrice: number, prevPrice: number, signPositive?: boolean): string {
       //   return ''

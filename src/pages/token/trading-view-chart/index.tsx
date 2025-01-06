@@ -34,21 +34,23 @@ export const AdvancedTradingView = (props: {
   const [selectedInterval, setSelectedInterval] = useState<string>(defaultInterval)
   const [chartWidget, setChartWidget] = useState<IChartingLibraryWidget>()
 
-  const symbol = props.tokenName
-  const rateSymbol = `FLOATING_RATE`
-  const floatingRateToggle = useRef<HTMLElement | null>(null);
-
   useEffect(() => {
+    const symbol = props.tokenName
+
     const datafeedParams: DatafeedParams = {
       tokenAddress: props.tokenAddress,
-      symbols: [{
+      symbols: []
+    }
+
+    if(symbol) {
+      datafeedParams.symbols.push({
         symbol,
         full_name: `${ExchangeName}:${symbol}`,
         description: symbol,
         exchange: ExchangeName,
         ticker: symbol,
         type: 'crypto',
-      }]
+      })
     }
 
     const chartOverrides = {
@@ -73,10 +75,10 @@ export const AdvancedTradingView = (props: {
       enabled_features: enabledFeatures,
       theme: 'dark',
       overrides: chartOverrides,
-      compare_symbols: [{
-        symbol: rateSymbol,
-        title: rateSymbol
-      }],
+      // compare_symbols: [{
+      //   symbol: rateSymbol,
+      //   title: rateSymbol
+      // }],
       loading_screen: { backgroundColor: "#1E1E20", foregroundColor: "#1E1E20" },
       custom_formatters: customFormatters,
       custom_css_url: "/tradingview-chart.css",
@@ -108,13 +110,10 @@ export const AdvancedTradingView = (props: {
     });
 
     return () => {
-      floatingRateToggle.current?.remove()
-      floatingRateToggle.current = null
-
       setChartWidget(undefined)
       tvWidget.remove();
     };
-  }, [props.tokenAddress]);
+  }, [props.tokenAddress, props.tokenName]);
 
   return (
     <Box
