@@ -152,7 +152,8 @@ export interface Competition {
 
 export enum SortField {
   timestamp = 'timestamp',
-  marketCap = 'marketCap'
+  marketCap = 'marketCap',
+  lastComment = 'lastComment',
 }
 
 export enum SortOrder {

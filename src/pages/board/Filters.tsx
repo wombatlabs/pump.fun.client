@@ -24,7 +24,15 @@ export const TokenFilters = (props: {
         {
           value: SortField.marketCap,
           label: 'sort: market cap'
-        }
+        },
+        {
+          value: SortField.lastComment,
+          label: 'sort: last comment'
+        },
+        // {
+        //   value: SortField.lastTrade,
+        //   label: 'sort: last trade'
+        // }
       ]}
       style={{ minWidth: '160px' }}
       onChange={(value) => {

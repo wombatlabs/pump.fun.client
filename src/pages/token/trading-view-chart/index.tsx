@@ -3,7 +3,6 @@ import {useEffect, useRef, useState} from 'react';
 import './index.css';
 import {
   ChartingLibraryWidgetOptions,
-  IChartingLibraryWidget,
   ResolutionString,
   TimeFrameType,
   widget,
@@ -31,7 +30,7 @@ export const AdvancedTradingView = (props: {
   const chartContainerRef = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>;
 
   const [selectedInterval, setSelectedInterval] = useState<string>(defaultInterval)
-  const [setChartWidget] = useState<IChartingLibraryWidget>()
+  // const [setChartWidget] = useState<IChartingLibraryWidget>()
 
   useEffect(() => {
     const symbol = props.tokenName
@@ -104,14 +103,12 @@ export const AdvancedTradingView = (props: {
         }
       })
       tvWidget.activeChart().getTimeScale().defaultRightOffset().setValue(20, true)
-      // @ts-ignore
-      setChartWidget(tvWidget)
+      // setChartWidget(tvWidget)
       setIsChartReady(true)
     });
 
     return () => {
-      // @ts-ignore
-      setChartWidget(undefined)
+      // setChartWidget(undefined)
       tvWidget.remove();
     };
   }, [props.tokenAddress, props.tokenName]);
