@@ -77,7 +77,7 @@ export const CreateDatafeed = (params: DatafeedParams) => {
         options: DatafeedSymbolInfo[]
       ) => void
     ) => {
-      console.log('[searchSymbols]: Method call');
+      console.log('[searchSymbols]: Method call', symbolType);
       const symbols = getAllSymbols();
       const newSymbols = symbols.filter(symbol => {
         const isExchangeValid = exchange === '' || symbol.exchange === exchange;
@@ -136,7 +136,7 @@ export const CreateDatafeed = (params: DatafeedParams) => {
       let bars: IBar[] = []
       try {
         // const interval = Number(resolution) ? `${Number(resolution) / 60}h` : resolution.toLowerCase()
-        bars = await getTokenPriceBars(tokenAddress, from, to)
+        bars = await getTokenPriceBars(tokenAddress, from - Math.round(Date.now() - 30 * 24 * 60 * 60), to)
       } catch (e) {
         console.log('[getBars]: historical data error:', e);
         onErrorCallback('Unable to load historical data');
@@ -151,9 +151,9 @@ export const CreateDatafeed = (params: DatafeedParams) => {
       resolution: string,
       onRealtimeCallback: (ohlc: IBar) => void,
       subscriberUID: string,
-      onResetCacheNeededCallback: () => void
+      // onResetCacheNeededCallback: () => void
     ) => {
-      console.log('[subscribeBars]: symbolInfo', symbolInfo);
+      console.log('[subscribeBars]: symbolInfo', symbolInfo, resolution);
 
       const runSubscribeUpdate = async () => {
         try {
@@ -176,9 +176,8 @@ export const CreateDatafeed = (params: DatafeedParams) => {
       subscribeIntervals[subscriberUID] = setInterval(() => {
         if(!isSubscribeRequestRunning) {
           runSubscribeUpdate()
-        } else {
         }
-      }, 30 * 1000)
+      }, 3 * 1000)
     },
     unsubscribeBars: (subscriberUID: string) => {
       console.log('[unsubscribeBars]: Method call with subscriberUID:', subscriberUID);

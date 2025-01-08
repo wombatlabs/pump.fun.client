@@ -103,7 +103,7 @@ export const CreatePage = () => {
       setCurrentStatus('Waiting for confirmation...')
       const receipt = await waitForTransactionReceipt(config, {
         hash: txnHash,
-        confirmations: 6
+        confirmations: 2
       })
       console.log('Create contract receipt:', receipt)
       let mintedToken: Token

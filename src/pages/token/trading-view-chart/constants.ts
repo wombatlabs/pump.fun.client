@@ -1,7 +1,6 @@
 import {
   ChartingLibraryFeatureset,
   CustomFormatters,
-  LibrarySymbolInfo,
   ResolutionString
 } from "../../../charting_library";
 
@@ -40,9 +39,9 @@ export const customFormatters: CustomFormatters = {
   // tickMarkFormatter: (date, tickMarkType) => {
   //   return 'test'
   // },
-  priceFormatterFactory: (symbolInfo: LibrarySymbolInfo | null) => {
+  priceFormatterFactory: () => {
     return {
-      format(price: number, signPositive?: boolean): string {
+      format(price: number): string {
         return price && !isNaN(price) ? `${price.toFixed(2)} ONE` : '0.00 ONE'
       },
       // formatChange(currentPrice: number, prevPrice: number, signPositive?: boolean): string {
