@@ -192,7 +192,7 @@ export const TokenPage = () => {
                       <Radio.Button value="thread">Thread</Radio.Button>
                       <Radio.Button value="trades">Trades</Radio.Button>
                   </Radio.Group>
-                  <Box margin={{ top: '16px' }}>
+                  <Box margin={{ top: '8px' }}>
                     {activeTab === 'thread' &&
                         <TokenComments tokenAddress={tokenAddress} />
                     }
