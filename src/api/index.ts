@@ -161,16 +161,18 @@ export interface GetCommentsParams {
   tokenAddress: string
   limit?: number
   offset?: number
+  sortingOrder?: SortOrder
 }
 
 export const getTokenComments = async (params: GetCommentsParams) => {
-  const {limit = 100, offset = 0, tokenAddress} = params
+  const {limit = 100, offset = 0, tokenAddress, sortingOrder} = params
 
   const {data} = await client.get<UserComment[]>('/comments', {
     params: {
       tokenAddress,
       limit,
-      offset
+      offset,
+      sortingOrder
     }
   })
   return data

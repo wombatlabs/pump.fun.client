@@ -1,5 +1,5 @@
-import {Box, Text, BoxExtendedProps} from "grommet";
-import {UserComment} from "../../types.ts";
+import {Box, BoxExtendedProps, Text} from "grommet";
+import {SortOrder, UserComment} from "../../types.ts";
 import {useEffect, useMemo, useState} from "react";
 import {addComment, getTokenComments} from "../../api";
 import {Button, Input, message, Modal, Tooltip} from "antd";
@@ -89,6 +89,7 @@ export const TokenComments = (props: { tokenAddress: string }) => {
   const { state: { jwtTokens } } = useClientData()
 
   const [isInitialLoading, setInitialLoading] = useState(true);
+  const [sortingOrder, setSortingOrder] = useState<SortOrder>(SortOrder.ASC)
   const [comments, setComments] = useState<UserComment[]>([]);
 
   const [showReplyModal, setShowReplyModal] = useState(false)
@@ -97,7 +98,10 @@ export const TokenComments = (props: { tokenAddress: string }) => {
 
   const loadComments = async () => {
     try {
-      const items = await getTokenComments({ tokenAddress: props.tokenAddress })
+      const items = await getTokenComments({
+        tokenAddress: props.tokenAddress,
+        sortingOrder
+      })
       setComments(items)
     } catch (e) {
       console.log('Failed to load comments', e)
@@ -108,6 +112,10 @@ export const TokenComments = (props: { tokenAddress: string }) => {
     setInitialLoading(true)
     loadComments().finally(() => setInitialLoading(false))
   }, []);
+
+  useEffect(() => {
+    loadComments()
+  }, [sortingOrder]);
 
   const onPostReplyClicked = async () => {
     try {
@@ -133,6 +141,27 @@ export const TokenComments = (props: { tokenAddress: string }) => {
   }
 
   return <Box>
+    <Box
+      direction={'row'}
+      align={'center'}
+      gap={'16px'}
+      margin={{ bottom: '16px' }}
+    >
+      <Box width={'160px'}>
+        <Button onClick={
+          () => setSortingOrder(sortingOrder === SortOrder.DESC ? SortOrder.ASC : SortOrder.DESC)
+        }>sort: time ({sortingOrder.toLowerCase()}) {
+          sortingOrder === SortOrder.DESC ? '↓' : '↑'
+        }</Button>
+      </Box>
+      {comments.length > 10 &&
+          <Box width={'120px'}>
+              <Button type={'primary'} onClick={() => setShowReplyModal(true)}>
+                  Post a reply
+              </Button>
+          </Box>
+      }
+    </Box>
     {!isInitialLoading && comments.length === 0 &&
       <Box>
           <Text size={'18px'}>No comments yet. Be the first to share your thoughts!</Text>
@@ -178,7 +207,7 @@ export const TokenComments = (props: { tokenAddress: string }) => {
         />
         <Box gap={'16px'}>
           <Button type={'primary'} size={'large'} onClick={onPostReplyClicked}>
-            Post reply
+            Post a reply
           </Button>
           <Button type={'default'} onClick={() => setShowReplyModal(false)}>
             Cancel
