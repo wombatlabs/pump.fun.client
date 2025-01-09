@@ -154,6 +154,7 @@ export enum SortField {
   timestamp = 'timestamp',
   marketCap = 'marketCap',
   lastComment = 'lastComment',
+  lastTrade = 'lastTrade',
 }
 
 export enum SortOrder {
