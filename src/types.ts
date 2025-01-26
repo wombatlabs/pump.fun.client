@@ -5,6 +5,7 @@ export interface UserAccount {
   createdAt: string
   updatedAt: string
   tokens: Token[]
+  isEnabled: boolean
 }
 
 export interface UserComment {

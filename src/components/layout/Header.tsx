@@ -1,6 +1,6 @@
 import {Box, Text} from "grommet";
 import {Button, Modal} from "antd";
-import {UserOutlined} from "@ant-design/icons";
+import {UserOutlined, WarningOutlined} from "@ant-design/icons";
 import {useClientData} from "../../providers/DataProvider.tsx";
 import {ProfileModal} from "./ProfileModal.tsx";
 import {useEffect, useState} from "react";
@@ -141,6 +141,9 @@ export const Header = () => {
                 onClick={() => setIsProfileModalOpen(true)}
                 style={{ minWidth: '180px' }}
             >
+                {!clientState.userAccount.isEnabled &&
+                    <WarningOutlined style={{ color: 'red' }} />
+                }
                 <UserOutlined />
                 <Box width={'100%'} justify={'between'} direction={'row'} align={'center'} gap={'8px'}>
                     <Text size={'16px'}>{clientState.userAccount?.username}</Text>

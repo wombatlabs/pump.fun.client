@@ -6,6 +6,7 @@ import {Link} from "react-router-dom";
 import {updateUser} from "../../api";
 import {useState} from "react";
 import axios from "axios";
+import {WarningOutlined} from "@ant-design/icons";
 
 interface EditForm {
   isOpened: boolean
@@ -59,10 +60,16 @@ export const ProfileModal = (props: {
     <Box gap={'2px'}>
       <Box direction={'row'} gap={'16px'}>
         <Text size={'16px'}>@{user.username}</Text>
-        {/*{!editForm.isOpened &&*/}
-        {/*    <Button size={'small'} onClick={() => setEditForm(current => ({...current, isOpened: true}))}>Edit</Button>*/}
-        {/*}*/}
+        {!editForm.isOpened &&
+            <Button size={'small'} onClick={() => setEditForm(current => ({...current, isOpened: true}))}>Edit</Button>
+        }
       </Box>
+      {!user.isEnabled &&
+          <Box direction={'row'} gap={'8px'} margin={{ top: '8px' }}>
+              <WarningOutlined style={{ color: 'red' }} />
+              <Text color={'errorMessage'}>Your user account has been disabled. New tokens cannot be created at this time. Please contact support for further details.</Text>
+          </Box>
+      }
       {editForm.isOpened &&
           <Box gap={'4px'}>
               <Box direction={'row'} gap={'8px'} margin={{ top: '16px' }}>
