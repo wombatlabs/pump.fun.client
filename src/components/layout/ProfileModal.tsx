@@ -65,9 +65,12 @@ export const ProfileModal = (props: {
         }
       </Box>
       {!user.isEnabled &&
-          <Box direction={'row'} gap={'8px'} margin={{ top: '8px' }}>
+          <Box direction={'row'} gap={'16px'} margin={{ top: '8px' }}>
               <WarningOutlined style={{ color: 'red' }} />
-              <Text color={'errorMessage'}>Your user account has been disabled. New tokens cannot be created at this time. Please contact support for further details.</Text>
+              <Box>
+                  <Text color={'errorMessage'}>Your user account has been disabled</Text>
+                  <Text color={'errorMessage'}>Please contact support for further details</Text>
+              </Box>
           </Box>
       }
       {editForm.isOpened &&
