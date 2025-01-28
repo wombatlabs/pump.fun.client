@@ -1,5 +1,5 @@
-import {Box, Text} from 'grommet'
-import {Button, Image, Tag, Typography} from "antd";
+import {Box} from 'grommet'
+import {Button, Tag} from "antd";
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
 import {Competition, TokenEnriched, WinnerLiquidityProvision} from "../../types.ts";
@@ -20,8 +20,8 @@ import {useMediaQuery} from "react-responsive";
 import {breakpoints} from "../../utils/breakpoints.ts";
 import {CompetitionWinner} from "./CompetitionWinner.tsx";
 import {TokenHeader} from "./TokenHeader.tsx";
-import {shortEthAddress} from "../../utils";
 import {AdvancedTradingView} from "./trading-view-chart";
+import {TokenCard} from "../../components/token";
 
 const ButtonBack = () => {
   const navigate = useNavigate()
@@ -34,27 +34,6 @@ const ButtonBack = () => {
     >
       Go back
     </Button>
-  </Box>
-}
-
-const TokenCard = (props: { token: TokenEnriched }) => {
-  const { token } = props
-
-  return <Box gap={'8px'}>
-    <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }}>
-      <Box>
-        <Image
-          width={200}
-          src={token.uriData?.image}
-        />
-      </Box>
-      <Box style={{ maxWidth: 'calc(100% - 200px - 16px)' }}>
-        <Text><b>{token.name} (ticker: {token.symbol})</b>: {token.uriData?.description}</Text>
-      </Box>
-    </Box>
-    <Typography.Text copyable={{ text: token.address }}>
-      Contract address: {shortEthAddress(token.address)}
-    </Typography.Text>
   </Box>
 }
 
