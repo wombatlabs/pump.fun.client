@@ -7,6 +7,7 @@ import {CreatePage} from "./pages/create";
 import {ProfilePage} from "./pages/profile";
 import {Leaderboard} from "./pages/leaderboard";
 import {RulesPage} from "./pages/rules";
+import {ReportTokenPage} from "./pages/report/token";
 
 export const AppRoutes = () => {
   return <Routes>
@@ -16,6 +17,7 @@ export const AppRoutes = () => {
       <Route path={'/board'} element={<BoardPage />} />
       <Route path={'/profile/:userAddress'} element={<ProfilePage />} />
       <Route path={'/:tokenAddress'} element={<TokenPage />} />
+      <Route path={'/report/token/:tokenAddress'} element={<ReportTokenPage />} />
       <Route path={'/leaderboard'} element={<Leaderboard />} />
       <Route path={'/rules'} element={<RulesPage />} />
       <Route path={'*'} element={<Page404 />} />
