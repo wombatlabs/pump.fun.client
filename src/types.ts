@@ -162,3 +162,12 @@ export enum SortOrder {
   ASC = 'ASC',
   DESC = 'DESC',
 }
+
+export interface UserReport {
+  id: string
+  tokenAddress?: string
+  userAddress?: string
+  reporterUserAddress?: string
+  details?: string
+  createdAt: string
+}

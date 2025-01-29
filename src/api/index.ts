@@ -8,7 +8,7 @@ import {
   TokenMetadata,
   TokenTrade,
   UserAccount,
-  UserComment,
+  UserComment, UserReport,
   WinnerLiquidityProvision
 } from "../types.ts";
 import {appConfig} from "../config.ts";
@@ -256,5 +256,20 @@ export const getCompetitions = async (params: {
       limit
     }
   })
+  return data
+}
+
+export interface PostReportParams {
+  type: number
+  tokenAddress?: string
+  userAddress?: string
+  reporterUserAddress?: string
+  details?: string
+}
+
+export const sendReport = async (
+  params: PostReportParams
+) => {
+  const {data} = await client.post<UserReport>('/report', params)
   return data
 }

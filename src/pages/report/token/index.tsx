@@ -1,10 +1,12 @@
-import {Button, Input, Radio} from 'antd';
+import {Button, Input, message, Radio} from 'antd';
 import { Box, Text } from 'grommet'
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {TokenEnriched} from "../../../types.ts";
-import {getTokens} from "../../../api";
+import {getTokens, sendReport} from "../../../api";
 import {TokenCard} from "../../../components/token";
+import {useAccount} from "wagmi";
+import {AxiosError} from "axios";
 
 const radioStyle: React.CSSProperties = {
   display: 'flex',
@@ -39,10 +41,34 @@ const AllReportTypes = Object.keys(ReportTypeMap)
 
 export const ReportTokenPage = () => {
   const { tokenAddress = '' } = useParams()
+  const account = useAccount()
 
   const [token, setToken] = useState<TokenEnriched>()
-  const [reportType, setReportType] = useState('')
+  const [reportType, setReportType] = useState<number>()
   const [reportDetails, setReportDetails] = useState('')
+
+  const onSubmit = async () => {
+    try {
+      if(!reportType) {
+        return
+      }
+      const report = await sendReport({
+        type: Number(reportType),
+        tokenAddress,
+        details: reportDetails,
+        reporterUserAddress: account.address
+      })
+      console.log('Report sent:', report)
+      message.success(`Report successfully sent`, 10);
+    } catch (e) {
+      const responseData: any = (e as AxiosError).response?.data
+      let messageString = responseData && responseData.message
+        ? responseData.message
+        : 'Unknown error'
+      console.error('Failed to send report:', e)
+      message.error(`Failed to send report: ${messageString}`, 10);
+    }
+  }
 
   useEffect(() => {
     const loadData = async () => {
@@ -101,6 +127,7 @@ export const ReportTokenPage = () => {
         type={'primary'}
         disabled={!reportType}
         danger
+        onClick={onSubmit}
       >Send Report</Button>
     </Box>
   </Box>

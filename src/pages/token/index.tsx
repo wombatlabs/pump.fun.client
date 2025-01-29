@@ -1,6 +1,6 @@
-import {Box} from 'grommet'
+import {Box, Text} from 'grommet'
 import {Button, Tag} from "antd";
-import {useNavigate, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
 import {Competition, TokenEnriched, WinnerLiquidityProvision} from "../../types.ts";
 import {getCompetitions, getTokenBalances, getTokens, getWinnerLiquidityProvisions} from "../../api";
@@ -224,6 +224,13 @@ export const TokenPage = () => {
           {token &&
               <TokenHolders token={token} />
           }
+          <Box>
+            <Link
+              to={`/report/token/${tokenAddress}`}
+            >
+              <Text>Report</Text>
+            </Link>
+          </Box>
         </Box>
       </Box>
     </Box>
