@@ -96,11 +96,11 @@ export const TokensList = () => {
     width={'100vw'}
     pad={{ left: '16px', right: '16px' }}
   >
-    {(isInitialLoading && !currentWinner) &&
-        <Box align={'center'}>
-            <SkeletonToken />
-        </Box>
-    }
+    {/*{(isInitialLoading && !currentWinner) &&*/}
+    {/*    <Box align={'center'}>*/}
+    {/*        <SkeletonToken />*/}
+    {/*    </Box>*/}
+    {/*}*/}
     {currentWinner &&
         <CurrentWinner data={currentWinner} />
     }
