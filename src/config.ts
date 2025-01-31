@@ -1,7 +1,7 @@
 export const appConfig = {
   walletConnectProjectId: 'd9582a28e2633cc50849bab7aa9ad668',
   apiUrl: 'http://localhost:8085',
-  tokenFactoryAddress: '0xEa5CE8534c4a1462C56Ef82a0a82B7770c0c29ea',
+  tokenFactoryAddress: '0x3d2f3d9385980A56fCb216571e074C7906Fb50eB',
 }
 
 // apiUrl:

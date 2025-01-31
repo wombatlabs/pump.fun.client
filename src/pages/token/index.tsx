@@ -65,11 +65,13 @@ export const TokenPage = () => {
 
       if(tokens.length > 0) {
         setToken(tokens[0])
-        const competitionItems = await getCompetitions({
-          competitionId: tokens[0].competition.competitionId
-        })
-        if(competitionItems.length > 0) {
-          setCompetition(competitionItems[0])
+        if(tokens[0].competition) {
+          const competitionItems = await getCompetitions({
+            competitionId: tokens[0].competition.competitionId
+          })
+          if(competitionItems.length > 0) {
+            setCompetition(competitionItems[0])
+          }
         }
       }
       if(holders.length > 0) {
@@ -94,10 +96,11 @@ export const TokenPage = () => {
   }, 3000)
 
   const isTradeAvailable = useMemo(() => {
-    if(token) {
-      return !token.competition.isCompleted
-    }
-    return false
+    // if(token && token.competition) {
+    //   return !token.competition.isCompleted
+    // }
+    // return false
+    return Boolean(token)
   }, [token])
 
   const isBurnAvailable = useMemo(() => {
