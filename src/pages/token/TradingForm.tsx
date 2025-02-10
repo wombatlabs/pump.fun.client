@@ -4,7 +4,6 @@ import styled from "styled-components";
 import {useEffect, useMemo, useState} from "react";
 import {useAccount, useBalance, useWriteContract} from "wagmi";
 import TokenFactoryABI from '../../abi/TokenFactory.json'
-import {appConfig} from "../../config.ts";
 import { parseUnits, formatUnits } from 'viem'
 import {Token, TokenTrade} from "../../types.ts";
 import {waitForTransactionReceipt, readContract} from "wagmi/actions";
@@ -89,7 +88,7 @@ export const TradingForm = (props: {
         const amountString = new Decimal(debouncedAmount || 0).toFixed()
         const amountBigInt = parseUnits(amountString, 18)
         const amount = await readContract(config, {
-          address: appConfig.tokenFactoryAddress as `0x${string}`,
+          address: token.tokenFactoryAddress as `0x${string}`,
           abi: TokenFactoryABI,
           functionName,
           args: [token.address, amountBigInt]
@@ -145,7 +144,7 @@ export const TradingForm = (props: {
       }
       const txnHash = await writeContractAsync({
         abi: TokenFactoryABI,
-        address: appConfig.tokenFactoryAddress as `0x${string}`,
+        address: token.tokenFactoryAddress as `0x${string}`,
         functionName: selectedSide === 'buy' ? 'buy' : 'sell',
         args,
         value: selectedSide === 'buy' ? value : undefined

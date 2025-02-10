@@ -1,12 +1,12 @@
 import {Box, Spinner, Text} from 'grommet'
-import {Button, Input, message, Upload, UploadProps} from "antd";
+import {Button, Checkbox, Input, message, Upload, UploadProps} from "antd";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
 import {writeContract, waitForTransactionReceipt} from "wagmi/actions";
-import {appConfig} from "../../config.ts";
+import {appConfig, getTokenFactoryAddress} from "../../config.ts";
 import TokenFactoryABI from '../../abi/TokenFactory.json'
 import {config} from "../../wagmi.ts";
-import { InboxOutlined } from '@ant-design/icons';
+import { InboxOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import {useClientData} from "../../providers/DataProvider.tsx";
 import {Token, TokenMetadata} from "../../types.ts";
 import {addTokenMetadata, getTokens} from "../../api";
@@ -24,6 +24,7 @@ export interface CreateTokenForm {
   twitterLink: string
   telegramLink: string
   websiteLink: string
+  isCompetitionsEnabled: boolean
 }
 
 const defaultFormState: CreateTokenForm = {
@@ -33,7 +34,8 @@ const defaultFormState: CreateTokenForm = {
   image: '',
   twitterLink: '',
   telegramLink: '',
-  websiteLink: ''
+  websiteLink: '',
+  isCompetitionsEnabled: true
 }
 
 export const CreatePage = () => {
@@ -91,8 +93,7 @@ export const CreatePage = () => {
 
       setCurrentStatus('Minting contract...')
       const txnHash = await writeContract(config, {
-        // @ts-ignore
-        address: appConfig.tokenFactoryAddress,
+        address: getTokenFactoryAddress(tokenForm.isCompetitionsEnabled),
         abi: TokenFactoryABI,
         args: [tokenForm.name, tokenForm.symbol, metadataUrl],
         functionName: 'createToken'
@@ -192,7 +193,7 @@ export const CreatePage = () => {
     || !account.address
     || !userAccount?.address
 
-  return <Box width={'400px'}>
+  return <Box width={'416px'}>
     <Box>
       <Button type={'text'} style={{ fontSize: '22px' }} onClick={() => navigate('/board')}>
         Go back
@@ -228,7 +229,7 @@ export const CreatePage = () => {
       <Box>
         <Text color={'accentLabel'} weight={500}>description</Text>
         <Input.TextArea
-          rows={4}
+          rows={2}
           value={tokenForm.description}
           size={'large'}
           onChange={(e) => setTokenForm(current => {
@@ -250,6 +251,22 @@ export const CreatePage = () => {
             banned files.
           </p>
         </Dragger>
+      </Box>
+    </Box>
+    <Box margin={{ top: '16px' }} direction={'row'} justify={'between'}>
+      <Checkbox
+        checked={tokenForm.isCompetitionsEnabled}
+        onChange={(e) => {
+        setTokenForm(current => {
+          return {
+            ...current,
+            isCompetitionsEnabled: e.target.checked
+          }
+        })
+      }}>Enable Competition mode</Checkbox>
+      <Box direction={'row'} gap={'4px'} style={{ borderBottom: '1px dashed gray' }}>
+        <Text>How competitions work?</Text>
+        <QuestionCircleOutlined />
       </Box>
     </Box>
     <Box margin={{ top: '16px' }}>

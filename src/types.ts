@@ -31,6 +31,7 @@ export interface Token {
   id: string;
   txnHash: string
   blockNumber: number
+  tokenFactoryAddress: string
   address: string
   name: string
   symbol: string
@@ -49,7 +50,7 @@ export interface Token {
 // GET /tokens enriched token response
 export interface TokenEnriched extends Token {
   commentsCount: number
-  competition?: Competition
+  competition: Competition | null
 }
 
 export interface TokenMetadata {

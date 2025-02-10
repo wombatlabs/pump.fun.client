@@ -4,7 +4,6 @@ import {Button, message} from "antd";
 import {useState} from "react";
 import {useWriteContract} from "wagmi";
 import TokenFactoryABI from "../../abi/TokenFactory.json";
-import {appConfig} from "../../config.ts";
 import {waitForTransactionReceipt} from "wagmi/actions";
 import {config} from "../../wagmi.ts";
 import {getTokenBurns} from "../../api";
@@ -38,7 +37,7 @@ export const BurnTokenForm = (props: {
       setCurrentStatus('Signing the transaction...')
       const txnHash = await writeContractAsync({
         abi: TokenFactoryABI,
-        address: appConfig.tokenFactoryAddress as `0x${string}`,
+        address: token.tokenFactoryAddress as `0x${string}`,
         functionName: 'burnTokenAndMintWinner',
         args: [tokenAddress],
       })
