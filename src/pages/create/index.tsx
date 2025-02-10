@@ -1,6 +1,6 @@
 import {Box, Spinner, Text} from 'grommet'
-import {Button, Checkbox, Input, message, Upload, UploadProps} from "antd";
-import {useNavigate} from "react-router-dom";
+import {Button, Checkbox, Input, message, Tooltip, Upload, UploadProps} from "antd";
+import {Link, useNavigate} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
 import {writeContract, waitForTransactionReceipt} from "wagmi/actions";
 import {appConfig, getTokenFactoryAddress} from "../../config.ts";
@@ -264,10 +264,25 @@ export const CreatePage = () => {
           }
         })
       }}>Enable Competition mode</Checkbox>
-      <Box direction={'row'} gap={'4px'} style={{ borderBottom: '1px dashed gray' }}>
-        <Text>How competitions work?</Text>
-        <QuestionCircleOutlined />
-      </Box>
+      <Tooltip
+        title={<Box gap={'4px'}>
+          <Text>
+            1. Tokens compete in weekly rounds to achieve the highest net liquidity.
+          </Text>
+          <Text>
+            2. The competition ends every 7 days if a token reaches 420,000 ONE in net liquidity.
+          </Text>
+          <Text>
+            3. The winning token is then listed on swap.country with a new liquidity pool created from all the net liquidity, and other tokens from the round can be exchanged into the winner token.
+          </Text>
+          <Link to={'/rules/'}>Read More</Link>
+        </Box>}
+      >
+        <Box direction={'row'} gap={'4px'} style={{ borderBottom: '1px dashed gray' }}>
+          <Text>How competition works?</Text>
+          <QuestionCircleOutlined />
+        </Box>
+      </Tooltip>
     </Box>
     <Box margin={{ top: '16px' }}>
       <Text
