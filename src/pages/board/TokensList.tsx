@@ -9,6 +9,8 @@ import {useNavigate} from "react-router-dom";
 import useDebounce from "../../hooks/useDebounce.ts";
 import {CurrentWinner} from "./CurrentWinner.tsx";
 import {TokenFilters} from "./Filters.tsx";
+import {useMediaQuery} from "react-responsive";
+import {breakpoints} from "../../utils/breakpoints.ts";
 
 const TokensContainer = styled(Box)`
     display: flex;
@@ -35,13 +37,15 @@ const SkeletonToken = () => {
 }
 
 export interface SearchFilter {
-  sortingField: SortField,
+  sortingField: SortField
   sortingOrder: SortOrder
+  isCompetition: boolean
 }
 
 const defaultFilter: SearchFilter = {
   sortingField: SortField.timestamp,
-  sortingOrder: SortOrder.DESC
+  sortingOrder: SortOrder.DESC,
+  isCompetition: false
 }
 
 export const TokensList = () => {
@@ -54,6 +58,7 @@ export const TokensList = () => {
   const searchValueDebounced = useDebounce(searchValue, 300)
 
   const navigate = useNavigate()
+  const isMobile = useMediaQuery({ query: `(max-width: ${breakpoints.mobile})` })
 
   useEffect(() => {
     const loadData = async () => {
@@ -77,7 +82,8 @@ export const TokensList = () => {
         const [tokensData, winnersData] = await Promise.all([
           getTokens({
             sortingField: searchFilter.sortingField,
-            sortingOrder: searchFilter.sortingOrder
+            sortingOrder: searchFilter.sortingOrder,
+            isCompetition: !searchFilter.isCompetition ? undefined : true
           }),
           getTokens({ isWinner: true, limit: 1 })
         ])
@@ -105,31 +111,31 @@ export const TokensList = () => {
         <CurrentWinner data={currentWinner} />
     }
     <Box margin={{ top: '16px' }} style={{ position: 'relative' }}>
-      <Box style={{ zIndex: 3 }} width={'300px'}>
+      <Box style={{ zIndex: 3 }}>
         <TokenFilters
           filter={searchFilter}
-          onChange={(prop: string, value: string) => {
+          onChange={(prop: string, value: string | boolean) => {
             setSearchFilter(current => ({ ...current, [prop]: value }))
           }}
         />
       </Box>
-      <Box style={{ position: 'absolute', zIndex: 2 }} width={'100%'} align={'center'}>
-        <Box width={'200px'} direction={'row'} gap={'16px'} align={'center'}>
-          <Box width={'260px'} style={{ position: 'relative' }}>
-            <Input
-              placeholder={'Search for a token'}
-              value={searchValue}
-              allowClear={true}
-              onChange={(e) => setSearchValue(e.target.value || '')}
-            />
-            {isLoading &&
-                <Box style={{ position: 'absolute', right: '-42px', top: '2px' }}>
-                    <Spinner color={'spinner'} />
-                </Box>
-            }
+      {!isMobile && <Box style={{ position: 'absolute', zIndex: 2 }} width={'100%'} align={'center'}>
+          <Box width={'200px'} direction={'row'} gap={'16px'} align={'center'}>
+              <Box width={'260px'} style={{ position: 'relative' }}>
+                  <Input
+                      placeholder={'Search for a token'}
+                      value={searchValue}
+                      allowClear={true}
+                      onChange={(e) => setSearchValue(e.target.value || '')}
+                  />
+                {isLoading &&
+                    <Box style={{ position: 'absolute', right: '-42px', top: '2px' }}>
+                        <Spinner color={'spinner'} />
+                    </Box>
+                }
+              </Box>
           </Box>
-        </Box>
-      </Box>
+      </Box>}
     </Box>
     <Box align={'center'} margin={{ top: '8px' }}>
       {tokens.length === 0 && !isInitialLoading && <Box align={'center'} margin={{ top: '8px' }}>

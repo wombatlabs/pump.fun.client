@@ -96,11 +96,10 @@ export const TokenPage = () => {
   }, 3000)
 
   const isTradeAvailable = useMemo(() => {
-    // if(token && token.competition) {
-    //   return !token.competition.isCompleted
-    // }
-    // return false
-    return Boolean(token)
+    if(token && token.competition) {
+      return !token.competition.isCompleted
+    }
+    return true
   }, [token])
 
   const isBurnAvailable = useMemo(() => {

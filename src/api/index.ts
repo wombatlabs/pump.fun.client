@@ -88,6 +88,7 @@ export interface GetTokensParams {
   offset?: number
   sortingField?: SortField;
   sortingOrder?: SortOrder;
+  isCompetition?: boolean
 }
 
 export const getTokens = async (params: GetTokensParams = {}) => {

@@ -31,6 +31,7 @@ export const TokenItem = (props: {
     user,
     uriData,
     commentsCount,
+    competition
   }} = props
 
   const marketCap = new Decimal(props.data.marketCap)
@@ -43,9 +44,15 @@ export const TokenItem = (props: {
       <Text color={'accentWhite'}>
         Created by {user?.username} {moment(+timestamp * 1000).fromNow()}
       </Text>
+      {competition &&
+          <Text>Competition #{competition.competitionId}{competition.isCompleted ? ' (Finished)' : ''}</Text>
+      }
+      {!competition &&
+          <Text>Tradable token</Text>
+      }
       <Text color={'positiveValue'}>Market cap: {marketCap.gt(0) ? marketCap.toFixed(4) : '0'} ONE</Text>
       <Text>replies: {commentsCount}</Text>
-      <Text><b>{name} (ticker: {symbol})</b>: {uriData?.description}</Text>
+      <Text><b style={{ fontSize: '16px' }}>{name} (ticker: {symbol})</b>: {uriData?.description}</Text>
     </Box>
   </TokenContainer>
 }
