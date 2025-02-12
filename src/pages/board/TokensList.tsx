@@ -81,23 +81,9 @@ export const TokensList = () => {
     const loadData = async () => {
       try {
         setIsLoading(true)
-        const data = await getTokens({ search: searchValueDebounced })
-        setTokens(data)
-      } catch (e) {
-        console.error('Failed to load data', e)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    loadData()
-  }, [searchValueDebounced]);
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setInitialLoading(true)
         const [tokensData, winnersData] = await Promise.all([
           getTokens({
+            search: searchValueDebounced,
             sortingField: searchFilter.sortingField,
             sortingOrder: searchFilter.sortingOrder,
             isCompetition: !searchFilter.isCompetition ? undefined : true
@@ -110,26 +96,41 @@ export const TokensList = () => {
         console.error('Failed to load tokens', e)
       } finally {
         setInitialLoading(false)
+        setIsLoading(false)
       }
     }
     loadData()
     saveFiltersStateToLS(searchFilter)
-  }, [searchFilter]);
+  }, [searchFilter, searchValueDebounced]);
 
   return <Box
     width={'100vw'}
     pad={{ left: '16px', right: '16px' }}
   >
-    {/*{(isInitialLoading && !currentWinner) &&*/}
-    {/*    <Box align={'center'}>*/}
-    {/*        <SkeletonToken />*/}
-    {/*    </Box>*/}
-    {/*}*/}
     {currentWinner &&
         <CurrentWinner data={currentWinner} />
     }
     <Box margin={{ top: '16px' }} style={{ position: 'relative' }}>
-      <Box style={{ zIndex: 3 }}>
+      {!isMobile &&
+          <Box align={'center'}>
+              <Box width={'200px'} direction={'row'} gap={'16px'} align={'center'}>
+                  <Box width={'260px'} style={{ position: 'relative' }}>
+                      <Input
+                          placeholder={'Search for a token'}
+                          value={searchValue}
+                          allowClear={true}
+                          onChange={(e) => setSearchValue(e.target.value || '')}
+                      />
+                    {isLoading &&
+                        <Box style={{ position: 'absolute', right: '-42px', top: '2px' }}>
+                            <Spinner color={'spinner'} />
+                        </Box>
+                    }
+                  </Box>
+              </Box>
+          </Box>
+      }
+      <Box>
         <TokenFilters
           filter={searchFilter}
           onChange={(prop: string, value: string | boolean) => {
@@ -137,23 +138,6 @@ export const TokensList = () => {
           }}
         />
       </Box>
-      {!isMobile && <Box style={{ position: 'absolute', zIndex: 2 }} width={'100%'} align={'center'}>
-          <Box width={'200px'} direction={'row'} gap={'16px'} align={'center'}>
-              <Box width={'260px'} style={{ position: 'relative' }}>
-                  <Input
-                      placeholder={'Search for a token'}
-                      value={searchValue}
-                      allowClear={true}
-                      onChange={(e) => setSearchValue(e.target.value || '')}
-                  />
-                {isLoading &&
-                    <Box style={{ position: 'absolute', right: '-42px', top: '2px' }}>
-                        <Spinner color={'spinner'} />
-                    </Box>
-                }
-              </Box>
-          </Box>
-      </Box>}
     </Box>
     <Box align={'center'} margin={{ top: '8px' }}>
       {tokens.length === 0 && !isInitialLoading && <Box align={'center'} margin={{ top: '8px' }}>
