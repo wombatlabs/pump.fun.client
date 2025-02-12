@@ -18,11 +18,11 @@ const getInitialFiltersState = () => {
   if(savedState) {
     const parsedState = JSON.parse(savedState);
     return {
-      ...defaultFilter,
+      ...DefaultFilter,
       ...parsedState
     }
   }
-  return {...defaultFilter}
+  return {...DefaultFilter}
 }
 
 const saveFiltersStateToLS = (state: SearchFilter) => {
@@ -35,7 +35,7 @@ export interface SearchFilter {
   isCompetition: boolean
 }
 
-const defaultFilter: SearchFilter = {
+export const DefaultFilter: SearchFilter = {
   sortingField: SortField.timestamp,
   sortingOrder: SortOrder.DESC,
   isCompetition: false
