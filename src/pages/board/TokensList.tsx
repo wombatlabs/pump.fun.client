@@ -12,6 +12,35 @@ import {TokenFilters} from "./Filters.tsx";
 import {useMediaQuery} from "react-responsive";
 import {breakpoints} from "../../utils/breakpoints.ts";
 
+const LSFiltersKey = 'pump_one_filters_v1'
+const getInitialFiltersState = () => {
+  const savedState = localStorage.getItem(LSFiltersKey);
+  if(savedState) {
+    const parsedState = JSON.parse(savedState);
+    return {
+      ...defaultFilter,
+      ...parsedState
+    }
+  }
+  return {...defaultFilter}
+}
+
+const saveFiltersStateToLS = (state: SearchFilter) => {
+  localStorage.setItem(LSFiltersKey, JSON.stringify(state));
+}
+
+export interface SearchFilter {
+  sortingField: SortField
+  sortingOrder: SortOrder
+  isCompetition: boolean
+}
+
+const defaultFilter: SearchFilter = {
+  sortingField: SortField.timestamp,
+  sortingOrder: SortOrder.DESC,
+  isCompetition: false
+}
+
 const TokensContainer = styled(Box)`
     display: flex;
     flex-wrap: wrap;
@@ -36,25 +65,13 @@ const SkeletonToken = () => {
   </Box>
 }
 
-export interface SearchFilter {
-  sortingField: SortField
-  sortingOrder: SortOrder
-  isCompetition: boolean
-}
-
-const defaultFilter: SearchFilter = {
-  sortingField: SortField.timestamp,
-  sortingOrder: SortOrder.DESC,
-  isCompetition: false
-}
-
 export const TokensList = () => {
   const [tokens, setTokens] = useState<TokenEnriched[]>([])
   const [currentWinner, setCurrentWinner] = useState<TokenEnriched>()
   const [isInitialLoading, setInitialLoading] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
   const [searchValue, setSearchValue] = useState('')
-  const [searchFilter, setSearchFilter] = useState(defaultFilter)
+  const [searchFilter, setSearchFilter] = useState(getInitialFiltersState())
   const searchValueDebounced = useDebounce(searchValue, 300)
 
   const navigate = useNavigate()
@@ -96,6 +113,7 @@ export const TokensList = () => {
       }
     }
     loadData()
+    saveFiltersStateToLS(searchFilter)
   }, [searchFilter]);
 
   return <Box
@@ -115,7 +133,7 @@ export const TokensList = () => {
         <TokenFilters
           filter={searchFilter}
           onChange={(prop: string, value: string | boolean) => {
-            setSearchFilter(current => ({ ...current, [prop]: value }))
+            setSearchFilter((current: any) => ({ ...current, [prop]: value }))
           }}
         />
       </Box>
