@@ -2,8 +2,8 @@ import {Box, Text} from 'grommet'
 import {Button, Tag} from "antd";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
-import {Competition, TokenEnriched, WinnerLiquidityProvision} from "../../types.ts";
-import {getCompetitions, getTokenBalances, getTokens, getWinnerLiquidityProvisions} from "../../api";
+import {TokenEnriched, WinnerLiquidityProvision} from "../../types.ts";
+import {getTokenBalances, getTokens, getWinnerLiquidityProvisions} from "../../api";
 import {TradingForm} from "./TradingForm.tsx";
 import {TokenComments} from "./TokenComments.tsx";
 import { Radio } from 'antd';
@@ -22,6 +22,10 @@ import {CompetitionWinner} from "./CompetitionWinner.tsx";
 import {TokenHeader} from "./TokenHeader.tsx";
 import {AdvancedTradingView} from "./trading-view-chart";
 import {TokenCard} from "../../components/token";
+import {TokenCollateralProgress} from "./TokenCollateralProgress.tsx";
+import {readContract} from "wagmi/actions";
+import {config} from "../../wagmi.ts";
+import TokenFactoryBaseABI from "../../abi/TokenFactoryBase.json";
 
 const ButtonBack = () => {
   const navigate = useNavigate()
@@ -47,7 +51,8 @@ export const TokenPage = () => {
   const [token, setToken] = useState<TokenEnriched>()
   const [userIsHolder, setUserIsHolder] = useState<boolean>(false)
   const [winnerLiquidityProvision, setWinnerLiquidityProvision] = useState<WinnerLiquidityProvision>()
-  const [competition, setCompetition] = useState<Competition>()
+  const [requiredCollateral, setRequiredCollateral] = useState(0n)
+  const [tokenCollateral, setTokenCollateral] = useState(0n)
   const [activeTab, setActiveTab] = useState<'thread' | 'trades'>('thread')
   const isMobile = useMediaQuery({ query: `(max-width: ${breakpoints.mobile})` })
 
@@ -65,13 +70,27 @@ export const TokenPage = () => {
 
       if(tokens.length > 0) {
         setToken(tokens[0])
-        if(tokens[0].competition) {
-          const competitionItems = await getCompetitions({
-            competitionId: tokens[0].competition.competitionId
-          })
-          if(competitionItems.length > 0) {
-            setCompetition(competitionItems[0])
-          }
+
+        try {
+          const {address, tokenFactoryAddress} = tokens[0]
+          const [requiredData, tokenData] = await Promise.all([
+            readContract(config, {
+              address: tokenFactoryAddress as `0x${string}`,
+              abi: TokenFactoryBaseABI,
+              functionName: 'requiredCollateral',
+              args: []
+            }),
+            readContract(config, {
+              address: tokenFactoryAddress as `0x${string}`,
+              abi: TokenFactoryBaseABI,
+              functionName: 'collateralById',
+              args: [address]
+            })
+          ]) as [bigint, bigint]
+          setRequiredCollateral(requiredData)
+          setTokenCollateral(tokenData)
+        } catch (e) {
+          console.error('Failed to load collateral progress')
         }
       }
       if(holders.length > 0) {
@@ -143,11 +162,11 @@ export const TokenPage = () => {
         }
       </Box>
       <Box alignSelf={'start'}>
-        {token && competition && competition.isCompleted &&
+        {token && token.competition && token.competition.isCompleted &&
             <CompetitionWinner
                 token={token}
                 winnerLiquidityProvision={winnerLiquidityProvision}
-                competition={competition}
+                competition={token.competition}
             />
         }
       </Box>
@@ -184,12 +203,12 @@ export const TokenPage = () => {
               </Box>
           }
         </Box>
-        <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }} gap={'24px'}>
-          {token && competition && competition.isCompleted &&
+        <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }} gap={'16px'}>
+          {token && token.competition && token.competition.isCompleted &&
               <CompetitionWinner
                   token={token}
                   winnerLiquidityProvision={winnerLiquidityProvision}
-                  competition={competition}
+                  competition={token.competition}
               />
           }
           {isTradeAvailable &&
@@ -222,6 +241,12 @@ export const TokenPage = () => {
                   </Box>
               }
             </Box>
+          }
+          {token && !token.competition &&
+              <TokenCollateralProgress
+                  requiredCollateral={requiredCollateral}
+                  tokenCollateral={tokenCollateral}
+              />
           }
           {token &&
               <TokenHolders token={token} />
