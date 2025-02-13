@@ -10,12 +10,16 @@ export const CompetitionWinner = (props: {
 }) => {
   const { token, winnerLiquidityProvision, competition } = props
 
+  console.log('competition', competition)
+
   if(competition.winnerToken?.id !== token.id) {
     return <Box gap={'4px'}>
       <Text color={'golden'} size={'16px'}>Competition is over</Text>
       <Text size={'16px'}>Winner: <Link to={`/${competition.winnerToken?.address}`}>{competition.winnerToken?.name}</Link></Text>
     </Box>
   }
+
+  console.log('competition', competition)
 
   return <Box>
     <Box>

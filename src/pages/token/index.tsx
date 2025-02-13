@@ -2,8 +2,8 @@ import {Box, Text} from 'grommet'
 import {Button, Tag} from "antd";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
-import {TokenEnriched, WinnerLiquidityProvision} from "../../types.ts";
-import {getTokenBalances, getTokens, getWinnerLiquidityProvisions} from "../../api";
+import {Competition, TokenEnriched, WinnerLiquidityProvision} from "../../types.ts";
+import {getCompetitions, getTokenBalances, getTokens, getWinnerLiquidityProvisions} from "../../api";
 import {TradingForm} from "./TradingForm.tsx";
 import {TokenComments} from "./TokenComments.tsx";
 import { Radio } from 'antd';
@@ -49,6 +49,7 @@ export const TokenPage = () => {
 
   const [isLoading, setLoading] = useState(false)
   const [token, setToken] = useState<TokenEnriched>()
+  const [competition, setCompetition] = useState<Competition>()
   const [userIsHolder, setUserIsHolder] = useState<boolean>(false)
   const [winnerLiquidityProvision, setWinnerLiquidityProvision] = useState<WinnerLiquidityProvision>()
   const [requiredCollateral, setRequiredCollateral] = useState(0n)
@@ -80,6 +81,19 @@ export const TokenPage = () => {
 
       if(tokens.length > 0) {
         setToken(tokens[0])
+
+        if(tokens[0].competition) {
+          try {
+            const competitionItems = await getCompetitions({
+              competitionId: tokens[0].competition.competitionId
+            })
+            if(competitionItems.length > 0) {
+              setCompetition(competitionItems[0])
+            }
+          } catch (e) {
+            console.error('Failed to get competition', e)
+          }
+        }
 
         try {
           const {address, tokenFactoryAddress} = tokens[0]
@@ -176,11 +190,11 @@ export const TokenPage = () => {
         }
       </Box>
       <Box alignSelf={'start'}>
-        {token && token.competition && token.competition.isCompleted &&
+        {token && competition && competition.isCompleted &&
             <CompetitionWinner
                 token={token}
                 winnerLiquidityProvision={winnerLiquidityProvision}
-                competition={token.competition}
+                competition={competition}
             />
         }
       </Box>
@@ -218,11 +232,11 @@ export const TokenPage = () => {
           }
         </Box>
         <Box style={{ minWidth: '420px' }} margin={{ top: '16px' }} gap={'16px'}>
-          {token && token.competition && token.competition.isCompleted &&
+          {token && competition && competition.isCompleted &&
               <CompetitionWinner
                   token={token}
                   winnerLiquidityProvision={winnerLiquidityProvision}
-                  competition={token.competition}
+                  competition={competition}
               />
           }
           {isTradeAvailable &&
