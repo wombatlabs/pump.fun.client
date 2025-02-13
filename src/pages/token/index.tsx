@@ -56,6 +56,16 @@ export const TokenPage = () => {
   const [activeTab, setActiveTab] = useState<'thread' | 'trades'>('thread')
   const isMobile = useMediaQuery({ query: `(max-width: ${breakpoints.mobile})` })
 
+  const tokenCollateralPercent = useMemo(() => {
+    if(requiredCollateral > 0n && tokenCollateral > 0n) {
+      return new Decimal(tokenCollateral.toString())
+        .div(new Decimal(requiredCollateral.toString()))
+        .mul(100)
+        .toFixed(1)
+    }
+    return '0'
+  }, [requiredCollateral, tokenCollateral])
+
   const loadData = async (updateStatus = false) => {
     try {
       if(updateStatus) {
@@ -143,8 +153,12 @@ export const TokenPage = () => {
       }
       return true
     }
+
+    if (Number(tokenCollateralPercent) >= 100) {
+      return true
+    }
     return false
-  }, [token, userAccount, isBurnAvailable, winnerLiquidityProvision])
+  }, [token, userAccount, isBurnAvailable, winnerLiquidityProvision, tokenCollateralPercent])
 
   if(isMobile) {
     return <Box gap={'16px'} pad={'8px'} align={'center'}>
@@ -217,9 +231,6 @@ export const TokenPage = () => {
           {isBurnAvailable &&
               <BurnTokenForm token={token} />
           }
-          {isPublishToUniswapAvailable &&
-              <PublishToUniswap token={token} />
-          }
           {token &&
               <TokenCard token={token} />
           }
@@ -244,9 +255,11 @@ export const TokenPage = () => {
           }
           {token && !token.competition &&
               <TokenCollateralProgress
-                  requiredCollateral={requiredCollateral}
-                  tokenCollateral={tokenCollateral}
+                  collateralPercent={tokenCollateralPercent}
               />
+          }
+          {isPublishToUniswapAvailable &&
+              <PublishToUniswap token={token} />
           }
           {token &&
               <TokenHolders token={token} />

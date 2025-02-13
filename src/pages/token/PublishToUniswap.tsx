@@ -1,16 +1,17 @@
 import {Box, Spinner, Text} from 'grommet'
-import {Token, WinnerLiquidityProvision} from "../../types.ts";
+import {TokenEnriched, WinnerLiquidityProvision} from "../../types.ts";
 import {Button, message} from "antd";
 import {useState} from "react";
 import {useWriteContract} from "wagmi";
 import TokenFactoryABI from "../../abi/TokenFactory.json";
+import TokenFactoryBaseABI from "../../abi/TokenFactoryBase.json";
 import {waitForTransactionReceipt} from "wagmi/actions";
 import {config} from "../../wagmi.ts";
 import {getWinnerLiquidityProvisions} from "../../api";
 import {useClientData} from "../../providers/DataProvider.tsx";
 
 export const PublishToUniswap = (props: {
-  token?: Token
+  token?: TokenEnriched
 }) => {
   const { token } = props
   const [inProgress, setInProgress] = useState(false)
@@ -35,7 +36,7 @@ export const PublishToUniswap = (props: {
 
       setCurrentStatus('Signing the transaction...')
       const txnHash = await writeContractAsync({
-        abi: TokenFactoryABI,
+        abi: token.competition ? TokenFactoryABI : TokenFactoryBaseABI,
         address: token.tokenFactoryAddress as `0x${string}`,
         functionName: 'publishToUniswap',
         args: [tokenAddress],
@@ -74,12 +75,14 @@ export const PublishToUniswap = (props: {
   }
 
   return <Box>
-    <Box gap={'4px'}>
-      <Text weight={500}>Daily competition is over</Text>
-      {!token?.isWinner &&
-          <Text>You can burn "{token?.name}" (ticker: ${token?.symbol}) and get some amount of the winner's token.</Text>
-      }
-    </Box>
+    {token && token.competition &&
+        <Box gap={'4px'}>
+            <Text weight={500}>Daily competition is over</Text>
+          {!token?.isWinner &&
+              <Text>You can burn "{token?.name}" (ticker: ${token?.symbol}) and get some amount of the winner's token.</Text>
+          }
+        </Box>
+    }
     <Box margin={{ top: '16px' }}>
       <Button
         type={'primary'}
