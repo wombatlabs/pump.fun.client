@@ -36,7 +36,17 @@ export const TokenItem = (props: {
 
   const marketCap = new Decimal(props.data.marketCap)
 
-  return <TokenContainer onClick={props.onClick} direction={'row'} gap={'16px'} style={props.style}>
+  return <TokenContainer
+    direction={'row'}
+    gap={'16px'}
+    round={'5px'}
+    style={{
+      // border: competition ? '1px solid #0A0708' : undefined,
+      background: competition ? '#242427' : undefined,
+      ...props.style
+    }}
+    onClick={props.onClick}
+  >
     <Box>
       <Image width={'150px'} src={uriData?.image} preview={false} />
     </Box>

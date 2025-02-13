@@ -1,4 +1,4 @@
-import {Box, Spinner, Text} from "grommet";
+import {Box, Text} from "grommet";
 import {useEffect, useState} from "react";
 import {getTokens} from "../../api";
 import {SortField, SortOrder, TokenEnriched} from "../../types.ts";
@@ -69,7 +69,7 @@ export const TokensList = () => {
   const [tokens, setTokens] = useState<TokenEnriched[]>([])
   const [currentWinner, setCurrentWinner] = useState<TokenEnriched>()
   const [isInitialLoading, setInitialLoading] = useState(true)
-  const [isLoading, setIsLoading] = useState(true)
+  // const [isLoading, setIsLoading] = useState(true)
   const [searchValue, setSearchValue] = useState('')
   const [searchFilter, setSearchFilter] = useState(getInitialFiltersState())
   const searchValueDebounced = useDebounce(searchValue, 300)
@@ -80,7 +80,7 @@ export const TokensList = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        setIsLoading(true)
+        // setIsLoading(true)
         const [tokensData, winnersData] = await Promise.all([
           getTokens({
             search: searchValueDebounced,
@@ -96,7 +96,7 @@ export const TokensList = () => {
         console.error('Failed to load tokens', e)
       } finally {
         setInitialLoading(false)
-        setIsLoading(false)
+        // setIsLoading(false)
       }
     }
     loadData()
@@ -121,11 +121,6 @@ export const TokensList = () => {
                           allowClear={true}
                           onChange={(e) => setSearchValue(e.target.value || '')}
                       />
-                    {isLoading &&
-                        <Box style={{ position: 'absolute', right: '-42px', top: '2px' }}>
-                            <Spinner color={'spinner'} />
-                        </Box>
-                    }
                   </Box>
               </Box>
           </Box>
@@ -150,7 +145,11 @@ export const TokensList = () => {
       }
       <TokensContainer direction={'row'} width={'100%'}>
         {tokens.map(token => {
-          return <TokenItem key={token.id} data={token} onClick={() => navigate(`/${token.address}`)} />
+          return <TokenItem
+            key={token.id}
+            data={token}
+            onClick={() => navigate(`/${token.address}`)}
+          />
         })}
       </TokensContainer>
     </Box>

@@ -57,7 +57,7 @@ export const TokenFilters = (props: {
     />
     {!isMobile && <Box justify={'center'}>
         <Box direction={'row'} align={'center'} gap={'4px'}>
-            <Text>Show only competition:</Text>
+            <Text>Only competition tokens:</Text>
             <Box>
                 <Switch
                     size={'small'}
