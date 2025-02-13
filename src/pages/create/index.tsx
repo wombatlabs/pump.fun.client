@@ -5,6 +5,7 @@ import {useEffect, useMemo, useState} from "react";
 import {writeContract, waitForTransactionReceipt} from "wagmi/actions";
 import {appConfig, getTokenFactoryAddress} from "../../config.ts";
 import TokenFactoryABI from '../../abi/TokenFactory.json'
+import TokenFactoryBaseABI from '../../abi/TokenFactoryBase.json'
 import {config} from "../../wagmi.ts";
 import { InboxOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import {useClientData} from "../../providers/DataProvider.tsx";
@@ -94,7 +95,7 @@ export const CreatePage = () => {
       setCurrentStatus('Minting contract...')
       const txnHash = await writeContract(config, {
         address: getTokenFactoryAddress(tokenForm.isCompetitionsEnabled),
-        abi: TokenFactoryABI,
+        abi: tokenForm.isCompetitionsEnabled ? TokenFactoryABI : TokenFactoryBaseABI,
         args: [tokenForm.name, tokenForm.symbol, metadataUrl],
         functionName: 'createToken'
       });
