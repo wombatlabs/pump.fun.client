@@ -107,10 +107,13 @@ export const Header = () => {
           <LatestUpdate />
       </Box>}
     </Box>
-    <Box direction={'row'} align={'center'} gap={'16px'}>
+    <Box direction={'row'} align={'center'} gap={'32px'}>
       {/*<Box onClick={() => navigate('/leaderboard')}>*/}
       {/*  <Text size={'18px'}>Leaderboard</Text>*/}
       {/*</Box>*/}
+      <Box onClick={() => navigate('/competitions')}>
+        <Text size={'18px'}>Competitions</Text>
+      </Box>
       {!isMobile && <Box onClick={() => navigate('/rules')}>
           <Text size={'18px'}>How it works</Text>
       </Box>}

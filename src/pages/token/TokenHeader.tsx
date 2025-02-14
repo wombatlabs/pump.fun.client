@@ -4,6 +4,7 @@ import {Box, Text} from "grommet";
 import {Skeleton, Tooltip} from "antd";
 import moment from "moment/moment";
 import {UserTag} from "../../components/UserTag.tsx";
+import {appConfig} from "../../config.ts";
 
 export const TokenHeader = (
   props: {
@@ -33,7 +34,7 @@ export const TokenHeader = (
               }
               {!token.competition.timestampEnd &&
                   <Text>Finish: after {
-                    moment(+token.competition.timestampStart * 1000 + 7 * 24 * 60 * 60 * 1000).format('DD MMM YY HH:mm:ss')
+                    moment(+token.competition.timestampStart * 1000 + appConfig.competitionDuration).format('DD MMM YY HH:mm:ss')
                   }</Text>
               }
             </Box>}

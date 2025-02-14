@@ -5,14 +5,15 @@ import {shortEthAddress} from "../../utils";
 
 export const TokenCard = (props: {
   token: TokenEnriched
+  imageSize?: number
 }) => {
-  const { token } = props
+  const { token, imageSize = 200 } = props
 
   return <Box gap={'8px'}>
     <Box direction={'row'} gap={'16px'} style={{ maxWidth: '600px' }}>
       <Box>
         <Image
-          width={200}
+          width={imageSize}
           src={token.uriData?.image}
         />
       </Box>

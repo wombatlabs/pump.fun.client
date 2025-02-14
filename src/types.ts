@@ -148,7 +148,7 @@ export interface Competition {
   timestampStart: string
   timestampEnd: string
   isCompleted: boolean
-  winnerToken: Token | null
+  winnerToken: TokenEnriched | null
   createdAt: string
 }
 
