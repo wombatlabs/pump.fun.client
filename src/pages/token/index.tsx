@@ -26,6 +26,7 @@ import {TokenCollateralProgress} from "./TokenCollateralProgress.tsx";
 import {readContract} from "wagmi/actions";
 import {config} from "../../wagmi.ts";
 import TokenFactoryBaseABI from "../../abi/TokenFactoryBase.json";
+import {UniswapPoolInfo} from "./UniswapPoolInfo.tsx";
 
 const ButtonBack = () => {
   const navigate = useNavigate()
@@ -142,14 +143,14 @@ export const TokenPage = () => {
     if(token && token.competition) {
       return !token.competition.isCompleted
     }
-    return true
+    return !winnerLiquidityProvision
   }, [token])
 
   const isBurnAvailable = useMemo(() => {
-    if(!isTradeAvailable && token && !token.isWinner) {
-      const totalSupply = new Decimal(token.totalSupply)
-      return totalSupply.gt(0) && userIsHolder
-    }
+    // if(!isTradeAvailable && token && !token.isWinner) {
+    //   const totalSupply = new Decimal(token.totalSupply)
+    //   return totalSupply.gt(0) && userIsHolder
+    // }
     return false
   }, [isTradeAvailable, token, userIsHolder, winnerLiquidityProvision])
 
@@ -168,7 +169,7 @@ export const TokenPage = () => {
       return true
     }
 
-    if (Number(tokenCollateralPercent) >= 100) {
+    if (Number(tokenCollateralPercent) >= 100 && !winnerLiquidityProvision) {
       return true
     }
     return false
@@ -193,7 +194,6 @@ export const TokenPage = () => {
         {token && competition && competition.isCompleted &&
             <CompetitionWinner
                 token={token}
-                winnerLiquidityProvision={winnerLiquidityProvision}
                 competition={competition}
             />
         }
@@ -235,9 +235,11 @@ export const TokenPage = () => {
           {token && competition && competition.isCompleted &&
               <CompetitionWinner
                   token={token}
-                  winnerLiquidityProvision={winnerLiquidityProvision}
                   competition={competition}
               />
+          }
+          {winnerLiquidityProvision &&
+            <UniswapPoolInfo winnerLiquidityProvision={winnerLiquidityProvision} />
           }
           {isTradeAvailable &&
               <TradingForm token={token} />
@@ -267,7 +269,7 @@ export const TokenPage = () => {
               }
             </Box>
           }
-          {token && !token.competition &&
+          {token && !token.competition && !winnerLiquidityProvision &&
               <TokenCollateralProgress
                   collateralPercent={tokenCollateralPercent}
               />
