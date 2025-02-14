@@ -21,7 +21,7 @@ export const CompetitionItem = (props: {
       <Text color={'accentWhite'} size={'16px'}>
         Competition #{competitionId}
       </Text>
-      {!isCompleted && <Tag>Active</Tag>}
+      {!isCompleted && <Tag color="success">Active</Tag>}
     </Box>
     <Box gap={'4px'} margin={{ top: '8px' }}>
       <Text>Start time: {moment(+timestampStart * 1000).format('MMM D, YYYY, HH:mm:ss')}</Text>
