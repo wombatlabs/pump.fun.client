@@ -48,6 +48,7 @@ export const TokenPage = () => {
 
   const { state: { userAccount } } = useClientData()
 
+  const [isInitialDataLoaded, setInitialLoaded] = useState<boolean>(false);
   const [isLoading, setLoading] = useState(false)
   const [token, setToken] = useState<TokenEnriched>()
   const [competition, setCompetition] = useState<Competition>()
@@ -126,6 +127,7 @@ export const TokenPage = () => {
       console.error('Failed to load token', e)
     } finally {
       setLoading(false)
+      setInitialLoaded(true)
     }
   }
 
@@ -144,7 +146,7 @@ export const TokenPage = () => {
       return !token.competition.isCompleted
     }
     return !winnerLiquidityProvision
-  }, [token])
+  }, [token, winnerLiquidityProvision])
 
   const isBurnAvailable = useMemo(() => {
     // if(!isTradeAvailable && token && !token.isWinner) {
@@ -174,6 +176,10 @@ export const TokenPage = () => {
     }
     return false
   }, [token, userAccount, isBurnAvailable, winnerLiquidityProvision, tokenCollateralPercent])
+
+  if(!isInitialDataLoaded) {
+    return null
+  }
 
   if(isMobile) {
     return <Box gap={'16px'} pad={'8px'} align={'center'}>
