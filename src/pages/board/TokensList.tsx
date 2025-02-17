@@ -110,18 +110,16 @@ export const TokensList = () => {
     {currentWinner &&
         <CurrentWinner data={currentWinner} />
     }
-    <Box margin={{ top: '16px' }} style={{ position: 'relative' }}>
+    <Box margin={{ top: '16px' }}>
       {!isMobile &&
           <Box align={'center'}>
-              <Box width={'200px'} direction={'row'} gap={'16px'} align={'center'}>
-                  <Box width={'260px'} style={{ position: 'relative' }}>
-                      <Input
-                          placeholder={'Search for a token'}
-                          value={searchValue}
-                          allowClear={true}
-                          onChange={(e) => setSearchValue(e.target.value || '')}
-                      />
-                  </Box>
+              <Box width={'360px'} direction={'row'} gap={'16px'} align={'center'}>
+                  <Input
+                      placeholder={'Search for a token (ticker, name, address)'}
+                      value={searchValue}
+                      allowClear={true}
+                      onChange={(e) => setSearchValue(e.target.value || '')}
+                  />
               </Box>
           </Box>
       }

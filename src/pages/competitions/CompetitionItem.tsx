@@ -9,7 +9,7 @@ export const CompetitionItem = (props: {
   competition: Competition
 }) => {
   const { competition } = props
-  const { competitionId, timestampStart, timestampEnd, isCompleted } = competition
+  const { competitionId, timestampStart, timestampEnd, isCompleted, tokensCount, winnerToken } = competition
 
   const endTime = timestampEnd
     ? moment(+timestampEnd * 1000).format('MMM D, YYYY, HH:mm:ss')
@@ -22,15 +22,17 @@ export const CompetitionItem = (props: {
         Competition #{competitionId}
       </Text>
       {!isCompleted && <Tag color="success">Active</Tag>}
+      {isCompleted && <Tag color="blue">Completed</Tag>}
     </Box>
-    <Box gap={'4px'} margin={{ top: '8px' }}>
+    <Box gap={'2px'} margin={{ top: '8px' }}>
       <Text>Start time: {moment(+timestampStart * 1000).format('MMM D, YYYY, HH:mm:ss')}</Text>
       <Text>End time: {endTime}</Text>
+      <Text>Total number of tokens: {tokensCount}</Text>
     </Box>
-    {competition.winnerToken &&
+    {winnerToken &&
       <Box margin={{ top: '8px' }} gap={'6px'}>
           <Text color={'accentWhite'} size={'16px'}>Winner</Text>
-          <TokenCard token={competition.winnerToken} imageSize={100} />
+          <TokenCard token={winnerToken} imageSize={100} />
       </Box>
     }
   </Box>
