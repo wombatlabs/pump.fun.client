@@ -4,8 +4,8 @@ import {Box, Text} from "grommet";
 import {Skeleton, Tooltip} from "antd";
 import moment from "moment/moment";
 import {UserTag} from "../../components/UserTag.tsx";
-import {appConfig} from "../../config.ts";
 import {MarketCap} from "../../components/marketCap";
+import {getCompetitionEndTimestamp} from "../../utils";
 
 export const TokenHeader = (
   props: {
@@ -35,7 +35,8 @@ export const TokenHeader = (
               }
               {!token.competition.timestampEnd &&
                   <Text>Finish: after {
-                    moment(+token.competition.timestampStart * 1000 + appConfig.competitionDuration).format('DD MMM YY HH:mm:ss')
+                    moment(getCompetitionEndTimestamp(token.competition.timestampStart))
+                      .format('DD MMM YY HH:mm:ss')
                   }</Text>
               }
             </Box>}

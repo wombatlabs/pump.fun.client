@@ -3,7 +3,7 @@ import {Competition} from "../../types.ts";
 import {TokenCard} from "../../components/token";
 import {Tag} from "antd";
 import moment from "moment";
-import { appConfig } from '../../config.ts'
+import {getCompetitionEndTimestamp} from "../../utils";
 
 export const CompetitionItem = (props: {
   competition: Competition
@@ -13,7 +13,7 @@ export const CompetitionItem = (props: {
 
   const endTime = timestampEnd
     ? moment(+timestampEnd * 1000).format('MMM D, YYYY, HH:mm:ss')
-    : `after ${moment(+timestampStart * 1000 + appConfig.competitionDuration).format('DD MMM YY HH:mm:ss')}`
+    : `after ${moment(getCompetitionEndTimestamp(timestampStart)).format('DD MMM YY HH:mm:ss')}`
 
 
   return <Box background={'#242427'} pad={'8px 12px'} round={'5px'}>
