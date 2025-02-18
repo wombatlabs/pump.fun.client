@@ -14,7 +14,9 @@ export const MarketCap = (props: {
   }, [value, harmonyPrice])
 
   const usdValueString = useMemo(() => {
-    if(usdValue < 0.01) {
+    if(usdValue === 0) {
+      return '$0'
+    } else if(usdValue < 0.01) {
       return '<$0.01'
     } else if(usdValue >= 100) {
       return `$${usdValue.toFixed(0)}`
