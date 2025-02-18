@@ -20,10 +20,24 @@ export interface RhoV2Data {
   onDisconnect: () => void
 }
 
+const LsPriceKey = 'pump_one_price_1'
+
+const savePriceToLS = (value: number) => {
+  localStorage.setItem(LsPriceKey, value.toString())
+}
+
+const getPriceFromLS = () => {
+  const data = localStorage.getItem(LsPriceKey);
+  if(data) {
+    return Number(data)
+  }
+  return 0
+}
+
 const getInitialState = (): RhoV2Data => {
   return {
     state: {
-      harmonyPrice: 0,
+      harmonyPrice: getPriceFromLS(),
       feePercent: 0n,
     },
     setState: () => {},
@@ -47,6 +61,7 @@ export const ClientDataProvider: React.FC<PropsWithChildren<unknown>> = ({ child
         ...current,
         harmonyPrice: value,
       }))
+      savePriceToLS(value)
     } catch (e) {
       console.error('Failed to get harmony one token price', e)
     }
