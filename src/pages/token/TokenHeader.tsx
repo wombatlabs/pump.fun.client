@@ -1,7 +1,7 @@
 import {TokenEnriched} from "../../types.ts";
 import Decimal from "decimal.js";
 import {Box, Text} from "grommet";
-import {Skeleton, Tooltip} from "antd";
+import {Skeleton, Tag, Tooltip} from "antd";
 import moment from "moment/moment";
 import {UserTag} from "../../components/UserTag.tsx";
 import {MarketCap} from "../../components/marketCap";
@@ -23,27 +23,33 @@ export const TokenHeader = (
     return null
   }
 
+  const { competition } = token
+
   const marketCap = new Decimal(token.marketCap)
 
-  return <Box direction={'row'} align={'center'} wrap={true} gap={{ row: '8px', column: '10px' }}>
-    {token.competition &&
+  return <Box direction={'row'} align={'baseline'} wrap={true} gap={{ row: '8px', column: '10px' }}>
+    {competition &&
         <Tooltip
             title={<Box>
-              <Text>Start: {moment(+token.competition.timestampStart * 1000).format('DD MMM YY HH:mm:ss')}</Text>
-              {token.competition.timestampEnd &&
-                  <Text>Finish: {moment(+token.competition.timestampEnd * 1000).format('DD MMM YY HH:mm:ss')}</Text>
+              <Text>Start: {moment(+competition.timestampStart * 1000).format('DD MMM YY HH:mm:ss')}</Text>
+              {competition.timestampEnd &&
+                  <Text>Finish: {moment(+competition.timestampEnd * 1000).format('DD MMM YY HH:mm:ss')}</Text>
               }
-              {!token.competition.timestampEnd &&
+              {!competition.timestampEnd &&
                   <Text>Finish: after {
-                    moment(getCompetitionEndTimestamp(token.competition.timestampStart))
+                    moment(getCompetitionEndTimestamp(competition.timestampStart))
                       .format('DD MMM YY HH:mm:ss')
                   }</Text>
               }
             </Box>}
         >
-            <Text size={'16px'} style={{ borderBottom: '1px dashed gray', cursor: 'pointer' }}>
-                Competition #{token.competition.competitionId}
-            </Text>
+            <Box direction={'row'} gap={'6px'} align={'center'}>
+                <Text size={'16px'} style={{ borderBottom: '1px dashed gray', cursor: 'pointer' }}>
+                    Competition #{competition.competitionId}
+                </Text>
+              {!competition.isCompleted && <Tag color="success">Active</Tag>}
+              {competition.isCompleted && <Tag color="blue">Completed</Tag>}
+            </Box>
         </Tooltip>
     }
     <Text size={'16px'}>Name: <b>{token.name}</b></Text>

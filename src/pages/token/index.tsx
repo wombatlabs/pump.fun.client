@@ -302,6 +302,8 @@ export const TokenPage = () => {
           {token && !winnerLiquidityProvision &&
               <TokenCollateralProgress
                   collateralPercent={tokenCollateralPercent}
+                  requiredCollateral={requiredCollateral}
+                  token={token}
               />
           }
           {isPublishToUniswapAvailable &&
