@@ -19,7 +19,7 @@ export const CurrentWinner = (props: {
       border={{ color: 'golden', size: '1px' }}
       round={'6px'}
       margin={{ top: '4px' }}
-      style={{ position: 'relative' }}
+      style={{ position: 'relative', maxWidth: '500px' }}
     >
       <Box style={{ position: 'absolute', right: 0, top: '-24px' }}>
         <Text>{moment(+currentWinner.timestamp * 1000).format('MMM DD, YYYY')}</Text>

@@ -2,7 +2,7 @@ import {Box, Text} from "grommet";
 import {TokenEnriched} from "../../types.ts";
 import styled from "styled-components";
 import moment from 'moment'
-import { Image } from 'antd'
+import {Image, Tag} from 'antd'
 import Decimal from "decimal.js";
 import {CSSProperties} from "react";
 
@@ -55,7 +55,11 @@ export const TokenItem = (props: {
         Created by {user?.username} {moment(+timestamp * 1000).fromNow()}
       </Text>
       {competition &&
-          <Text>Competition #{competition.competitionId}{competition.isCompleted ? ' (Finished)' : ''}</Text>
+          <Box direction={'row'} gap={'8px'} align={'center'}>
+              <Text>Competition #{competition.competitionId}</Text>
+              {!competition.isCompleted && <Tag color="success">Active</Tag>}
+              {competition.isCompleted && <Tag color="blue">Completed</Tag>}
+          </Box>
       }
       {!competition &&
           <Text>Tradable token</Text>
