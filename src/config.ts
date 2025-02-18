@@ -3,7 +3,7 @@ export const appConfig = {
   apiUrl: 'https://pump-fun-backend-staging.fly.dev',
   tokenFactorySimple: '0xCBe0Ca4739282793D65c486c29a929624a0bcA5D',
   tokenFactoryCompetition: '0xd5e9b7ec8f2e4feB6fab99209fa352ad6DE5D625',
-  competitionDuration: 1 * 24 * 60 * 60 * 1000
+  competitionDuration: 1 * 24 * 60 * 60 * 1000,
 }
 
 export const getTokenFactoryAddress = (

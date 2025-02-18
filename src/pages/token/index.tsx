@@ -26,6 +26,7 @@ import {TokenCollateralProgress} from "./TokenCollateralProgress.tsx";
 import {readContract} from "wagmi/actions";
 import {config} from "../../wagmi.ts";
 import TokenFactoryBaseABI from "../../abi/TokenFactoryBase.json";
+import TokenFactoryABI from "../../abi/TokenFactory.json";
 import {UniswapPoolInfo} from "./UniswapPoolInfo.tsx";
 
 const ButtonBack = () => {
@@ -83,11 +84,12 @@ export const TokenPage = () => {
 
       if(tokens.length > 0) {
         setToken(tokens[0])
+        const {address, tokenFactoryAddress, competition} = tokens[0]
 
-        if(tokens[0].competition) {
+        if(competition) {
           try {
             const competitionItems = await getCompetitions({
-              competitionId: tokens[0].competition.competitionId
+              competitionId: competition.competitionId
             })
             if(competitionItems.length > 0) {
               setCompetition(competitionItems[0])
@@ -98,25 +100,44 @@ export const TokenPage = () => {
         }
 
         try {
-          const {address, tokenFactoryAddress} = tokens[0]
-          const [requiredData, tokenData] = await Promise.all([
-            readContract(config, {
-              address: tokenFactoryAddress as `0x${string}`,
-              abi: TokenFactoryBaseABI,
-              functionName: 'requiredCollateral',
-              args: []
-            }),
-            readContract(config, {
-              address: tokenFactoryAddress as `0x${string}`,
-              abi: TokenFactoryBaseABI,
-              functionName: 'collateralById',
-              args: [address]
-            })
-          ]) as [bigint, bigint]
-          setRequiredCollateral(requiredData)
-          setTokenCollateral(tokenData)
+
+          if(competition) {
+            const [requiredData, tokenData] = await Promise.all([
+              readContract(config, {
+                address: tokenFactoryAddress as `0x${string}`,
+                abi: TokenFactoryABI,
+                functionName: 'requiredCollateral',
+                args: []
+              }),
+              readContract(config, {
+                address: tokenFactoryAddress as `0x${string}`,
+                abi: TokenFactoryABI,
+                functionName: 'collateralById',
+                args: [competition.competitionId, address]
+              })
+            ]) as [bigint, bigint]
+            setRequiredCollateral(requiredData)
+            setTokenCollateral(tokenData)
+          } else {
+            const [requiredData, tokenData] = await Promise.all([
+              readContract(config, {
+                address: tokenFactoryAddress as `0x${string}`,
+                abi: TokenFactoryBaseABI,
+                functionName: 'requiredCollateral',
+                args: []
+              }),
+              readContract(config, {
+                address: tokenFactoryAddress as `0x${string}`,
+                abi: TokenFactoryBaseABI,
+                functionName: 'collateralById',
+                args: [address]
+              })
+            ]) as [bigint, bigint]
+            setRequiredCollateral(requiredData)
+            setTokenCollateral(tokenData)
+          }
         } catch (e) {
-          console.error('Failed to load collateral progress')
+          console.error('Failed to load collateral progress', e)
         }
       }
       if(holders.length > 0) {
@@ -157,25 +178,18 @@ export const TokenPage = () => {
   }, [isTradeAvailable, token, userIsHolder, winnerLiquidityProvision])
 
   const isPublishToUniswapAvailable = useMemo(() => {
-    if(
-      !isBurnAvailable
-      && token
-      && token.isWinner
-      && token.user
-      && userAccount
+    if (
+      Number(tokenCollateralPercent) >= 100
       && !winnerLiquidityProvision
     ) {
-      if(token.user.address === userAccount?.address) {
+      if(competition) {
+        return competition.isCompleted
+      } else {
         return true
       }
-      return true
-    }
-
-    if (Number(tokenCollateralPercent) >= 100 && !winnerLiquidityProvision) {
-      return true
     }
     return false
-  }, [token, userAccount, isBurnAvailable, winnerLiquidityProvision, tokenCollateralPercent])
+  }, [token, userAccount, isBurnAvailable, winnerLiquidityProvision, competition, tokenCollateralPercent])
 
   if(!isInitialDataLoaded) {
     return null
@@ -206,6 +220,16 @@ export const TokenPage = () => {
       </Box>
     </Box>
   }
+
+  // const onSetRequiredCollateral = async () => {
+  //   const txHash = await writeContract(config, {
+  //     address: '0xd5e9b7ec8f2e4feB6fab99209fa352ad6DE5D625',
+  //     abi: TokenFactoryABI,
+  //     args: ['10000000000000000'],
+  //     functionName: 'setRequiredCollateral'
+  //   })
+  //   console.log('txHash', txHash)
+  // }
 
   return <Box width={'100%'} pad={'0 32px'} style={{ maxWidth: '1300px', minWidth: '1000px' }}>
     <ButtonBack />
@@ -275,7 +299,7 @@ export const TokenPage = () => {
               }
             </Box>
           }
-          {token && !token.competition && !winnerLiquidityProvision &&
+          {token && !winnerLiquidityProvision &&
               <TokenCollateralProgress
                   collateralPercent={tokenCollateralPercent}
               />
