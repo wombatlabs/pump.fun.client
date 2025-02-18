@@ -15,8 +15,11 @@ export const TokenCollateralProgress = (props: {
     <Box width={'100%'}>
       <Progress
         percent={Number(collateralPercent)}
-        status="active"
+        // status="active"
         showInfo={false}
+        size={{
+          height: 12
+        }}
         strokeColor={{ from: '#108ee9', to: '#87d068' }}
       />
       <Box>
