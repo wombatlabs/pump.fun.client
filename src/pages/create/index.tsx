@@ -9,11 +9,13 @@ import TokenFactoryBaseABI from '../../abi/TokenFactoryBase.json'
 import {config} from "../../wagmi.ts";
 import { InboxOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import {useClientData} from "../../providers/DataProvider.tsx";
-import {Token, TokenMetadata} from "../../types.ts";
-import {addTokenMetadata, getTokens} from "../../api";
+import {Competition, Token, TokenMetadata} from "../../types.ts";
+import {addTokenMetadata, getCompetitions, getTokens} from "../../api";
 import {useAccount} from "wagmi";
 import {getFormError} from "./utils.ts";
 import useDebounce from "../../hooks/useDebounce.ts";
+import {getCompetitionEndTimestamp} from "../../utils";
+import moment from "moment";
 
 const { Dragger } = Upload;
 
@@ -44,12 +46,35 @@ export const CreatePage = () => {
   const account = useAccount()
   const { state: { userAccount, jwtTokens } } = useClientData()
 
+  const [currentCompetition, setCompetition] = useState<Competition>()
   const [tokenForm, setTokenForm] = useState<CreateTokenForm>(defaultFormState)
   const [currentStatus, setCurrentStatus] = useState('')
   const [inProgress, setInProgress] = useState(false)
   const [isOptionalFieldVisible, setOptionalFieldVisible] = useState(false)
   const symbolDebounced = useDebounce(tokenForm.symbol, 300)
   const [validationError, setValidationError] = useState<string>('')
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [lastItem] = await getCompetitions({ limit: 1 })
+        if(lastItem) {
+          setCompetition(lastItem)
+        } else {
+          throw Error('Competition not found')
+        }
+      } catch (e) {
+        console.error('Failed to load last competition', e)
+        setTokenForm(current => {
+          return {
+            ...current,
+            isCompetitionsEnabled: false
+          }
+        })
+      }
+    }
+    loadData()
+  }, []);
 
   useEffect(() => {
     const validateForm = async () => {
@@ -194,7 +219,7 @@ export const CreatePage = () => {
     || !account.address
     || !userAccount?.address
 
-  return <Box width={'416px'}>
+  return <Box width={'450px'}>
     <Box>
       <Button type={'text'} style={{ fontSize: '22px' }} onClick={() => navigate('/board')}>
         Go back
@@ -254,17 +279,28 @@ export const CreatePage = () => {
         </Dragger>
       </Box>
     </Box>
-    <Box margin={{ top: '16px' }} direction={'row'} justify={'between'}>
+    <Box
+      margin={{ top: '16px' }}
+      direction={'row'}
+      justify={'between'}
+      align={'start'}
+    >
       <Checkbox
         checked={tokenForm.isCompetitionsEnabled}
+        disabled={!currentCompetition}
         onChange={(e) => {
-        setTokenForm(current => {
-          return {
-            ...current,
-            isCompetitionsEnabled: e.target.checked
-          }
-        })
-      }}>Enable Competition mode</Checkbox>
+          setTokenForm(current => ({ ...current, isCompetitionsEnabled: e.target.checked }))
+        }}>
+        {currentCompetition && !currentCompetition.isCompleted &&
+          <Box>
+              <Text>Participate in Competition #{currentCompetition.competitionId}</Text>
+              <Text color={'gray'} size={'12px'}>Ends after {
+                moment(getCompetitionEndTimestamp(currentCompetition.timestampStart))
+                  .format('DD MMM YY HH:mm:ss')
+              }</Text>
+          </Box>
+        }
+      </Checkbox>
       <Tooltip
         title={<Box gap={'4px'}>
           <Text>
@@ -279,7 +315,7 @@ export const CreatePage = () => {
           <Link to={'/rules/'}>Read More</Link>
         </Box>}
       >
-        <Box direction={'row'} gap={'4px'} style={{ borderBottom: '1px dashed gray' }}>
+        <Box direction={'row'} gap={'4px'} align={'center'} style={{ borderBottom: '1px dashed gray' }}>
           <Text>How competition works?</Text>
           <QuestionCircleOutlined />
         </Box>
