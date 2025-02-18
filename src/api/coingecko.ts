@@ -13,3 +13,8 @@ export const getTokensPrice = async (tokens: string[], currency = 'usd')=> {
   const { data } = await axios.get<CoinGeckoPriceResponse>(url)
   return data
 }
+
+export const getHarmonyPrice = async () => {
+  const data = await getTokensPrice(['harmony'])
+  return data['harmony'].usd
+}

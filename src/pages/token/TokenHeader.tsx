@@ -5,6 +5,7 @@ import {Skeleton, Tooltip} from "antd";
 import moment from "moment/moment";
 import {UserTag} from "../../components/UserTag.tsx";
 import {appConfig} from "../../config.ts";
+import {MarketCap} from "../../components/marketCap";
 
 export const TokenHeader = (
   props: {
@@ -46,7 +47,7 @@ export const TokenHeader = (
     }
     <Text size={'16px'}>Name: <b>{token.name}</b></Text>
     <Text size={'16px'}>Ticker: <b>{token.symbol}</b></Text>
-    <Text size={'16px'} color={'positiveValue'}>Market cap: {marketCap.gt(0) ? marketCap.toFixed(4) : '0'} ONE</Text>
+    <MarketCap value={marketCap.toNumber()} />
     <Text size={'16px'}>
       Created by: <UserTag fontSize={'18px'} user={token.user} />
       {moment(+token.timestamp * 1000).fromNow()}

@@ -5,6 +5,7 @@ import moment from 'moment'
 import {Image, Tag} from 'antd'
 import Decimal from "decimal.js";
 import {CSSProperties} from "react";
+import {MarketCap} from "../../components/marketCap";
 
 const TokenContainer = styled(Box)`
     border: 1px solid transparent;
@@ -64,7 +65,7 @@ export const TokenItem = (props: {
       {!competition &&
           <Text>Tradable token</Text>
       }
-      <Text color={'positiveValue'}>Market cap: {marketCap.gt(0) ? marketCap.toFixed(4) : '0'} ONE</Text>
+      <MarketCap value={marketCap.toNumber()} />
       <Text>replies: {commentsCount}</Text>
       <Text><b style={{ fontSize: '16px' }}>{name} (ticker: {symbol})</b>: {uriData?.description}</Text>
     </Box>
