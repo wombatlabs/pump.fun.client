@@ -291,13 +291,16 @@ export const CreatePage = () => {
         onChange={(e) => {
           setTokenForm(current => ({ ...current, isCompetitionsEnabled: e.target.checked }))
         }}>
-        {currentCompetition && !currentCompetition.isCompleted &&
+        {currentCompetition && !currentCompetition.isCompleted ?
           <Box>
               <Text>Participate in Competition #{currentCompetition.competitionId}</Text>
               <Text color={'gray'} size={'12px'}>Ends after {
                 moment(getCompetitionEndTimestamp(currentCompetition.timestampStart))
                   .format('DD MMM YY HH:mm:ss')
               }</Text>
+          </Box>
+          : <Box>
+            <Text>Participate in Competition</Text>
           </Box>
         }
       </Checkbox>
