@@ -25,13 +25,13 @@ function App() {
           borderRadius: '5px'
         },
         description: <Box gap={'8px'}>
-          <Text>Welcome to Pump.One! Please note that this platform is distinct from pump.fun and operates under its own unique set of rules. By participating, you agree to abide by these rules.</Text>
-          <Text>For detailed information, please visit: <a href={'/rules'}>pump.one/rules</a>.</Text>
+          <Text>Welcome to Pump.ONE! Please note that this platform is distinct from pump.fun and operates under its own unique set of rules. By participating, you agree to abide by these rules.</Text>
+          <Text>For detailed information, please visit: <a href={'/rules'}>/rules</a>.</Text>
+          {/*<Text>*/}
+          {/*  Additionally, pump.one is currently in a pre-alpha stage. Use at your own risk until an official announcement is made by the main Harmony X account <a href={'https://twitter.com/harmonyprotocol'} target={'_blank'}>@harmonyprotocol</a>.*/}
+          {/*</Text>*/}
           <Text>
-            Additionally, pump.one is currently in a pre-alpha stage. Use at your own risk until an official announcement is made by the main Harmony X account <a href={'https://twitter.com/harmonyprotocol'} target={'_blank'}>@harmonyprotocol</a>.
-          </Text>
-          <Text>
-            If you encounter any issues, please report them at our GitHub page: <a href={'https://github.com/harmony-one/pump.fun.client/issues'} target={'_blank'}>Report Issues</a>.
+            If you encounter any issues, please report them in <a href={'https://discord.com/channels/1313237802107797538'} target={'_blank'}>Pump.ONE Discord</a>.
           </Text>
         </Box>
     ,
