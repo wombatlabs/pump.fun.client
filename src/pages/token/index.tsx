@@ -193,6 +193,10 @@ export const TokenPage = () => {
     return false
   }, [token, userAccount, isBurnAvailable, winnerLiquidityProvision, competition, tokenCollateralPercent])
 
+  const isCollateralProgressBarVisible = useMemo(() => {
+    return token && !winnerLiquidityProvision
+  }, [token, winnerLiquidityProvision])
+
   if(!isInitialDataLoaded) {
     return null
   }
@@ -301,7 +305,7 @@ export const TokenPage = () => {
               }
             </Box>
           }
-          {token && !winnerLiquidityProvision &&
+          {isCollateralProgressBarVisible && token &&
               <TokenCollateralProgress
                   collateralPercent={tokenCollateralPercent}
                   requiredCollateral={requiredCollateral}
