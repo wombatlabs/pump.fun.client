@@ -1,9 +1,10 @@
 export const appConfig = {
   walletConnectProjectId: 'd9582a28e2633cc50849bab7aa9ad668',
-  apiUrl: 'https://pump-fun-backend-staging.fly.dev',
-  tokenFactorySimple: '0xCBe0Ca4739282793D65c486c29a929624a0bcA5D',
-  tokenFactoryCompetition: '0xd5e9b7ec8f2e4feB6fab99209fa352ad6DE5D625',
+  apiUrl: 'http://localhost:8085',
+  tokenFactorySimple: '0x3C2fdEb2a8c62F41CCC626067D308c0603fd8F34',
+  tokenFactoryCompetition: '0x50331189a406cd0763EdcCa0c599f5328daFeB04',
   competitionDuration: 1 * 24 * 60 * 60 * 1000,
+  competitionCollateralThreshold: 420000
 }
 
 export const getTokenFactoryAddress = (

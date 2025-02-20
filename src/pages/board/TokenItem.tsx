@@ -32,7 +32,8 @@ export const TokenItem = (props: {
     user,
     uriData,
     commentsCount,
-    competition
+    competition,
+    isWinner
   }} = props
 
   const marketCap = new Decimal(props.data.marketCap)
@@ -57,7 +58,7 @@ export const TokenItem = (props: {
       </Text>
       {competition &&
           <Box direction={'row'} gap={'8px'} align={'center'}>
-              <Text>Competition #{competition.competitionId}</Text>
+              <Text>{isWinner ? '👑 ' : ''}Competition #{competition.competitionId}</Text>
               {!competition.isCompleted && <Tag color="success">Active</Tag>}
               {competition.isCompleted && <Tag color="blue">Completed</Tag>}
           </Box>

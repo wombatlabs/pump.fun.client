@@ -28,6 +28,8 @@ import {config} from "../../wagmi.ts";
 import TokenFactoryBaseABI from "../../abi/TokenFactoryBase.json";
 import TokenFactoryABI from "../../abi/TokenFactory.json";
 import {UniswapPoolInfo} from "./UniswapPoolInfo.tsx";
+import {appConfig} from "../../config.ts";
+import {parseUnits} from "viem";
 
 const ButtonBack = () => {
   const navigate = useNavigate()
@@ -100,23 +102,14 @@ export const TokenPage = () => {
         }
 
         try {
-
           if(competition) {
-            const [requiredData, tokenData] = await Promise.all([
-              readContract(config, {
-                address: tokenFactoryAddress as `0x${string}`,
-                abi: TokenFactoryABI,
-                functionName: 'requiredCollateral',
-                args: []
-              }),
-              readContract(config, {
-                address: tokenFactoryAddress as `0x${string}`,
-                abi: TokenFactoryABI,
-                functionName: 'collateralById',
-                args: [competition.competitionId, address]
-              })
-            ]) as [bigint, bigint]
-            setRequiredCollateral(requiredData)
+            const tokenData = await readContract(config, {
+              address: tokenFactoryAddress as `0x${string}`,
+              abi: TokenFactoryABI,
+              functionName: 'collateralById',
+              args: [competition.competitionId, address]
+            }) as bigint
+            setRequiredCollateral(parseUnits(appConfig.competitionCollateralThreshold.toString(), 18))
             setTokenCollateral(tokenData)
           } else {
             const [requiredData, tokenData] = await Promise.all([
@@ -229,15 +222,16 @@ export const TokenPage = () => {
 
   // const onSetRequiredCollateral = async () => {
   //   const txHash = await writeContract(config, {
-  //     address: '0xd5e9b7ec8f2e4feB6fab99209fa352ad6DE5D625',
+  //     address: '0xe7D431E5A77c14796706937913F0C9F4f78D40e6',
   //     abi: TokenFactoryABI,
-  //     args: ['10000000000000000'],
+  //     args: ['1000000000000000000'],
   //     functionName: 'setRequiredCollateral'
   //   })
   //   console.log('txHash', txHash)
   // }
 
   return <Box width={'100%'} pad={'0 32px'} style={{ maxWidth: '1300px', minWidth: '1000px' }}>
+    {/*<Button onClick={onSetRequiredCollateral}>Collateral</Button>*/}
     <ButtonBack />
     <Box margin={{ top: '16px' }} width={'100%'}>
       <TokenHeader isLoading={isLoading} data={token} />
