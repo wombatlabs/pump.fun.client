@@ -184,6 +184,8 @@ export const TokenPage = () => {
     ) {
       if(competition) {
         return competition.isCompleted
+          && competition.winnerToken
+          && (token && competition.winnerToken.id === token.id)
       } else {
         return true
       }

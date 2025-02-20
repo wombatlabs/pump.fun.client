@@ -24,7 +24,7 @@ export const TokenCollateralProgress = (props: {
       />
       <Box>
         {(+collateralPercent >= 100) &&
-            <Text>The minimum collateral requirement has been successfully reached</Text>
+            <Text>The minimum collateral threshold of {formatUnits(requiredCollateral, 18)} ONE has been reached</Text>
         }
         {(+collateralPercent < 100) &&
             <Text
