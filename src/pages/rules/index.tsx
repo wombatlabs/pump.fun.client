@@ -10,7 +10,7 @@ export const RulesPage = () => {
         <Text color={'accentWhite'} size={'20px'}>Launching tokens, minting, burning</Text>
       </Box>
       <Box gap={'8px'}>
-        <Text color={'accentWhite'}>1. Anyone can launch a token on pump.one. The token will automatically join the current competition round.</Text>
+        <Text color={'accentWhite'}>1. Anyone can launch a token on pump.one. If you choose to, the token will join the current competition round.</Text>
         <Text color={'accentWhite'}>2. After a token is launched, anyone can pay and mint more of the tokens</Text>
         <Text color={'accentWhite'}>3. Token price grows exponentially to the token's supply. The more tokens minted, the more it costs to mint the same amount of token.</Text>
         <Text color={'accentWhite'}>4. Anyone can burn their token at any time, in exchange for ONE. Like in minting, tokens can be sold for more ONE when token supply is high.</Text>
