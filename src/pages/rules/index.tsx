@@ -14,7 +14,7 @@ export const RulesPage = () => {
         <Text color={'accentWhite'}>2. After a token is launched, anyone can pay and mint more of the tokens</Text>
         <Text color={'accentWhite'}>3. Token price grows exponentially to the token's supply. The more tokens minted, the more it costs to mint the same amount of token.</Text>
         <Text color={'accentWhite'}>4. Anyone can burn their token at any time, in exchange for ONE. Like in minting, tokens can be sold for more ONE when token supply is high.</Text>
-        <Text color={'accentWhite'}>5. Tokens can no longer burned or minted on this platform when the current competition round ends, but it may be eligible to be traded on swap.country, or be exchanged into another tradable token. See below for details.</Text>
+        <Text color={'accentWhite'}>5. Competition tokens can no longer burned or minted on this platform when the current competition round ends, but it may be eligible to be traded on swap.country, or be exchanged into another tradable token. See below for details.</Text>
       </Box>
     </Box>
     <Box gap={'16px'}>
