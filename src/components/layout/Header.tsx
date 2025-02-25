@@ -15,6 +15,14 @@ import {JWTTokensPair, UserAccount} from "../../types.ts";
 import {decodeJWT} from "../../utils";
 import {useMediaQuery} from "react-responsive";
 import {breakpoints} from "../../utils/breakpoints.ts";
+import styled from "styled-components";
+
+const HeaderMenuItem = styled(Text)`
+    transition: color 150ms;
+    &:hover {
+        color: #E4E4E8;
+    }
+`
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -113,11 +121,11 @@ export const Header = () => {
       {/*</Box>*/}
       {!isMobile &&
           <Box onClick={() => navigate('/competitions')}>
-              <Text size={'18px'}>Competitions</Text>
+              <HeaderMenuItem size={'18px'}>Competitions</HeaderMenuItem>
           </Box>
       }
       {!isMobile && <Box onClick={() => navigate('/rules')}>
-          <Text size={'18px'}>How it works</Text>
+          <HeaderMenuItem size={'18px'}>How it works</HeaderMenuItem>
       </Box>}
       {!isMobile && <Box align={'center'} onClick={() => setSimpleSwapModalOpened(true)}>
           <GradientButtonText size={'16px'}>Get ONE</GradientButtonText>
