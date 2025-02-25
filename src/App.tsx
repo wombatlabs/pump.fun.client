@@ -51,7 +51,7 @@ function App() {
             <Checkbox
               onChange={(e) => onDisclaimerShow(!e.target.checked)}
             >
-              Do not show again
+              Don't show again
             </Checkbox>
             <Box width={'140px'}>
               <Button onClick={() => api.destroy('disclaimer')}>Close</Button>
