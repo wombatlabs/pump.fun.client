@@ -2,10 +2,23 @@ import {Box, Grommet, Text} from "grommet";
 import {AppRoutes} from "./Routes.tsx";
 import {darkTheme} from "./theme/grommet.ts";
 import {antdTheme} from "./theme/antd.ts";
-import {ConfigProvider, notification} from "antd";
+import {Button, Checkbox, ConfigProvider, notification} from "antd";
 import {BrowserRouter} from "react-router-dom";
 import {ClientDataProvider} from "./providers/DataProvider.tsx";
 import {useEffect} from "react";
+
+const LsShowDisclaimerKey = 'pump_one_show_disclaimer';
+const onDisclaimerShow = (showDisclaimer: boolean) => {
+  localStorage.setItem(LsShowDisclaimerKey, showDisclaimer ? 'true' : 'false')
+}
+const getShowDisclaimer = () => {
+  const item = localStorage.getItem(LsShowDisclaimerKey)
+  if(item) {
+    return item === 'true'
+  }
+  return true
+}
+const showDisclaimerOnStart = getShowDisclaimer()
 
 function App() {
   // const account = useAccount()
@@ -17,6 +30,7 @@ function App() {
   useEffect(() => {
     const showNotification = () => {
       api.open({
+        key: 'disclaimer',
         message: <Text size={'20px'} weight={500}>Disclaimer</Text>,
         placement: 'top',
         style: {
@@ -33,13 +47,26 @@ function App() {
           <Text>
             If you encounter any issues, please report them in <a href={'https://discord.com/channels/1313237802107797538'} target={'_blank'}>Pump.ONE Discord</a>.
           </Text>
+          <Box gap={'8px'} margin={{ top: '16px' }}>
+            <Checkbox
+              onChange={(e) => onDisclaimerShow(!e.target.checked)}
+            >
+              Do not show again
+            </Checkbox>
+            <Box width={'140px'}>
+              <Button onClick={() => api.destroy('disclaimer')}>Close</Button>
+            </Box>
+          </Box>
         </Box>
     ,
     duration: 0,
       });
     }
-    showNotification()
-  }, []);
+
+    if(showDisclaimerOnStart) {
+      showNotification()
+    }
+  }, [showDisclaimerOnStart]);
 
   return <Box>
     <Grommet theme={darkTheme} themeMode={'dark'} full>
