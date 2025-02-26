@@ -1,51 +1,147 @@
 import {Box, Text} from "grommet";
+import {useNavigate} from "react-router-dom";
 
 export const RulesPage = () => {
-  return <Box width={'800px'} gap={'48px'} margin={{ top: '32px', bottom: '32px' }}>
-    <Box align={'center'}>
+  const navigate = useNavigate();
+
+  const handleModeClick = (isCompetition: boolean) => {
+    navigate(`/create?mode=${isCompetition ? 'competition' : 'standard'}`);
+  };
+
+  return <Box width={'800px'} gap={'40px'} margin={{ top: '32px', bottom: '32px' }}>
+    {/* Header */}
+    <Box align={'center'} margin={{ bottom: '24px' }}>
       <Text size={'22px'} color={'accentWhite'} weight={500}>Pump One Rules</Text>
     </Box>
-    <Box gap={'24px'}>
-      <Box align={'center'}>
-        <Text color={'accentWhite'} size={'20px'}>Launching tokens, minting, burning</Text>
+    
+    {/* Two Modes Introduction - Improved flow */}
+    <Box>
+      <Box align={'center'} margin={{ bottom: '16px' }}>
+        <Text color={'accentWhite'} size={'20px'}>Two Ways to Launch</Text>
       </Box>
-      <Box gap={'8px'}>
-        <Text color={'accentWhite'}>1. Anyone can launch a token on pump.one. Participation in the current competition round is optional, and the token will only join if you choose to enter it.</Text>
-        <Text color={'accentWhite'}>2. After a token is launched, anyone can pay and mint more of the tokens</Text>
-        <Text color={'accentWhite'}>3. Token price grows exponentially to the token's supply. The more tokens minted, the more it costs to mint the same amount of token.</Text>
-        <Text color={'accentWhite'}>4. Anyone can burn their token at any time, in exchange for ONE. Like in minting, tokens can be sold for more ONE when token supply is high.</Text>
-        <Text color={'accentWhite'}>5. Competition tokens can no longer burned or minted on this platform when the current competition round ends, but it may be eligible to be traded on swap.country, or be exchanged into another tradable token. See below for details.</Text>
+      <Box direction={'row'} gap={'medium'}>
+        <Box 
+          width={'50%'} 
+          background={'rgba(255, 255, 255, 0.03)'} 
+          pad={'medium'} 
+          round={'small'} 
+          onClick={() => handleModeClick(false)}
+          hoverIndicator={{ background: 'rgba(255, 255, 255, 0.07)' }}
+          focusIndicator={false}
+          as="button"
+          style={{ 
+            cursor: 'pointer', 
+            outline: 'none', 
+            textAlign: 'left',
+            border: 'none', 
+            boxShadow: 'none'
+          }}
+        >
+          <Text color={'accentWhite'} size={'18px'} weight={500} margin={{ bottom: 'small' }} textAlign="center">Standard</Text>
+          <Box gap={'8px'}>
+            <Text color={'accentWhite'}>Launch tokens without time limits.</Text>
+            <Text color={'accentWhite'}>Mint and burn anytime.</Text>
+          </Box>
+        </Box>
+        <Box 
+          width={'50%'} 
+          background={'rgba(255, 255, 255, 0.03)'} 
+          pad={'medium'} 
+          round={'small'}
+          onClick={() => handleModeClick(true)}
+          hoverIndicator={{ background: 'rgba(255, 255, 255, 0.07)' }}
+          focusIndicator={false}
+          as="button"
+          style={{ 
+            cursor: 'pointer', 
+            outline: 'none', 
+            textAlign: 'left',
+            border: 'none',  
+            boxShadow: 'none' 
+          }}
+        >
+          <Text color={'accentWhite'} size={'18px'} weight={500} margin={{ bottom: 'small' }} textAlign="center">Competition</Text>
+          <Box gap={'8px'}>
+            <Text color={'accentWhite'}>Battle for highest liquidity.</Text>
+            <Text color={'accentWhite'}>Only ONE token wins each round.</Text>
+          </Box>
+        </Box>
       </Box>
     </Box>
-    <Box gap={'16px'}>
-      <Box align={'center'}>
-        <Text color={'accentWhite'} size={'20px'}>Competition rounds, winner selection, publish to swap.country, exchange tokens</Text>
+    
+    {/* Mode Comparison */}
+    <Box>
+      <Box align={'center'} margin={{ bottom: '16px' }}>
+        <Text color={'accentWhite'} size={'20px'}>Comparison</Text>
       </Box>
-      <Box gap={'8px'}>
-        <Text color={'accentWhite'}>1. Tokens launched in the same round competes to be the one with highest net liquidity - that is, the one that has received the highest amount of payment in ONE to mint the token, minus the amount of ONE paid out due to burning the token</Text>
-        <Text color={'accentWhite'}>2. A round of competition ends every 7 days at a random time within one hour around midnight, US Pacific Time, if at least one token received 420,000 amount of ONE in net liquidity. If there is no such token, the competition round is automatically extended for 7 days.</Text>
-        <Text color={'accentWhite'}>3. When a round of competition ends, the winner is determined as the one with the highest net liquidity. The winner will be automatically announced on Pump One and its social platforms. Tokens in the same competition round, including the winner, can no longer be minted or burned on Pump One.</Text>
-        <Text color={'accentWhite'}>4. A liquidity pool will be automatically created on swap.country so the winner token can be traded outside the platform. The price of the liquidity pool will be set based on the current cost in ONE to mint a unit of the winner token. All net liquidity of the winner, plus the net liquidity of all other tokens in the competition round, will be moved to the new pool. A small amount of supply of the winner token will be automatically minted, to match the required amount for creating the new liquidity pool at the current price.</Text>
-        <Text color={'accentWhite'}>5. Other tokens in the competition round (that are not the winner) can be exchanged into the winner token. The rate of exchange depends on the current supply of the token and the winner token, approximately equal to the amount you would get for burning the token then use the ONE you would get paid for to mint the winner token.</Text>
+      <Box direction={'row'} gap={'medium'}>
+        <Box width={'50%'} background={'rgba(255, 255, 255, 0.03)'} pad={'medium'} round={'small'}>
+          <Text color={'accentWhite'} weight={500} margin={{ bottom: 'small' }}>Standard Mode:</Text>
+          <Text color={'accentWhite'}>• Launch tokens without time restrictions</Text>
+          <Text color={'accentWhite'}>• Mint and burn anytime</Text>
+          <Text color={'accentWhite'}>• No competition with other tokens</Text>
+          <Text color={'accentWhite'}>• Tokens that reach 420k ONE liquidity get listed on swap.country</Text>
+        </Box>
+        <Box width={'50%'} background={'rgba(255, 255, 255, 0.03)'} pad={'medium'} round={'small'}>
+          <Text color={'accentWhite'} weight={500} margin={{ bottom: 'small' }}>Competition Mode:</Text>
+          <Text color={'accentWhite'}>• Competitive token launchpad</Text>
+          <Text color={'accentWhite'}>• Only ONE token wins each round</Text>
+          <Text color={'accentWhite'}>• Winner gets all competition liquidity</Text>
+          <Text color={'accentWhite'}>• Non-winners can convert to winner token</Text>
+          <Text color={'accentWhite'}>• Swap.country listing for winner, if at least one token reaches 420k ONE liquidity</Text>
+        </Box>
       </Box>
     </Box>
-    <Box gap={'16px'}>
-      <Box align={'center'}>
-        <Text color={'accentWhite'} size={'20px'}>Fees and technical parameters</Text>
+    
+    {/* Token Basics */}
+    <Box>
+      <Box align={'center'} margin={{ bottom: '16px' }}>
+        <Text color={'accentWhite'} size={'20px'}>Token Basics</Text>
       </Box>
-      <Box gap={'8px'}>
-        <Text color={'accentWhite'}>1. There is no fee for using the platform. However, to reduce spam, fraud, and to establish a prize and market making pool, a a 50 basis point (0.5%) deduction is made from the ONE amount you pay (or would be paid) towards the prize and market making pool. Any use or operation of the funds in this pool will be announced ahed of time. Pump One do not earn income from the pool.</Text>
-        <Text color={'accentWhite'}>2. Token unit price for minting and burning follows the formula of Unit Price =  2 * (Token Current Supply ^ 0.5). However, the formula may be changed from time to time by Pump One to improve user experience.</Text>
-        <Text color={'accentWhite'}>3. Similarly, the number of days for each competition round and the minimum net liquidity required to conclude a competition round may be changed from time to time. However, when there is a major change, announcements will be made on the website as well as on social platforms.</Text>
+      <Box gap={'8px'} background={'rgba(255, 255, 255, 0.03)'} pad={'medium'} round={'small'}>
+        <Text color={'accentWhite'}>1. Anyone can launch a token on pump.one.</Text>
+        <Text color={'accentWhite'}>2. After launch, anyone can mint more tokens by paying ONE.</Text>
+        <Text color={'accentWhite'}>3. Token price increases with supply - more tokens minted means higher mint costs.</Text>
+        <Text color={'accentWhite'}>4. Anyone can burn their tokens anytime to receive ONE back. Higher token supply means better burn rates.</Text>
+        <Text color={'accentWhite'}>5. Competition tokens can't be burned or minted after the round ends, but may be tradable on swap.country or exchangeable for winner tokens.</Text>
       </Box>
     </Box>
-    <Box gap={'16px'}>
-      <Box align={'center'}>
-        <Text color={'accentWhite'} size={'20px'}>Security and moderation</Text>
+    
+    {/* Competition Details */}
+    <Box>
+      <Box align={'center'} margin={{ bottom: '16px' }}>
+        <Text color={'accentWhite'} size={'20px'}>Competition Details</Text>
       </Box>
-      <Box gap={'8px'}>
-        <Text color={'accentWhite'}>1. Pump One operators have no access to your funds or your tokens. The smart contract only allows the operators to access the funds accumulated in prize and market making pool, as described above.</Text>
-        <Text color={'accentWhite'}>2. Pump One website operators may remove any token from the website at their discretion, for example, when the token displays content that are obscene, violating privacy or copyright laws, or inciting violence and terrorism. The removed tokens will still exist on the blockchain, but it will not be accessible from Pump One platform.</Text>
+      <Box gap={'8px'} background={'rgba(255, 255, 255, 0.03)'} pad={'medium'} round={'small'}>
+        <Text color={'accentWhite'} weight={500} margin={{ bottom: 'small' }}>Only ONE token wins each competition round!</Text>
+        <Text color={'accentWhite'}>1. Tokens compete for highest net liquidity (total ONE paid for minting minus ONE returned from burns).</Text>
+        <Text color={'accentWhite'}>2. Rounds last 7 days, ending at random time around midnight US Pacific Time if at least one token reaches 420,000 ONE in net liquidity. Otherwise, round extends 7 more days.</Text>
+        <Text color={'accentWhite'}>3. When a round ends, the winner is announced on Pump One and its social platforms. All competition tokens can no longer be minted or burned on Pump One.</Text>
+        <Text color={'accentWhite'}>4. A liquidity pool automatically launches on swap.country for the winner. All net liquidity (winner's + other competing tokens) moves to this pool.</Text>
+        <Text color={'accentWhite'}>5. Non-winning tokens can be exchanged for the winner token at rates based on current supply ratios.</Text>
+      </Box>
+    </Box>
+    
+    {/* Fees Section */}
+    <Box>
+      <Box align={'center'} margin={{ bottom: '16px' }}>
+        <Text color={'accentWhite'} size={'20px'}>Fees and Parameters</Text>
+      </Box>
+      <Box gap={'8px'} background={'rgba(255, 255, 255, 0.03)'} pad={'medium'} round={'small'}>
+        <Text color={'accentWhite'}>1. No platform fee, but a 0.5% deduction from ONE transactions goes to the prize and market making pool. Pump One doesn't earn income from this pool.</Text>
+        <Text color={'accentWhite'}>2. Token pricing formula: Unit Price = 2 * (Token Current Supply ^ 0.5). May be adjusted to improve user experience.</Text>
+        <Text color={'accentWhite'}>3. Competition parameters (round length, minimum liquidity) may change with advance notice on website and social platforms.</Text>
+      </Box>
+    </Box>
+    
+    {/* Security Section */}
+    <Box>
+      <Box align={'center'} margin={{ bottom: '16px' }}>
+        <Text color={'accentWhite'} size={'20px'}>Security and Moderation</Text>
+      </Box>
+      <Box gap={'8px'} background={'rgba(255, 255, 255, 0.03)'} pad={'medium'} round={'small'}>
+        <Text color={'accentWhite'}>1. Pump One operators cannot access your funds or tokens. They can only access the prize/market making pool as described above.</Text>
+        <Text color={'accentWhite'}>2. Platform operators may remove tokens displaying inappropriate content (obscene, illegal, violent). Removed tokens still exist on blockchain but won't be accessible through Pump One.</Text>
       </Box>
     </Box>
   </Box>
