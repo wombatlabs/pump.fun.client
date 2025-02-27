@@ -5,7 +5,7 @@ import {formatUnits} from "viem";
 import {Skeleton} from "antd";
 import Decimal from "decimal.js";
 import {getTokens, getTrades} from "../../api";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import usePoller from "../../hooks/usePoller.ts";
 import useIsTabActive from "../../hooks/useActiveTab.ts";
 import {Link} from "react-router-dom";
@@ -62,13 +62,17 @@ const UpdateItem = (props: {
     background = trade.type === 'buy' ? 'positiveValue' : 'negativeValue'
   }
 
+  const tradeAmount = useMemo(() => {
+    if(trade) {
+      const value = trade.type === 'buy' ? trade.amountOut : trade.amountIn
+      return new Decimal(formatUnits(BigInt(value), 18)).toFixed(4)
+    }
+    return ''
+  }, [trade])
+
   if((type === 'trade' && !trade) || (type === 'token' && !token)) {
     return <Skeleton.Input active={true} />
   }
-
-  const tradeAmount = trade
-    ? new Decimal(formatUnits(BigInt(trade.amountIn), 18)).toFixed(4)
-    : ''
 
   return <ShakeDiv
     isAnimating={isAnimating}
