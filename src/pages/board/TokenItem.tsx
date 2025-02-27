@@ -4,7 +4,7 @@ import styled from "styled-components";
 import moment from 'moment'
 import {Image, Tag} from 'antd'
 import Decimal from "decimal.js";
-import {CSSProperties} from "react";
+import {CSSProperties, useMemo} from "react";
 import {MarketCap} from "../../components/marketCap";
 
 const TokenContainer = styled(Box)`
@@ -38,6 +38,16 @@ export const TokenItem = (props: {
 
   const marketCap = new Decimal(props.data.marketCap)
 
+  const description = useMemo(() => {
+    if(uriData) {
+      if(uriData.description.length > 256) {
+        return `${uriData.description.slice(0, 256)}...`
+      }
+      return uriData.description
+    }
+    return ''
+  }, [uriData])
+
   return <TokenContainer
     direction={'row'}
     gap={'16px'}
@@ -68,7 +78,7 @@ export const TokenItem = (props: {
       }
       <MarketCap value={marketCap.toNumber()} />
       <Text>replies: {commentsCount}</Text>
-      <Text><b style={{ fontSize: '16px' }}>{name} (ticker: {symbol})</b>: {uriData?.description}</Text>
+      <Text><b style={{ fontSize: '16px' }}>{name} (ticker: {symbol})</b>: {description}</Text>
     </Box>
   </TokenContainer>
 }
