@@ -1,9 +1,9 @@
 export const appConfig = {
   walletConnectProjectId: 'd9582a28e2633cc50849bab7aa9ad668',
   apiUrl: 'http://localhost:8085',
-  tokenFactorySimple: '0x3C2fdEb2a8c62F41CCC626067D308c0603fd8F34',
-  tokenFactoryCompetition: '0x50331189a406cd0763EdcCa0c599f5328daFeB04',
-  competitionDuration: 1 * 24 * 60 * 60 * 1000,
+  tokenFactoryCompetition: '0xc115aDA811C5c81f1EafcBe5526d5Fcb73B6b40D',
+  tokenFactoryBase: '0x7400bE22b1F3fF409E58738E4cF32290f60b7504',
+  competitionDuration: 7 * 24 * 60 * 60 * 1000,
   competitionCollateralThreshold: 420000
 }
 
@@ -13,7 +13,7 @@ export const getTokenFactoryAddress = (
   if(isCompetitionsEnabled) {
     return appConfig.tokenFactoryCompetition as `0x${string}`
   }
-  return appConfig.tokenFactorySimple as `0x${string}`
+  return appConfig.tokenFactoryBase as `0x${string}`
 }
 
 // apiUrl:
