@@ -1,6 +1,6 @@
 import {Box, Spinner, Text} from 'grommet'
 import {Button, Checkbox, Input, message, Tooltip, Upload, UploadProps} from "antd";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
 import {writeContract, waitForTransactionReceipt} from "wagmi/actions";
 import {appConfig, getTokenFactoryAddress} from "../../config.ts";
@@ -44,10 +44,17 @@ const defaultFormState: CreateTokenForm = {
 export const CreatePage = () => {
   const navigate = useNavigate();
   const account = useAccount()
+  const [searchParams] = useSearchParams()
+  const initialMode = searchParams.get('mode') || 'competition'
   const { state: { userAccount, jwtTokens } } = useClientData()
 
   const [currentCompetition, setCompetition] = useState<Competition>()
-  const [tokenForm, setTokenForm] = useState<CreateTokenForm>(defaultFormState)
+  const [tokenForm, setTokenForm] = useState<CreateTokenForm>(() => {
+    return {
+      ...defaultFormState,
+      isCompetitionsEnabled: initialMode === 'competition',
+    }
+  })
   const [currentStatus, setCurrentStatus] = useState('')
   const [inProgress, setInProgress] = useState(false)
   const [isOptionalFieldVisible, setOptionalFieldVisible] = useState(false)
