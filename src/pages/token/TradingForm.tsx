@@ -87,12 +87,17 @@ export const TradingForm = (props: {
           : '_sellReceivedAmount'
         const amountString = new Decimal(debouncedAmount || 0).toFixed()
         const amountBigInt = parseUnits(amountString, 18)
-        const amount = await readContract(config, {
+        const quoteResult = await readContract(config, {
           address: token.tokenFactoryAddress as `0x${string}`,
           abi: TokenFactoryABI,
           functionName,
           args: [token.address, amountBigInt]
-        }) as bigint
+        }) as (bigint | bigint[])
+
+        const amount = selectedSide === 'buy'
+          ? quoteResult as bigint
+          : (quoteResult as bigint[])[0]
+
         console.log('Trade amount estimate:', amount)
         setTradeQuote({
           ...defaultTradeQuote,
