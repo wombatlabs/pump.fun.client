@@ -4,6 +4,7 @@ import {TokenEnriched} from "../../types.ts";
 import {formatUnits} from "viem";
 import {useMemo} from "react";
 import moment from 'moment'
+import Decimal from "decimal.js";
 
 export const TokenCollateralProgress = (props: {
   collateralPercent: string
@@ -20,6 +21,15 @@ export const TokenCollateralProgress = (props: {
     }
     return false
   }, [token])
+
+  const requiredCollateralDelta = useMemo(() => {
+    const delta = new Decimal((requiredCollateral - tokenCollateral).toString())
+      .div(10 ** 18)
+    if(delta.gt(1)) {
+      return delta.toDecimalPlaces(2).toString()
+    }
+    return delta.toString()
+  }, [requiredCollateral, tokenCollateral])
 
   return <Box>
     <Text>Collateral progress: {collateralPercent}%</Text>
@@ -46,7 +56,7 @@ export const TokenCollateralProgress = (props: {
         }
         {(isCompetitionExtended && requiredCollateral > tokenCollateral) &&
           <Text size={'small'}>
-            {formatUnits((requiredCollateral - tokenCollateral), 18)} amount of ONE needed before competition ends
+            {requiredCollateralDelta} amount of ONE needed before competition ends
           </Text>
         }
       </Box>
