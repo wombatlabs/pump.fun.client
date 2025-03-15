@@ -67,7 +67,7 @@ export const TokenPage = () => {
       return new Decimal(tokenCollateral.toString())
         .div(new Decimal(requiredCollateral.toString()))
         .mul(100)
-        .toFixed(1)
+        .toFixed(2)
     }
     return '0'
   }, [requiredCollateral, tokenCollateral])
@@ -302,6 +302,7 @@ export const TokenPage = () => {
           {isCollateralProgressBarVisible && token &&
               <TokenCollateralProgress
                   collateralPercent={tokenCollateralPercent}
+                  tokenCollateral={tokenCollateral}
                   requiredCollateral={requiredCollateral}
                   token={token}
               />

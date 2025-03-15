@@ -2,13 +2,24 @@ import {Box, Text} from "grommet";
 import {Progress} from "antd";
 import {TokenEnriched} from "../../types.ts";
 import {formatUnits} from "viem";
+import {useMemo} from "react";
+import moment from 'moment'
 
 export const TokenCollateralProgress = (props: {
   collateralPercent: string
+  tokenCollateral: bigint
   requiredCollateral: bigint
   token: TokenEnriched
 }) => {
-  const { collateralPercent, requiredCollateral } = props
+  const { token, collateralPercent, tokenCollateral, requiredCollateral } = props
+
+  const isCompetitionExtended = useMemo(() => {
+    if(token.competition) {
+      const { winnerToken, timestampStart } = token.competition
+      return !winnerToken && moment().diff(moment(+timestampStart * 1000), 'days') > 7
+    }
+    return false
+  }, [token])
 
   return <Box>
     <Text>Collateral progress: {collateralPercent}%</Text>
@@ -32,6 +43,11 @@ export const TokenCollateralProgress = (props: {
             >
                 Graduate this coin to swap.country at {formatUnits(requiredCollateral, 18)} ONE market cap
             </Text>
+        }
+        {(isCompetitionExtended && requiredCollateral > tokenCollateral) &&
+          <Text size={'small'}>
+            {formatUnits((requiredCollateral - tokenCollateral), 18)} amount of ONE needed before competition ends
+          </Text>
         }
       </Box>
     </Box>
