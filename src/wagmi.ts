@@ -28,7 +28,7 @@ export const config = createConfig(
     // Your dApps chains
     chains: [harmonyOne, harmonyOneTestnet],
     transports: {
-      [harmonyOne.id]: http(),
+      [harmonyOne.id]: http('https://api.harmony.one'),
       [harmonyOneTestnet.id]: http(),
     },
     walletConnectProjectId: appConfig.walletConnectProjectId,
